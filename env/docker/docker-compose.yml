@@ -31,11 +31,26 @@ services:
     image: kagemeka/cp:go
     tty: true
     volumes:
-      # - type: tmpfs
-      #   target: /tmp/
       - type: bind
         source: $ROOT/go/
         target: /root/cp/
     working_dir: /root/cp/
   
+  rs:
+    build:
+      context: $ROOT/rs/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:rs
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/rs/
+        target: /root/cp/
+    working_dir: /root/cp/
   
