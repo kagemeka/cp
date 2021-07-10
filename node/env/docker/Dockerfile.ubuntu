@@ -1,0 +1,14 @@
+FROM ubuntu:20.04
+SHELL ["/bin/bash", "-c"]
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /root/
+RUN \
+  apt update -q=2 \
+  && apt install -yq=2 \
+  apt-utils \
+  curl \
+  sudo \
+  && curl \
+  -sL https://deb.nodesource.com/setup_current.x \
+  | sudo -E bash - \
+  && apt install -y nodejs
