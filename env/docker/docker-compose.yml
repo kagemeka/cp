@@ -54,6 +54,24 @@ services:
         target: /root/cp/
     working_dir: /root/cp/
   
+  node:
+    build:
+      context: $ROOT/node/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.alpine"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:node
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/node/
+        target: /root/cp/
+    working_dir: /root/cp/
+    
   py:
     build:
       context: $ROOT/py/env/

@@ -1,0 +1,8 @@
+FROM alpine:latest 
+SHELL ["ash", "-c"]
+WORKDIR /root/
+RUN \
+  apk update \
+  && apk add \
+  nodejs \
+  npm
