@@ -1,3 +1,5 @@
+main()
 func main() {
-  var label = 50
+  let label = 50
+  print(label)
 }
