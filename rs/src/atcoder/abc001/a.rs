@@ -1,7 +1,6 @@
 use std::io;
 
 
-
 fn readline() 
 -> String 
 {
