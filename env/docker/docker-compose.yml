@@ -2,6 +2,22 @@ version: '3.9'
 
 
 services:
+  go:
+    build:
+      context: $ROOT/go/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.alpine"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:go
+    tty: true
+    volumes:
+      - type: bind
+        source: $ROOT/go/
+        target: /root/cp/
+    working_dir: /root/cp/
+  
   py:
     build:
       context: $ROOT/py/env/
@@ -17,22 +33,6 @@ services:
         target: /tmp/
       - type: bind
         source: $ROOT/py/
-        target: /root/cp/
-    working_dir: /root/cp/
-  
-  go:
-    build:
-      context: $ROOT/go/env/
-      dockerfile:
-        "docker/\
-        Dockerfile.alpine"
-    env_file: 
-      - common.env
-    image: kagemeka/cp:go
-    tty: true
-    volumes:
-      - type: bind
-        source: $ROOT/go/
         target: /root/cp/
     working_dir: /root/cp/
   
@@ -53,4 +53,22 @@ services:
         source: $ROOT/rs/
         target: /root/cp/
     working_dir: /root/cp/
-  
+   
+  dart:
+    build:
+      context: $ROOT/dart/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:dart
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/dart/
+        target: /root/cp/
+    working_dir: /root/cp/
+   
