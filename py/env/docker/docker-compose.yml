@@ -1,0 +1,232 @@
+version: '3.9'
+
+configs:
+  pseudo_config:
+    # driver: 
+    # driver_opts:
+    external: false
+    file: ./pseudo_config.txt
+    name: cp
+    template_driver: golang 
+
+
+networks:
+  py:
+    attachable: false
+    driver: bridge
+    # driver_opts:
+    external: false
+    internal: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 
+            172.168.0.0/24
+    labels:
+      com.kagemeka.author: >
+        kagemeka
+    name: cp
+
+
+secrets:
+  pseudo_secret :
+    external: false
+    file: ./pseudo_secret.txt
+    name: cp
+    template_driver: golang 
+
+
+services:
+  py:
+    build:
+      args:
+        - PYVER
+        # - TZ
+      cache_from: 
+        - ubuntu:latest
+      context: $ROOT/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.cp-py"
+      labels:
+        com.kagemeka.author: >
+          kagemeka
+      network: host
+      shm_size: 64m
+      target: python-stage
+    cap_add:
+      - ALL
+    cap_drop:
+      - NET_ADMIN
+    # cgroup_parent:
+    command: []
+    # configs:
+    # credential_spec: 
+    container_name: cp-py
+    # depends_on:
+      # - other_service
+    deploy:
+      endpoint_mode: vip 
+      mode: replicated
+      labels:
+        com.kagemeka.author: >
+          kagemeka
+      placement:
+        constraints:
+          - node.platform.os==ubuntu
+        preferences:
+          - spread: > 
+              node.labels.zone
+          - spread: >
+              node.labels.datacenter
+        max_replicas_per_node:
+          1
+      replicas: 1
+      # resources:
+      #   limits:
+      #     cpus: 0.32
+      #     memory: 1024M
+      #   reservations:
+      #     cpus: 0.16
+      #     memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 4s
+        max_attempts: 2
+        window: 64s
+      rollback_config:
+        delay:  0s
+        failure_action: pause
+        max_failure_ratio: 0.1
+        monitor: 4s
+        order: stop-first
+        parallelism: 0  
+      update_config:
+        delay: 16s
+        failure_action: pause
+        max_failure_ratio: 0.3
+        monitor: 4s
+        order: stop-first
+        parallelism: 2
+    devices:
+      - /dev/video0:/dev/video0
+    dns:
+      - 8.8.8.8
+    # dns_search: 
+    domainname: kagemeka.com
+    entrypoint: [
+      "/bin/bash",
+    ]
+    env_file: 
+      - common.env
+    environment:
+      DISPLAY: ${DISPLAY:-:0}
+    expose:
+      - 8888
+    external_links:
+      - pseudo-container:alias
+    # extra_hosts:
+    #   - pseudo-host:<ip>
+    healthcheck:
+      # disable: true
+      interval: 2m
+      retries: 2
+      start_period: 0s
+      test: [
+        "CMD-SHELL",
+        "echo",
+        "it's healthy",
+      ]
+      timeout: 4s 
+    hostname: kagemeka
+    image: kagemeka/cp-py
+    init: true
+    ipc: host
+    isolation: default
+    labels:
+      com.kagemeka.author: >
+        kagemeka
+    
+    logging:
+      driver: json-file
+      options:
+        max-size: 128k
+        max-file: "4"
+    
+    # network_mode: bridge
+    networks:
+      py:
+        aliases:
+          - python
+        ipv4_address: 
+          172.168.0.16
+    
+    pid: host
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 12345
+        target: 12345 
+    privileged: true
+    # profiles: 
+    #   - cp
+    read_only: false
+    restart: unless-stopped
+    # runtime: nvidia
+    secrets:
+      - gid: '0'
+        mode: 0444
+        source: pseudo_secret
+        target: py_secret
+        uid: '0'
+    # security_opt:
+      # - 
+    shm_size: 64m
+    stdin_open: true
+    stop_grace_period: 8s
+    stop_signal: SIGTERM
+    sysctls:
+      net.ipv4.ip_forward: 1
+    tty: true
+    ulimits:
+      nproc:
+        soft: 4095
+        hard: 16383
+      nofile:
+        soft: 511
+        hard: 65535
+    # user: kagemeka
+    userns_mode: host
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 4g
+      - type: bind
+        bind:
+          propagation: rprivate
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: false
+        volume:
+          nocopy: true
+      - type: bind
+        bind:
+          propagation: rprivate
+        source: $ROOT
+        target: /root/$PROJECT
+        read_only: false 
+        volume:
+          nocopy: true    
+    working_dir: /root/$PROJECT
+
+
+volumes:
+  cp-py:
+    driver: local
+    # driver_opts:
+    external: false
+    labels:
+      com.kagemeka.author: >
+        kagemeka
+    name: cp
