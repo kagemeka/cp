@@ -3,24 +3,20 @@ SHELL ["/bin/bash", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /root/
 RUN \
-  echo $TZ > /etc/timezone \
-  && apt -q=2 update \
-  && apt -yq=2 upgrade \
+  apt -q=2 update \
   && apt -yq=2 install \
   apt-utils \
   neovim \
   software-properties-common \
   && rm -rf /var/lib/apt/lists/* \
   && apt --yes clean \
-  && echo "PS1='\W\$ '" >> ~/.bashrc \
+  && echo "PS1='\w\$ '" >> ~/.bashrc \
   && echo "bind '\"\t\":menu-complete'" >> ~/.bashrc
 
 
-
-FROM base-stage AS python-stage
-COPY py/requirements.txt /root/ 
+FROM base-stage AS ubuntu-stage
 WORKDIR /root/ 
-ARG PYVER
+ARG PYVER=3.9
 RUN \
   apt -q=2 update \
   && apt -yq=2 install \
@@ -39,9 +35,11 @@ RUN \
   /usr/bin/python3 \
   && ln -sn \
   /usr/bin/python3 \
-  /usr/bin/python \
-  && pip3 install -U pip \
+  /usr/bin/python
+
+COPY py/requirements.txt .
+RUN \
+  pip3 install -U pip \
   && pip install \
   -Uqr requirements.txt \
   && rm requirements.txt
- 

@@ -1,0 +1,9 @@
+FROM python:3.8.11-alpine AS alpine-stage
+SHELL ["ash", "-c"]
+RUN \
+  apk add \
+  neovim
+COPY py/requirements.txt .
+RUN \
+  pip install -Ur requirements.txt \
+  && rm requirements.txt

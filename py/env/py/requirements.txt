@@ -1,3 +1,3 @@
 networkx
 numpy 
-scipy
+scipy==1.7.0
