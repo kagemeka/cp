@@ -1,0 +1,23 @@
+version: '3.9'
+
+
+services:
+  py:
+    build:
+      context: $ROOT/py/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:py
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/py/
+        target: /root/cp/
+    working_dir: /root/cp/
+  
+  
