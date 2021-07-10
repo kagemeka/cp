@@ -1,0 +1,5 @@
+{
+  "sourcekit-lsp.serverPath": "/usr/local/swift/usr/bin/sourcekit-lsp",
+  "sourcekit-lsp.toolchainPath": "/usr/local/swift",
+  "sourcekit-lsp.trace.server": "verbose"
+}
