@@ -2,6 +2,24 @@ version: '3.9'
 
 
 services:
+  dart:
+    build:
+      context: $ROOT/dart/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:dart
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/dart/
+        target: /root/cp/
+    working_dir: /root/cp/
+   
   go:
     build:
       context: $ROOT/go/env/
@@ -53,22 +71,25 @@ services:
         source: $ROOT/rs/
         target: /root/cp/
     working_dir: /root/cp/
-   
-  dart:
+  
+  swift:
     build:
-      context: $ROOT/dart/env/
+      context: $ROOT/swift/env/
       dockerfile:
         "docker/\
         Dockerfile.ubuntu"
+      target: artifact
     env_file: 
       - common.env
-    image: kagemeka/cp:dart
+    image: kagemeka/cp:swift
+    privileged: true
     tty: true
     volumes:
       - type: tmpfs
         target: /tmp/
       - type: bind
-        source: $ROOT/dart/
+        source: $ROOT/swift/
         target: /root/cp/
     working_dir: /root/cp/
-   
+     
+  
