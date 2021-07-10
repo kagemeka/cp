@@ -138,7 +138,4 @@ func (
 func main() {
 	p := new(ABC001A)
 	Run(p)
-	fmt.Println(
-		^int(0) >> 1 & 1,
-	)
 }

@@ -1,0 +1,2 @@
+ARG GOVER=1.16.3
+FROM golang:${GOVER}-alpine
