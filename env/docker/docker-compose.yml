@@ -128,4 +128,21 @@ services:
         target: /root/cp/
     working_dir: /root/cp/
      
-  
+  ts:
+    build:
+      context: $ROOT/ts/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.alpine"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:ts
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/ts/
+        target: /root/cp/
+    working_dir: /root/cp/
+      
