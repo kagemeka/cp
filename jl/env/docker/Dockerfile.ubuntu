@@ -7,7 +7,6 @@ ARG MINOR=6
 ARG PATCH=1
 ARG MM_VER=${MAJOR}.${MINOR}
 ARG VER=${MM_VER}.${PATCH}
-RUN echo ${VER}
 RUN \
   apt update -q=2 \
   && apt install -yq=2 \
