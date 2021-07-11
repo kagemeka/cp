@@ -8,3 +8,9 @@ Console.WriteLine("Hello World!");
 //         Console.WriteLine("Hello, World");
 //     }
 // }
+
+void foo() {
+  Console.WriteLine("bar");
+}
+
+foo();
