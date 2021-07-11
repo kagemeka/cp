@@ -20,15 +20,13 @@ class Problem(
   def __init__(
     self,
   ) -> typing.NoReturn:
-    ...
+    self.__read = ReadStdin()
 
 
   def _prepare(
     self,
   ) -> typing.NoReturn:
-    for _ in range(10):
-      a = self._read.int()
-      print(a)
+    ... 
 
 
   def _solve(

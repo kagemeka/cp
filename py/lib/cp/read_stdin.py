@@ -29,7 +29,7 @@ class ReadStdin:
 
   def __read_chunks(
     self,
-  ) -> typing.Generator[bytes]:
+  ) -> typing.Iterator[bytes]:
     while 1:
       l = self.__buf.readline()
       for chunk in l.split():

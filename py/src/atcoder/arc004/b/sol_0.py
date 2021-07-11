@@ -84,7 +84,6 @@ class Solver(
 
 
 import typing
-import itertools
 
 
 class Problem(
@@ -94,73 +93,42 @@ class Problem(
     self,
   ) -> typing.NoReturn:
     self.__read = ReadStdin()
-    self.__pool = 'ABXY'
 
 
   def _prepare(
     self,
   ) -> typing.NoReturn:
     read = self.__read
-    self.__n = read.int()
-    self.__s = read.str()
+    n = read.int()
+    self.__d = [
+      read.int()
+      for _ in range(n)
+    ]
+    self.__n = n
 
 
   def _solve(
     self,
   ) -> typing.NoReturn:
-    self.__make_combs()
-    cnt = 1 << 10
-    for comb in self.__combs:
-      self.__comb = set(comb)
-      c = self.__calc()
-      cnt = min(cnt, c)
-    print(cnt)
+    self.__solve_max()
+    self.__solve_min()
   
 
-  def __calc(
-    self,
-  ) -> int:
-    n = self.__n
-    s = self.__s + '$'
-    comb = self.__comb
-    inf = 1 << 10
-    dp = [
-      [inf] * 2
-      for _ in range(n + 1)
-    ]
-    dp[0][0] = 0
-    for i in range(n):
-      dp[i + 1][0] = min(
-        dp[i][0] + 1,
-        dp[i][1],
-      )
-      w = s[i:i + 2]
-      if not w in comb: 
-        continue
-      dp[i + 1][1] = (
-        dp[i][0] + 1
-      )
-    return dp[-1][0]
-
-
-  def __make_combs(
+  def __solve_max(
     self,
   ) -> typing.NoReturn:
-    p = itertools.product(
-      self.__pool,
-      repeat=2,
-    )
-    p = map(
-      lambda x: ''.join(x),
-      p,
-    )
-    c = itertools.combinations(
-      p,
-      2,
-    )
-    self.__combs = c 
-    
-    
+    print(sum(self.__d))
+  
+
+  def __solve_min(
+    self,
+  ) -> typing.NoReturn:
+    d = self.__d
+    s = sum(d)
+    mx = max(d)
+    if mx <= s // 2:
+      print(0); return
+    print(2 * mx - s)
 
 
 def main():
