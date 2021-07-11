@@ -2,6 +2,24 @@ version: '3.9'
 
 
 services:
+  cs:
+    build:
+      context: $ROOT/cs/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:cs
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/cs/
+        target: /root/cp/
+    working_dir: /root/cp/
+
   cpp:
     build:
       context: $ROOT/cpp/env/
