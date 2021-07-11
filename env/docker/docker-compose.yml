@@ -91,6 +91,24 @@ services:
         target: /root/cp/
     working_dir: /root/cp/
 
+  kt:
+    build:
+      context: $ROOT/kt/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:kt
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/kt/
+        target: /root/cp/
+    working_dir: /root/cp/
+    
   node:
     build:
       context: $ROOT/node/env/
