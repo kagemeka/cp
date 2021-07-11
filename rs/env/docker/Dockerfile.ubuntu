@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
+ENV RUST_BACKTRACE=full
 RUN \
   apt -q=2 update \
   && apt install -yq=2 \
