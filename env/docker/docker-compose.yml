@@ -2,23 +2,6 @@ version: '3.9'
 
 
 services:
-  cs:
-    build:
-      context: $ROOT/cs/env/
-      dockerfile:
-        "docker/\
-        Dockerfile.ubuntu"
-    env_file: 
-      - common.env
-    image: kagemeka/cp:cs
-    tty: true
-    volumes:
-      - type: tmpfs
-        target: /tmp/
-      - type: bind
-        source: $ROOT/cs/
-        target: /root/cp/
-    working_dir: /root/cp/
 
   cpp:
     build:
@@ -37,7 +20,25 @@ services:
         source: $ROOT/cpp/
         target: /root/cp/
     working_dir: /root/cp/
-   
+      
+  cs:
+    build:
+      context: $ROOT/cs/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.ubuntu"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:cs
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/cs/
+        target: /root/cp/
+    working_dir: /root/cp/
+
   dart:
     build:
       context: $ROOT/dart/env/
@@ -71,7 +72,25 @@ services:
         source: $ROOT/go/
         target: /root/cp/
     working_dir: /root/cp/
-  
+
+  jl:
+    build:
+      context: $ROOT/jl/env/
+      dockerfile:
+        "docker/\
+        Dockerfile.alpine"
+    env_file: 
+      - common.env
+    image: kagemeka/cp:jl
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+      - type: bind
+        source: $ROOT/jl/
+        target: /root/cp/
+    working_dir: /root/cp/
+
   node:
     build:
       context: $ROOT/node/env/
