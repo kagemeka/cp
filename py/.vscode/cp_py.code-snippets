@@ -1,6 +1,133 @@
 {
 
 
+	"compress_array": {
+		"prefix": "compress_array",
+		"body": [
+			"import typing ",
+			"",
+			"",
+			"",
+			"class CompressArray():",
+			"  def retrieve(",
+			"    self,",
+			"    i: int,",
+			"  ) -> int:",
+			"    return self.__v[i]",
+			"  ",
+			"",
+			"  def __call__(",
+			"    self,",
+			"    a: typing.Iterable[int],",
+			"  ) -> typing.List[int]:",
+			"    a = sorted(",
+			"      enumerate(a),",
+			"      key=lambda x: x[1],",
+			"    )",
+			"    n = len(a)",
+			"    b = [None] * n",
+			"    v = [None] * n",
+			"    i, mn = -1, -float('inf')",
+			"    for j, x in a:",
+			"      if x > mn: ",
+			"        i += 1",
+			"        v[i] = x",
+			"        mn = x",
+			"      b[j] = i",
+			"    self.__v = v",
+			"    return b"
+		],
+		"description": "compress_array"
+	},
+
+
+
+
+	"fenwick_tree": {
+		"prefix": "fenwick_tree",
+		"body": [
+			"import typing",
+			"",
+			"",
+			"class FenwickTree():",
+			"  def __init__(",
+			"    self,",
+			"    n: int,",
+			"  ) -> typing.NoReturn:",
+			"    self.__buf = [0] * (n + 1)",
+			"  ",
+			"",
+			"  def add(",
+			"    self,",
+			"    i: int,",
+			"    x: int,",
+			"  ) -> typing.NoReturn:",
+			"    b = self.__buf",
+			"    n = len(b)",
+			"    while i < n:",
+			"      b[i] += x",
+			"      i += i & -i",
+			"  ",
+			"",
+			"  def sum(",
+			"    self,",
+			"    i: int,",
+			"  ) -> int:",
+			"    b = self.__buf",
+			"    s = 0 ",
+			"    while i > 0:",
+			"      s += b[i]",
+			"      i -= i & -i",
+			"    return s"
+		],
+		"description": "fenwick_tree"
+	},
+
+
+
+	"inversion count": {
+		"prefix": "inversion_count",
+		"body": [
+			"import typing",
+			"",
+			"",
+			"class InversionCount():",
+			"  def __call__(",
+			"    self,",
+			"    a: typing.List[int],",
+			"  ) -> int:",
+			"    self.__a = a",
+			"    self.__compress()",
+			"    self.__calc()",
+			"    return self.__cnt",
+			"",
+			"",
+			"  def __calc(",
+			"    self,",
+			"  ) -> typing.NoReturn:",
+			"    a = self.__a",
+			"    n = len(a)",
+			"    ft = FenwickTree(n)",
+			"    c = 0",
+			"    for i in range(n):",
+			"      x = a[i]",
+			"      c += i - ft.sum(x)",
+			"      ft.add(x + 1, 1)",
+			"    self.__cnt = c",
+			"",
+			"",
+			"  def __compress(",
+			"    self,",
+			"  ) -> typing.NoReturn:",
+			"    a = self.__a",
+			"    fn = CompressArray()",
+			"    self.__a = fn(a)  "
+		],
+		"description": "inversion count"
+	},
+
+
+
 
 	"Problem": {
 		"prefix": "problem",
