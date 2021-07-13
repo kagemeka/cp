@@ -1,14 +1,23 @@
 
+def fn(i: int) -> int:
+  return i ** 2 + 1
+
 
 def test():
-  n: int = 10 
-  for i in range(n):
-    print(i)
+  palette = (
+    (1 << 11) - 1, 
+    (1 << 15) - 1, 
+    (1 << 22) - 1,
+  )
+  print(palette)
+  i = 1
+  i = fn(i)
+  c = tuple(
+    int(p * i % 255)
+    for p in palette
+  )
+  print(c)
   
-  import numpy as np
-  a = np.arange(1 << 26)
-  print(a)
-
 
 
 if __name__ == '__main__':
