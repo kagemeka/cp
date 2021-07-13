@@ -9,7 +9,7 @@ RUN \
   neovim \
   software-properties-common \
   && rm -rf /var/lib/apt/lists/* \
-  && apt --yes clean \
+  && apt clean -y \
   && echo "PS1='\w\$ '" >> ~/.bashrc \
   && echo "bind '\"\t\":menu-complete'" >> ~/.bashrc
 
@@ -29,11 +29,10 @@ RUN \
   python$PYVER \
   python$PYVER-distutils \
   python$PYVER-dev \
-  && rm /usr/bin/python3 \
-  && ln -s \
+  && ln -fns \
   /usr/bin/python$PYVER \
   /usr/bin/python3 \
-  && ln -sn \
+  && ln -fns \
   /usr/bin/python3 \
   /usr/bin/python
 
