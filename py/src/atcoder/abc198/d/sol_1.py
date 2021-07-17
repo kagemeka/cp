@@ -43,6 +43,7 @@ class ReadStdin:
     return b.decode()
 
 
+
 from abc import (
   ABC,
   abstractmethod,
@@ -84,9 +85,11 @@ class Solver(
 import typing
 from itertools import (
   permutations,
+  chain,
 )
-import numpy as np
-
+from bisect import (
+  bisect_left,
+)
 
 
 
@@ -97,90 +100,89 @@ class Problem(
     self,
   ) -> typing.NoReturn:
     self.__read = ReadStdin()
+    self.__n = 3
     self.__m = 10
-
 
   def _prepare(
     self,
   ) -> typing.NoReturn:
     read = self.__read
-    self.__s1 = read()
-    self.__s2 = read()
-    self.__s3 = read()
+    n = self.__n
+    self.__s = [
+      read()
+      for _ in range(n)
+    ]
 
 
   def _solve(
     self,
   ) -> typing.NoReturn:
-    self.__preprocess()
-    s1 = self.__s1
-    s2 = self.__s2
-    s3 = self.__s3
-    a = np.unique(
-      np.hstack((s1, s2, s3)),
-    )
-    m = self.__m
-    if a.size > m:
-      print('UNSOLVABLE')
-      return
-    s1 = np.searchsorted(a, s1)
-    s2 = np.searchsorted(a, s2)
-    s3 = np.searchsorted(a, s3)
-    n = len(a)
-    p = permutations(
-      range(m), 
-      n,
-    )
-    p = np.array((*p,))
-    (s1, s2, s3) = (
-      p[:, s] 
-      * 10 ** np.arange(
-        len(s),
-      )[::-1]
-      for s in (s1, s2, s3)
-    )
-    (ok1, ok2, ok3) = (
-      s[:, 0] != 0
-      for s in (s1, s2, s3)
-    )
-    ok = ok1 & ok2 & ok3
-    (s1, s2, s3) = (
-      s[ok].sum(axis=1)
-      for s in (s1, s2, s3)
-    )
-    i = np.argwhere(
-      s1 + s2 == s3,
-    ).ravel()
-    if i.size == 0:
-      print('UNSOLVABLE')
-      return
-    i = i[0]
-    print(
-      s1[i],
-      s2[i],
-      s3[i],
-      sep='\n',
-    )
+    ok = self.__preprocess()
+    if not ok: return
+    for p in self.__perms:
+      self.__p = p 
+      ok = self.__check()
+      if ok: return
+    print('UNSOLVABLE')
+  
+
+
+  def __check(
+    self,
+  ) -> bool:
+    s = self.__s
+    p = self.__p
+    s = [
+      [p[i] for i in x]
+      for x in s
+    ]
+    if any(
+      x[0] == 0 for x in s
+    ): return False
+    d = self.__d
+    for i in range(self.__n):
+      l = len(s[i])
+      s[i] = sum(
+        d[i][j] * s[i][j]
+        for j in range(l)
+      )
+    ok = s[0] + s[1] == s[2]
+    if ok:
+      print(*s, sep='\n')
+    return ok
 
 
   def __preprocess(
     self,
-  ) -> typing.NoReturn:
-    (
-      self.__s1,
-      self.__s2,
-      self.__s3,
-    ) = (
-      np.array(
-        list(s), 
-        dtype=np.int64,
-      ) - ord('a')
-      for s in (
-        self.__s1, 
-        self.__s2, 
-        self.__s3,
-      )
+  ) -> bool:
+    s = self.__s
+    s = [list(x) for x in s]
+    a = chain.from_iterable(s)
+    a = sorted(set(a))
+    s = [
+      [
+        bisect_left(a, c)
+        for c in x
+      ] for x in s
+    ]
+    r = len(a)
+    if r > self.__m:
+      print('UNSOLVABLE')
+      return False
+    perms = permutations(
+      range(self.__m),
+      r,
     )
+    self.__s = s
+    self.__perms = perms
+    self.__d = [
+      [
+        pow(10, i)
+        for i in range(len(x))
+      ][::-1] for x in s
+    ]
+    return True
+
 
 def main():
   p = Problem()
