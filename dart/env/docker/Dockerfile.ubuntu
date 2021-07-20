@@ -8,6 +8,8 @@ RUN \
   apt-transport-https \
   gnupg2 \
   wget \
+  xclip \
+  xsel \
   && wget -qO - \
   https://dl-ssl.google.com/linux/linux_signing_key.pub \
   | apt-key add - \

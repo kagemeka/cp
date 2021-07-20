@@ -1,15 +1,34 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:convert';
 
-void main() {
-  readLine().listen(processLine);
+abstract class Solver {
+  void prepare() {}
+  void solve() {}
 }
 
-Stream<String> readLine() => stdin
-    .transform(utf8.decoder)
-    .transform(const LineSplitter());
 
-void processLine(String line) {
-  print(line);
+
+mixin Run<T extends Solver> {
+  void call() {
+    var sol = this as T;
+    sol.prepare();
+    sol.solve();
+  }
+}
+
+
+
+class Problem
+with Run<Problem>, IO
+implements Solver {
+  void prepare() {
+  }
+
+  void solve() {
+  }
+}
+
+
+
+void main() async {
+  var p = new Problem();
+  p();
 }

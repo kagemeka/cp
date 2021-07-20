@@ -8,6 +8,8 @@ RUN \
   apt-utils \
   neovim \
   software-properties-common \
+  xclip \  
+  xsel \
   && rm -rf /var/lib/apt/lists/* \
   && apt clean -y \
   && echo "PS1='\w\$ '" >> ~/.bashrc \
