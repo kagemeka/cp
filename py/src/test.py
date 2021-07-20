@@ -265,7 +265,7 @@ class ModFactory():
 
 
 def test():
-  ...  
+  s = open('..
 
 
 if __name__ == '__main__':

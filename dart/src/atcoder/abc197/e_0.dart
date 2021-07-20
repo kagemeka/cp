@@ -4,23 +4,16 @@ import 'dart:math';
 
 
 
-class IO 
-{
-
-
-  int readByte() => (
-    stdin
-    .readByteSync()
-  );
-
+class IO {
+  int readByte() =>
+    stdin.readByteSync();
 
   int readInt() => int.parse(
     read(),
   );
 
 
-  String read() 
-  {
+  String read() {
     List<int> bytes = [];
     const int maxWait = 1 << 8;
     int wait = 0;

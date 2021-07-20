@@ -7,7 +7,17 @@ void main()  {
     if (line == null) {
       break;
     }
-    lines.add(line); // No more error about `String?`.
+    lines.add(line);
   }
   print(lines.length);
 }
+
+class ReadStdinSync {
+  int a = 1;
+  
+  String call() {
+    return '';
+  }
+}
+
+
