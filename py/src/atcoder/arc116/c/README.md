@@ -10,3 +10,4 @@
 ## sol_2 
 - dp
 - compress states
+- harmonic series
