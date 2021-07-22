@@ -1,9 +1,9 @@
-import numpy as np 
-import numba as nb
 import typing
+import numpy as np
+# import numba as nb
 
 
-@nb.njit
+# @nb.njit
 def cumprod(
   a: np.array,
   mod: int,
@@ -14,7 +14,7 @@ def cumprod(
     a[i + 1] %= mod
 
 
-@nb.njit
+# @nb.njit
 def factorial(
   n: int,
   mod: int,
@@ -24,8 +24,7 @@ def factorial(
   return a
 
 
-
-@nb.njit
+# @nb.njit
 def mpow(
   x: int,
   n: int,
@@ -38,7 +37,7 @@ def mpow(
   return y
 
 
-@nb.njit
+# @nb.njit
 def inv_factorial(
   n: int,
   mod: int,
@@ -50,27 +49,7 @@ def inv_factorial(
   return a
 
 
-N = 1 << 20
-mod = 998244353
-fact = factorial(N, mod)
-ifact = inv_factorial(N, mod)
-
-
-
-@nb.njit
-def choose(
-  n: int,
-  r: int,
-) -> int:
-  global mod, fact, ifact
-  ok = (0 <= r) & (r <= n)
-  c = fact[n] * ok
-  c = c * ifact[r] % mod
-  return c * ifact[n - r] % mod
-
-
-
-@nb.njit
+# @nb.njit
 def lpf(
   n: int = 1 << 20,
 ) -> np.array:
@@ -84,14 +63,27 @@ def lpf(
   return s
 
 
-@nb.njit
+# @nb.njit
 def solve(
   n: int,
   m: int,
 ) -> typing.NoReturn:
+  mod = 998244353
+  N = 1 << 18
+  fact = factorial(N, mod)
+  ifact = inv_factorial(N, mod)
+
+  def choose(n, r):
+    nonlocal mod, fact, ifact
+    ok = (0 <= r) & (r <= n)
+    c = fact[n] * ok
+    c = c * ifact[n - r] % mod
+    return c * ifact[r] % mod
+
   a = lpf(1 << 18)
-  res = 1
-  for i in range(2, m + 1):
+  res = 0
+  for i in range(m):
+    i += 1
     tot = 1
     prime = -1
     cnt = 0
@@ -120,4 +112,41 @@ def main():
   solve(n, m)
 
 
+def aot_compile(
+) -> typing.NoReturn:
+  '''TODO'''
+  global \
+    cumprod, mpow, factorial, \
+    inv_factorial, lpf
+  from numba import njit, i8
+  cumprod = njit(cumprod)
+  mpow = njit(mpow)
+  factorial = njit(factorial)
+  inv_factorial = njit(
+    inv_factorial,
+  )
+  lpf = njit(lpf)
+  fn = solve 
+  signature = (i8, i8)
+  ''''''
+
+  from numba.pycc import CC
+  cc = CC('my_module')
+  cc.export(
+    fn.__name__, 
+    signature,
+  )(fn)
+  cc.compile()
+
+
+import sys
+if (
+  sys.argv[-1] 
+  == 'ONLINE_JUDGE'
+): 
+  aot_compile()
+  exit(0)
+
+
+from my_module import solve
 main()
