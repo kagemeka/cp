@@ -5,4 +5,4 @@
 
 
 # AOT Compilation
-- [sample submission(ARC116C)](https://atcoder.jp/contests/arc116/submissions/24435960)
+- [sample submission(ARC116C)](https://atcoder.jp/contests/arc116/submissions/24436702)

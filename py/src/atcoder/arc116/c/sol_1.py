@@ -69,19 +69,21 @@ def solve(
   m: int,
 ) -> typing.NoReturn:
   mod = 998244353
-  N = 1 << 20
+  N = 1 << 18
   fact = factorial(N, mod)
   ifact = inv_factorial(N, mod)
 
   def choose(n, r):
+    nonlocal mod, fact, ifact
     ok = (0 <= r) & (r <= n)
     c = fact[n] * ok
-    c = c * ifact[r] % mod
-    return c * ifact[n - r] % mod
+    c = c * ifact[n - r] % mod
+    return c * ifact[r] % mod
 
   a = lpf(1 << 18)
-  res = 1
-  for i in range(2, m + 1):
+  res = 0
+  for i in range(m):
+    i += 1
     tot = 1
     prime = -1
     cnt = 0
@@ -110,15 +112,12 @@ def main():
   solve(n, m)
 
 
-
-import sys
-
-
-if (
-  sys.argv[-1] 
-  == 'ONLINE_JUDGE'
-):
+def aot_compile(
+) -> typing.NoReturn:
   '''TODO'''
+  global \
+    cumprod, mpow, factorial, \
+    inv_factorial, lpf
   from numba import njit, i8
   cumprod = njit(cumprod)
   mpow = njit(mpow)
@@ -138,6 +137,14 @@ if (
     signature,
   )(fn)
   cc.compile()
+
+
+import sys
+if (
+  sys.argv[-1] 
+  == 'ONLINE_JUDGE'
+): 
+  aot_compile()
   exit(0)
 
 
