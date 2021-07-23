@@ -13,4 +13,5 @@ def main():
     n = int(input())
     solve(n)
 
+
 main()

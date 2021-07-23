@@ -12,5 +12,4 @@ def main():
       input().split(),
     )
 
-
 main()

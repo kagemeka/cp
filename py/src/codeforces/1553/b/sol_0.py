@@ -25,7 +25,6 @@ def solve(
     ok |= dfs(i + 1, j + 1, 1)
     return ok
   
- 
   for i in range(len(s)):
     ok = dfs(i, 0, 1)
     if ok: print('YES'); break

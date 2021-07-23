@@ -1,44 +1,23 @@
 import typing 
-import sys
-
-
-
 
 
 def solve(
   s: str,
   t: str,
 ) -> typing.NoReturn:
-  i = j = 0 
+  j = 0
   n, m = len(s), len(t)
-  w = ''
-  while 1:
-    # if j == m:
-    #   print('YES')
-    #   return
+  for i in range(n + 1):
     ri, rj = n - i, m - j
     if ri < rj:
       print('NO')
       return 
-    if (ri - rj) & 1:
-      i += 1
-      continue
+    if (ri - rj) & 1: continue
     if j == m:
-      print(
-        'YES' if w == t
-        else 'NO',
-      )
+      print('YES')
       return 
-    if s[i] == t[j]:
-      j += 1
-      w += s[i]
-    i += 1
+    if s[i] == t[j]: j += 1
     
-
-      
-
-    
-
 
 def main():
   q = int(input())
