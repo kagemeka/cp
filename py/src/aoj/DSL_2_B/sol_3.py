@@ -8,7 +8,7 @@ class FenwickTree():
     self,
     n: int,
   ) -> typing.NoReturn:
-    self.__a = [0] * n
+    self.__a = [0] * (n + 1)
   
 
   def add(
@@ -16,22 +16,20 @@ class FenwickTree():
     i: int,
     x: int,
   ) -> typing.NoReturn:
-    a = self.__a
-    n = len(a)
+    a = self.__a; n = len(a)
     while i < n:
       a[i] += x
-      i |= i + 1
-
+      i += i & -i
+  
 
   def sum(
     self,
     i: int,
   ) -> int:
     s = 0 
-    while i >= 0:
+    while i > 0:
       s += self.__a[i]
-      i &= i + 1
-      i -= 1
+      i -= i & -i
     return s
 
 
@@ -44,11 +42,9 @@ def solve(
 ) -> typing.NoReturn:
   fen = FenwickTree(n)
   for com, x, y in q:
-    x -= 1
     if com == 0:
       fen.add(x, y)
     else:
-      y -= 1
       s = fen.sum(y)
       s -= fen.sum(x - 1)
       print(s)
