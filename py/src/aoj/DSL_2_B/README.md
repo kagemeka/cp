@@ -21,3 +21,8 @@
 ## sol_4
 - segment tree
 - dfs 
+
+
+## sol_5
+- abstract segment tree
+- dfs 

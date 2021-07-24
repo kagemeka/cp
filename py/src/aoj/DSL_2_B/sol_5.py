@@ -1,24 +1,40 @@
-from __future__ import (
-  annotations,
-)
+# from __future__ import (
+#   annotations,
+# )
 
 import typing
 import sys
 
 
-import dataclasses
-
-
 T = typing.TypeVar('T')
-@dataclasses.dataclass
 class Monoid(
   typing.Generic[T],
 ):
-  fn: typing.Callable[
-    [T, T],
-    T,
-  ]
-  e: typing.Callable[[], T]
+  def __init__(
+    self,
+    fn: typing.Callable[
+      [T, T],
+      T,
+    ],
+    e: typing.Callable[[], T],
+  ) -> typing.NoReturn:
+    self.fn = fn
+    self.e = e
+
+
+# import dataclasses
+
+
+# T = typing.TypeVar('T')
+# @dataclasses.dataclass
+# class Monoid(
+#   typing.Generic[T],
+# ):
+#   fn: typing.Callable[
+#     [T, T],
+#     T,
+#   ]
+#   e: typing.Callable[[], T]
 
 
 
@@ -54,7 +70,6 @@ class SegTree(
     rhs = self[lr]
     self.__l, self.__i = l, i
     return m.fn(lhs, rhs)
-
 
 
   def __init__(
@@ -109,7 +124,7 @@ class SegTree(
     cls,
     monoid: Monoid,
     arr: typing.List[int],
-  ) -> SegTree:
+  ):# -> SegTree:
     n = len(arr)
     seg = cls(monoid, n)
     for i in range(n):
@@ -118,13 +133,11 @@ class SegTree(
 
 
 
-class RMQ():
+class RSQ():
   def __init__(
     self,
     n: int,
-    inf: int,
   ) -> typing.NoReturn:
-    self.__inf = inf
     self.__seg = SegTree(
       self.__monoid,
       n,
@@ -146,13 +159,13 @@ class RMQ():
     x: int, 
     y: int,
   ) -> int:
-    return min(x, y)
+    return x + y
   
 
   def __identity(
     self,
   ) -> int:
-    return self.__inf
+    return 0
 
 
   def __setitem__(
@@ -169,7 +182,7 @@ class RMQ():
       typing.Tuple[int, int],
       int,
     ],
-  ) -> T:
+  ) -> int:
     return self.__seg[lr]
 
 
@@ -179,13 +192,13 @@ def solve(
     typing.Tuple[int],
   ],
 ) -> typing.NoReturn:
-  inf = (1 << 31) - 1
-  rmq = RMQ(1 << 18, inf)
+  rmq = RSQ(1 << 18)
   for com, x, y in q:
+    x -= 1
     if com == 0:
-      rmq[x] = y
+      rmq[x] += y
     else:
-      print(rmq[x, y + 1])
+      print(rmq[x, y])
       
 
 
