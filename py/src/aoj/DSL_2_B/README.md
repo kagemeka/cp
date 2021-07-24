@@ -16,3 +16,8 @@
 ## sol_2, sol_3
 - fenwick tree (Binary Indexed Tree)
 - sol_2 uses 0-indexed, sol_3 uses 1-indexed.
+
+
+## sol_4
+- segment tree
+- dfs 

@@ -1,28 +1,25 @@
-from __future__ import (
-  annotations,
-)
 
 
-import numpy as np
-import numba as nb
-
-
+import dataclasses
 import typing
 
 
-# @nb.njit(cache=True)
-def compress(
-  a: np.array,
-) -> np.array:
-  v = np.unique(a)
-  return np.searchsorted(v, a)
+
+class A():
+  def __init__(
+    self,
+  ):
+    self.v = 0
 
 
 
 def test():
-  a = np.arange(1 << 23)
-  a = compress(a)
-  print(a)
+  a = A()
+  b = [A()] * 10 
+  print(b[0].v)
+  b[1].v += 1
+  print(b[0].v)
+
 
 
 if __name__ == '__main__':

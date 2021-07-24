@@ -50,6 +50,10 @@ class RMQ():
     n = len(seg)
     for i in range(n):
       self[i] = inf
+    self.__sl, self.__sr = 0, n
+    self.__i = 1
+
+
 
   def __setitem__(
     self,
@@ -71,21 +75,24 @@ class RMQ():
     self,
     l: int,
     r: int,
-    sl: int,
-    sr: int,
-    i: int,
   ) -> int:
+    sl = self.__sl
+    sr = self.__sr
+    i = self.__i
     if r <= sl or sr <= l:
       return self.__inf
     if l <= sl and sr <= r:
       return self.__seg[i]
     sc = (sl + sr) // 2
-    lmin = self.min(
-      l, r, sl, sc, i << 1,
-    )
-    rmin = self.min(
-      l, r, sc, sr, i << 1 | 1,
-    )
+    self.__i = i << 1
+    self.__sr = sc
+    lmin = self.min(l, r)
+    self.__i = i << 1 | 1
+    self.__sl = sc
+    self.__sr = sr
+    rmin = self.min(l, r)
+    self.__sl = sl 
+    self.__i = i
     return min(lmin, rmin)
 
 
@@ -103,7 +110,7 @@ def solve(
       rmq[x] = y
     else:
       print(rmq.min(
-        x, y + 1, 0, 1 << h, 1,
+        x, y + 1,
       ))
       
 
