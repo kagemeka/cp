@@ -8,7 +8,7 @@ services:
       context: $ROOT/cpp/env/
       dockerfile:
         "docker/\
-        Dockerfile.alpine"
+        Dockerfile.ubuntu"
     env_file: 
       - common.env
     image: kagemeka/cp:cpp
@@ -16,6 +16,10 @@ services:
     volumes:
       - type: tmpfs
         target: /tmp/
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: false
       - type: bind
         source: $ROOT/cpp/
         target: /root/cp/
