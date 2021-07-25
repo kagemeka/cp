@@ -44,8 +44,15 @@ class SegTree(
 ):
   def __getitem__(
     self,
-    lr: typing.Tuple[int, int],
-  ) -> int:
+    lr: typing.Union[
+      typing.Tuple[int, int],
+      int,
+    ],
+  ) -> T:
+    if type(lr) == int:
+      return self.__a[
+        lr + self.__n
+      ]
     m = self.__m 
     l, r = self.__l, self.__r 
     i = self.__i
@@ -57,12 +64,12 @@ class SegTree(
     c = (l + r) // 2
     self.__i = i << 1
     self.__r = c
-    lmin = self[lr]
+    lhs = self[lr]
     self.__i = i << 1 | 1
     self.__l, self.__r = c, r
-    rmin = self[lr]
+    rhs = self[lr]
     self.__l, self.__i = l, i
-    return m.fn(lmin, rmin)
+    return m.fn(lhs, rhs)
 
 
   def __init__(
@@ -125,7 +132,6 @@ class SegTree(
     return seg  
 
 
-
 class RMQ():
   def __init__(
     self,
@@ -173,8 +179,11 @@ class RMQ():
 
   def __getitem__(
     self,
-    lr: typing.Tuple[int, int],
-  ) -> int:
+    lr: typing.Union[
+      typing.Tuple[int, int],
+      int,
+    ],
+  ) -> T:
     return self.__seg[lr]
 
 
