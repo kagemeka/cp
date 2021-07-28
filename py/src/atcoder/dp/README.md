@@ -7,6 +7,8 @@
   - State 
   - Transition
   - Update Order
+  - DAG
+    - if not DAG, try to find out DAG.
 - Method
   - DFS 
   - ONLINE Update
