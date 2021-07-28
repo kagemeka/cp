@@ -9,7 +9,7 @@
     dp[i - 1][j - 1] (if dp[i][j] = dp[i - 1][j - 1]),
   )
 - retrieve DP transition
-  - memorize previous state
+  - memorize previous state (TLE in this case.)
   - In this problem, it can be retrieved after dp transition finised.
 
 
