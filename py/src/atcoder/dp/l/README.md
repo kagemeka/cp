@@ -6,6 +6,7 @@
 # keywords 
 - Game Theory
 - Range DP
+  - fix values from small to large range.
 - dp[l][r] := max(
     dp[l + 1][r] + a[l],
     dp[l][r - 1] + a[r - 1],
