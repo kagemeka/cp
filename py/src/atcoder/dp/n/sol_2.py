@@ -1,10 +1,9 @@
 import typing
 import sys 
 import numpy as np 
-import numba as nb
 
 
-@nb.njit
+
 def dfs(
   l: int,
   r: int,
@@ -26,10 +25,6 @@ def dfs(
   return v
   
 
-@nb.njit(
-  (nb.i8, nb.i8[:]),
-  # cache=True,
-)
 def solve(
   n: int,
   a: np.array,
@@ -54,4 +49,26 @@ def main() -> typing.NoReturn:
   solve(n, a)
 
 
+
+OJ = 'ONLINE_JUDGE'
+if sys.argv[-1] == OJ:
+  from numba import njit, i8
+  dfs = njit(dfs)
+
+  fn = solve
+  signature = (i8, i8[:])
+  
+  from numba.pycc import CC 
+  cc = CC('my_module')
+  cc.export(
+    fn.__name__,
+    signature,
+  )(fn)
+
+  cc.compile()
+
+  exit(0)
+
+
+from my_module import solve
 main()

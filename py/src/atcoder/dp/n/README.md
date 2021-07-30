@@ -4,9 +4,14 @@
 
 # keywords
 - Range DP
+  - fix values from small to large range.
 - cumsum
 - brute force
 - divide and conquer
+- dp[l][r] = min(dp[l, m] + dp[m, r]) + s[r] - s[l] (for m in [l + 1, r))
+  - dp[l][r] = 0 (when r - l == 1)
+  - dp[l][r] := undefined or inf (when r <= l)
+  - where s is 1 indexed cumulative summation.
 
 
 ## sol_0
@@ -16,3 +21,13 @@
 
 
 ## sol_1
+- DFS
+- numba (JIT)
+
+
+## sol_2
+- DFS
+- numba (AOT)
+- runtime error
+
+
