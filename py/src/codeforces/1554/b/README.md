@@ -42,3 +42,14 @@ which is the heaviest pair.
 - brute force
 - O(tk^2), O(6 * 10^7)      
 - pypy.
+
+
+
+## sol_1
+- fast z-transform
+- DP 
+- bitDP
+- dp_j[x] = j such that i * j is max under that condition a[i] | a[j] <= x.
+- dp_i[x] = i such that i * j is max under that condition a[i] | a[j] <= x.
+- ans = max(dp_j[x] * dp_i[x] - k * x) (for x in 0 ... 1 << m, where m is the bit-length of N)
+- pypy
