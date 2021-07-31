@@ -23,10 +23,8 @@ def solve(
       mx_i[x] = i + 1
 
 
-  # for l in range(m):
-  #   for x in range(1 << m):
-  for x in range(1 << m):
-    for l in range(m):
+  for l in range(m):
+    for x in range(1 << m):
       if x >> l & 1: continue
       nx = x | (1 << l)
       i = max(
