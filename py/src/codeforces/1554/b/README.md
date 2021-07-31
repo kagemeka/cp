@@ -46,10 +46,17 @@ which is the heaviest pair.
 
 
 ## sol_1
-- fast z-transform
+- fast z-transform (O(4^N) -> O(N2^N))
 - DP 
 - bitDP
 - dp_j[x] = j such that i * j is max under that condition a[i] | a[j] <= x.
 - dp_i[x] = i such that i * j is max under that condition a[i] | a[j] <= x.
 - ans = max(dp_j[x] * dp_i[x] - k * x) (for x in 0 ... 1 << m, where m is the bit-length of N)
 - pypy
+
+
+
+# tips
+- fast z-transform (O(4^N) -> O(N2^N))
+  - [ikatakos blog](https://ikatakos.com/pot/programming_algorithm/dynamic_programming/subset_convolution)
+  - monoid
