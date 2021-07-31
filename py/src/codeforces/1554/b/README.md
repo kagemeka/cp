@@ -46,17 +46,20 @@ which is the heaviest pair.
 
 
 ## sol_1
-- fast z-transform (O(4^N) -> O(N2^N))
+- fast zeta-transform (O(4^N) -> O(N2^N)) (where use N in place of log(N))
+- log(N) dimentional zeta-transform
 - DP 
 - bitDP
 - dp_j[x] = j such that i * j is max under that condition a[i] | a[j] <= x.
 - dp_i[x] = i such that i * j is max under that condition a[i] | a[j] <= x.
 - ans = max(dp_j[x] * dp_i[x] - k * x) (for x in 0 ... 1 << m, where m is the bit-length of N)
 - pypy
+- $$ S \subseteq{T}$$
 
 
 
 # tips
 - fast z-transform (O(4^N) -> O(N2^N))
   - [ikatakos blog](https://ikatakos.com/pot/programming_algorithm/dynamic_programming/subset_convolution)
+  - [qiita](https://qiita.com/convexineq/items/afc84dfb9ee4ec4a67d5)
   - monoid

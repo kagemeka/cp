@@ -31,3 +31,22 @@
 - runtime error
 
 
+
+## sol_3
+- BFS
+
+
+## sol_4
+- BFS
+- numba (JIT)
+
+
+## sol_5
+- BFS 
+- numba (AOT)
+
+
+## sol_6
+- numpy
+- dp_left[left_index, width]
+- dp_right[right_index, width]

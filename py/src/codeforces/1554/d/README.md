@@ -26,3 +26,6 @@
 # tips 
 - how to check whether the arbitral answer satisfy the condition?
 - keywords: `suffix automaton` data structure see [wiki](https://en.wikipedia.org/wiki/Suffix_automaton)
+- odd + even = odd 
+- even + even = even
+- odd + odd = even
