@@ -1,6 +1,5 @@
 import typing 
 import sys 
-sys.setrecursionlimit(1 << 20)
 
 
 def solve(
@@ -19,23 +18,32 @@ def solve(
     g[y].append(x)
   
 
+  st = [0]
+  order = []
   parent = [-1] * n
-  def dfs(
-    u: int,
-  ) -> typing.Tuple[int, int]:
-    black = white = 1
+  while st:
+    u = st.pop()
+    order.append(u)
     for v in g[u]:
-      if v == parent[u]:
-        continue
-      parent[v] = u 
-      b, w = dfs(v)
-      black *= w 
-      black %= mod
-      white *= b + w
-      white %= mod
-    return black, white
-
-  print(sum(dfs(0)) % mod)
+      if v == parent[u]: 
+        continue 
+      parent[v] = u
+      st.append(v)
+  
+  dp = [
+    [1] * 2
+    for _ in range(n)
+  ]
+  
+  for u in order[:0:-1]:
+    v = parent[u]
+    w, b = dp[u]
+    dp[v][0] *= w + b 
+    dp[v][0] %= mod
+    dp[v][1] *= w 
+    dp[v][1] %= mod
+  
+  print(sum(dp[0]) % mod)
 
 
 def main() -> typing.NoReturn:
