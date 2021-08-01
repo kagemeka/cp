@@ -2,24 +2,23 @@
 
 import dataclasses
 import typing
+import heapq
 
 
 
-class A():
-  def __init__(
+
+class MergeSort():
+  
+  def __call__(
     self,
+    a: typing.List[int],
   ):
-    self.v = 0
+    ... 
 
 
 
 def test():
-  a = A()
-  b = [A()] * 10 
-  print(b[0].v)
-  b[1].v += 1
-  print(b[0].v)
-
+  ...
 
 
 if __name__ == '__main__':
