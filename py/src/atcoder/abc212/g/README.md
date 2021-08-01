@@ -25,7 +25,7 @@
     - [manabitimes](manabitimes.jp/math/842)
   - condtion `r` is primitive root 
     - $r, r^2, r^3, ...r^{p - 1} (\mod{p})$ are pairwise distinct
-    - $r^{p - 1} \equiv 1 \mod{p}$
+    - $r^{p - 1} \equiv 1 \mod{p}$ ($Z/PZ$ (multiplicative group) is isomorphic to $Z/(P - 1)Z$ (Additive group)
   - $x^n\equiv{y}\ (mod\ p) \leftrightarrow\ r^{an} \equiv{r^b}\ (mod\ p) \leftrightarrow an\equiv{b}\ (mod\ p - 1)$
 
 
@@ -44,3 +44,10 @@
 - TLE 
 
 
+
+## sol_2
+- numba (JIT)
+
+
+## sol_3
+- numba (AOT)
