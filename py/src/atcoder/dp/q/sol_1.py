@@ -12,6 +12,7 @@ class Monoid(
   commutative: bool = False
 
 
+
 T = typing.TypeVar('T')
 class Fenwick(
   typing.Generic[T],
