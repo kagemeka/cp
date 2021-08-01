@@ -1,14 +1,11 @@
 # [E - Safety Journey](https://atcoder.jp/contests/abc212/tasks/abc212_e)
 
 
-
 # think during contest 
 - at first, it looks like to use fast matrix power.
 - but N is 5000. this solution is NG.
 - $$ O(N^3\log{k}) $$
 - notice M is small. this constraint should be used anyhow but i don't know.
-
-
 
 
 # keywords 
@@ -28,6 +25,7 @@
 - Dijkstra is DP 
 - Bellman Ford is DP 
 - Floyd Warshall is DP
+- subtract small pattern from all pattern.
 
 
 

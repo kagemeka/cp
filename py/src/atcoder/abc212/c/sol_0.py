@@ -8,6 +8,7 @@ def main() -> typing.NoReturn:
   n, m = map(
     int, input().split(),
   )
+  inf = 1 << 40
   a = np.array(
     input().split(),
     dtype=np.int64,
@@ -16,35 +17,21 @@ def main() -> typing.NoReturn:
     input().split(),
     dtype=np.int64,
   )
+  b = np.pad(
+    b, 
+    1, 
+    constant_values=(
+      -inf, inf,
+    ),
+  )
   a.sort()
   b.sort()
-
-  i = np.searchsorted(
-    b,
-    a,
-    side='left',
-  )
-  j = np.maximum(i - 1, 0)
-  i = np.minimum(i, m - 1)
-  k = np.searchsorted(
-    b,
-    a,
-    side='right',
-  )
-  l = np.maximum(k - 1, 0)
-  k = np.minimum(k, m - 1)
-  
-
-  cand = np.hstack((
-    np.abs(a - b[i]),
-    np.abs(a - b[j]),
-    np.abs(a - b[k]),
-    np.abs(a - b[l]),
-  ))
-  print(cand.min())
-
-
-
+  i = np.searchsorted(b, a)
+  d = np.minimum(
+    np.abs(b[i] - a),
+    np.abs(b[i - 1] - a),
+  ).min()
+  print(d)
 
 
 main()

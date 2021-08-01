@@ -5,7 +5,6 @@ from heapq import (
 
 
 def main() -> typing.NoReturn:
-  
   a = []
   n = int(input())
 

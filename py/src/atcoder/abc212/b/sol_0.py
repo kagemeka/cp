@@ -8,7 +8,8 @@ def main():
   
   for i in range(3):
     if (
-      s[i + 1] != (s[i] + 1) % 10
+      s[i + 1] 
+      != (s[i] + 1) % 10
     ):
       print('Strong')
       return 
