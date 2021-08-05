@@ -42,6 +42,9 @@
     - ans $= 1 + \sum_{g \in \{gcd(p - 1, g) = g, 1 \le g \le p - 1 \}} {\phi(\frac{p - 1}{g}) * \frac{p - 1}{g}}$
       $= 1 + \sum_{d|p - 1} {\phi(\frac{p - 1}{d}) * \frac{p - 1}{d}} = 1 + \sum_{d|p - 1} {\phi(d) * d}$
 
+  - method 3: fast mobius transformation 
+    - [for detail](https://youtu.be/hI8xC_1ZBf8?t=2871)
+
 
 # tips 
 - primitive root
@@ -102,3 +105,14 @@
 ## sol_6
 - Euler's totient
 - numba (AOT)
+
+
+## sol_7
+- Euler's totient with prime numbers
+
+
+## sol_8
+- Euler's totient with prime numbers 
+- numba (JIT)
+
+

@@ -24,7 +24,6 @@ def factorial(
   return a
 
 
-
 @nb.njit
 def mpow(
   x: int,
