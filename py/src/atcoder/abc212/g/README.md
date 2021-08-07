@@ -68,6 +68,11 @@
     - [wolfman](https://mathworld.wolfram.com/TotientFunction.html)
   - $\phi(n) = \sum_{x \in \{x\perp{n}, 1 \le x \le n \}} {1} = \sum_{x \in \{\gcd(x, n) = 1, 1 \le x \le n \}} {1}$
 
+- Red Black Tree
+
+
+
+
 # similar
 - [ABC020 D - LCM Rush](https://atcoder.jp/contests/abc020/tasks/abc020_d)
 
@@ -115,4 +120,18 @@
 - Euler's totient with prime numbers 
 - numba (JIT)
 
+## sol_9
+- Euler's totient with prime numbers 
+- numba (AOT)
+
+
+## sol_10
+- fast mobius transform
+
+
+
+## sol_11
+- fast mobius transform
+- numba (JIT)
+- rbtree (red black tree)
 
