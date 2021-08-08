@@ -38,16 +38,15 @@ def solve(
   a: np.array,
 ) -> typing.NoReturn:
   idx = np.argsort(h)
-  # a = a[i]
-  seg = np.zeros(
+  fw = np.zeros(
     n + 1,
     dtype=np.int64,
   )
   mx = 0 
   for i in idx:
-    v = get_mx(seg, i) + a[i]
+    v = get_mx(fw, i) + a[i]
     mx = max(mx, v)
-    set_val(seg, i + 1, v)
+    set_val(fw, i + 1, v)
   print(mx)
 
 

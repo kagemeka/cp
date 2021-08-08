@@ -4,13 +4,21 @@ import numpy as np
 
 
 
+def fw_f(
+  a: int,
+  b: int,
+) -> int:
+  if a >= b: return a 
+  return b
+
+
 def set_val(
   a: np.array,
   i: int,
   x: int,
 ) -> typing.NoReturn:
   while i < a.size:
-    a[i] = max(a[i], x)
+    a[i] = fw_f(a[i], x)
     i += i & -i
 
 
@@ -20,7 +28,7 @@ def get_mx(
 ) -> int:
   mx = 0 
   while i > 0:
-    mx = max(mx, a[i])
+    mx = fw_f(mx, a[i])
     i -= i & -i
   return mx
 
@@ -31,18 +39,15 @@ def solve(
   h: np.array,
   a: np.array,
 ) -> typing.NoReturn:
-  idx = np.argsort(h)
   fw = np.zeros(
     n + 1,
     dtype=np.int64,
   )
   mx = 0 
-  for i in idx:
-    v = get_mx(fw, i) + a[i]
-    mx = max(mx, v)
-    set_val(fw, i + 1, v)
-  print(mx)
-
+  for i in range(n):
+    v = get_mx(fw, h[i] - 1)
+    set_val(fw, h[i], v + a[i])
+  print(get_mx(fw, n))
 
 
 
@@ -69,6 +74,7 @@ if sys.argv[-1] == OJ:
   cc = CC('my_module')
   fn = solve
   sig = (i8, i8[:], i8[:])
+  fw_f = njit(fw_f)
   get_mx = njit(get_mx)
   set_val = njit(set_val)
   cc.export(

@@ -31,18 +31,15 @@ def solve(
   h: np.array,
   a: np.array,
 ) -> typing.NoReturn:
-  idx = np.argsort(h)
   fw = np.zeros(
     n + 1,
     dtype=np.int64,
   )
   mx = 0 
-  for i in idx:
-    v = get_mx(fw, i) + a[i]
-    mx = max(mx, v)
-    set_val(fw, i + 1, v)
-  print(mx)
-
+  for i in range(n):
+    v = get_mx(fw, h[i] - 1)
+    set_val(fw, h[i], v + a[i])
+  print(get_mx(fw, n))
 
 
 
