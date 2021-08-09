@@ -46,6 +46,7 @@ def main() -> typing.NoReturn:
 
   while q:
     d, i, j = heappop(q)
+    print(d)
     if d > dist[i][j]: 
       continue
     for di, dj in dij:
