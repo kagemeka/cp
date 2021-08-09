@@ -27,3 +27,14 @@
 ## sol_4
 - rewrite state as int than Enum.
 - TLE
+
+
+
+## sol_5 
+- splay tree with DFS(splay function)
+- RE (__future__, dataclasses)
+
+
+## sol_6
+- refactor sol_5 without unsupported features.
+- AC
