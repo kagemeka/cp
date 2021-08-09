@@ -47,6 +47,24 @@
 - convert char to int
 
 
+## sol_3 
+- 01-BFS
+- numba (JIT)
+
+
+## sol_4
+- 01-BFS
+- numba (AOT)
+
+
+## sol_5 
+- Dijkstra 
+- numba (JIT)
+
+
+## sol_6
+- Dijkstra 
+- numba (AOT)
 
 
 
