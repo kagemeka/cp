@@ -1,6 +1,6 @@
-<!-- # []() -->
+# []()
 
 
 # keywords
 - xor
-- $a ^ b = c$ 
+- $a \vee b = c \leftrightarrow a \vee c = b$ 

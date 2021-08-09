@@ -1,6 +1,7 @@
 import typing 
-from collections import (
-  deque,
+from heapq import (
+  heappush,
+  heappop,
 )
 
 
@@ -9,7 +10,12 @@ def main() -> typing.NoReturn:
     int, input().split(),
   )
   s = [
-    input()
+    list(map(
+      lambda x: (
+        ord(x) - ord('#')
+      ),
+      input(),    
+    ))
     for _ in range(h)
   ]
 
@@ -19,9 +25,6 @@ def main() -> typing.NoReturn:
     for _ in range(h)
   ]
   dist[0][0] = 0
-  
-  q = deque()
-  q.append((0, 0))
   
 
   dij = (
@@ -39,21 +42,23 @@ def main() -> typing.NoReturn:
       0 <= j < w
     )
 
+  q = [(0, 0, 0)]
 
   while q:
-    i, j = q.popleft()
+    d, i, j = heappop(q)
+    if d > dist[i][j]: 
+      continue
     for di, dj in dij:
       ni = i + di
       nj = j + dj
       if not on_grid(ni, nj):
         continue
-      if s[i][j] == '#':
+      if not s[i][j]:
         continue
-      d = dist[i][j]
       if d >= dist[ni][nj]:
         continue
       dist[ni][nj] = d
-      q.appendleft((ni, nj))
+      heappush(q, (d, ni, nj))
     
     for di in range(-2, 3):
       for dj in range(-2, 3):
@@ -64,11 +69,14 @@ def main() -> typing.NoReturn:
         nj = j + dj
         if not on_grid(ni, nj):
           continue
-        d = dist[i][j] + 1
-        if d >= dist[ni][nj]:
+        nd = d + 1
+        if nd >= dist[ni][nj]:
           continue
-        dist[ni][nj] = d
-        q.append((ni, nj))
+        dist[ni][nj] = nd
+        heappush(
+          q, 
+          (nd, ni, nj),
+        )
         
 
   print(dist[-1][-1])
