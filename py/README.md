@@ -34,13 +34,23 @@ $ xsel | python3 <problem>.py
     - np.maximum
     - np.minimum
     - axis
+  - 
+
 - supported numpy feature 
   - np.cumsum(a)
-  - ndarray.cumsum
+  - np.unique(a)
+  - np.zeros()
+  - np.full()
+  - np.eye()
+  - np.int64
+  - ndarray.shape
+  - ndarray.reshape()
+  - ndarray.cumsum()
 
 - supported standard feature 
   - min
   - max
+
 
 - unsupported standart feature
   - dict
@@ -48,6 +58,7 @@ $ xsel | python3 <problem>.py
   - itertools module
   - math module 
   - functools module
+  - collections module
 
 
 - strict dtype
