@@ -71,3 +71,4 @@
 # similar 
 - [AtCoder ABC176 D - Wizard in Maze](https://atcoder.jp/contests/abc176/tasks/abc176_d)
 - [AtCoder ABC077 D - Small Multiple](https://atcoder.jp/contests/abc077/tasks/arc084_b)
+- [AtCoder ARC005 C - 器物損壊！高橋君](https://atcoder.jp/contests/arc005/tasks/arc005_3)

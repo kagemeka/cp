@@ -135,41 +135,12 @@ class SAIS():
 
 
 
-class LCPArray():
-  def __call__(
-    self,
-  ) -> typing.NoReturn:
-    ... 
-  
-
-class SuffixArray():
-  ...
-
-
-
-def solve(
-  n: int,
-  s: str,
-) -> typing.NoReturn:
-  ...
-
-
 
 def main() -> typing.NoReturn:
-  n = int(input())
   s = input()
-  solve(n, s)
+  s = [ord(x) - ord('a') for x in s]
+  sa = SAIS()(s)
+  print(*sa)
 
 
-def sa_test() -> typing.NoReturn:
-  s = 'toukoudai'
-  s = 'zazazazaz'
-  a = list(map(ord, s))
-  sa_is = SAIS()
-  sa = sa_is(a)
-  print(sa)
-
-
-
-# main()
-sa_test()
+main()
