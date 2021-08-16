@@ -102,7 +102,7 @@ class SAIS():
       a = [x + 1 for x in a]
     assert all(x > 0 for x in a)
     self.__m = max(a) + 1
-    a.append(0)
+    a = a + [0]
     n = len(a)
     self.__a = a
 
@@ -135,15 +135,28 @@ class SAIS():
 
 
 
-class LCPArray():
+class Kasai():
   def __call__(
     self,
-  ) -> typing.NoReturn:
-    ... 
-  
+    a: typing.List[int],
+    sa: typing.List[int],
+  ) -> typing.List[int]:
+    n = len(a)
+    assert len(sa) == n
+    rank = [-1] * n
+    for i, x in enumerate(sa): rank[x] = i
+    h, l = [0] * n, 0 
+    for i in range(n):
+      if l > 0: l -= 1
+      r = rank[i]
+      if r == 0: continue
+      j = sa[r - 1]
+      while i + l < n and j + l < n:
+        if a[i + l] != a[j + l]: break
+        l += 1
+      h[r] = l
+    return h
 
-class SuffixArray():
-  ...
 
 
 
@@ -163,11 +176,16 @@ def main() -> typing.NoReturn:
 
 def sa_test() -> typing.NoReturn:
   s = 'toukoudai'
-  s = 'zazazazaz'
+  # s = 'zazazazaz'
+  s = 'banana'
+  s = 'mississippi'
   a = list(map(ord, s))
+  print(a)
   sa_is = SAIS()
   sa = sa_is(a)
   print(sa)
+  lcp = Kasai()(a, sa)
+  print(lcp)
 
 
 
