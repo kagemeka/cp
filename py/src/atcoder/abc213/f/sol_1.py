@@ -1,5 +1,4 @@
 import typing
-import dataclasses
 
 
 
@@ -143,10 +142,10 @@ class Kasai():
     sa: typing.List[int],
   ) -> typing.List[int]:
     n = len(a)
-    assert len(sa) == n
+    assert n > 0 and len(sa) == n
     rank = [-1] * n
     for i, x in enumerate(sa): rank[x] = i
-    h, l = [0] * n, 0 
+    h, l = [0] * (n - 1), 0 
     for i in range(n):
       if l > 0: l -= 1
       r = rank[i]
@@ -155,15 +154,10 @@ class Kasai():
       while i + l < n and j + l < n:
         if a[i + l] != a[j + l]: break
         l += 1
-      h[r + 1] = l
+      h[r] = l
     return h
 
 
-
-@dataclasses.dataclass 
-class Node():
-  height: int
-  length: int
 
 
 
@@ -173,8 +167,8 @@ def solve(
 ) -> typing.NoReturn:
   s = [ord(x) - ord('a') + 1 for x in s]
   sa = SAIS()(s)
-  lcp = Kasai()(s, sa)[1:]
-  
+  lcp = Kasai()(s, sa)
+
   a = list(range(n, 0, -1))
   for i in range(2):
     s = 0
@@ -182,12 +176,12 @@ def solve(
     for i in range(n - 1):
       l = 1
       h = lcp[i]
-      while st and st[-1].height >= h:
+      while st and st[-1][0] >= h:
         x = st.pop()
-        l += x.length
-        s -= x.height * x.length
+        l += x[1]
+        s -= x[0] * x[1]
       s += h * l
-      st.append(Node(h, l))
+      st.append((h, l))
       a[sa[i + 1]] += s
     sa.reverse()
     lcp.reverse()

@@ -8,6 +8,22 @@
 
 
 
+# keywords 
+- suffix array 
+- lcp array 
+- height array 
+- cummulatie sum
+- store height and the length.
+- online update with stack
+
+
+# summary
+- calculate suffix array and lcp array.
+  - suffix array: $O(N)$ SA-IS
+  - lcp array: $O(N)$ Kasai
+
+
+
 
 # reference
 - [submission by kiri](atcoder.jp/contests/abc213/submissions/24899399)
