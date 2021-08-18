@@ -1,5 +1,4 @@
 import typing
-import dataclasses
 
 
 
@@ -58,32 +57,31 @@ class SAIS():
     self,
   ) -> typing.NoReturn:
     sa = self.__sa
-    sa_index = self.__b.copy()
+    sa_idx = self.__b.copy()
     s = 0
     for i in range(self.__m):
-      s += sa_index[i]
-      sa_index[i] = s - sa_index[i]
+      s, sa_idx[i] = s + sa_idx[i], s
     for i in range(len(sa)):
       i = sa[i] - 1
       if i < 0 or self.__is_s[i]: continue
       x = self.__a[i]
-      sa[sa_index[x]] = i
-      sa_index[x] += 1
+      sa[sa_idx[x]] = i
+      sa_idx[x] += 1
 
 
   def __induce_s(
     self,
   ) -> typing.NoReturn:
     sa = self.__sa
-    sa_index = self.__b.copy()
+    sa_idx = self.__b.copy()
     for i in range(self.__m - 1):
-      sa_index[i + 1] += sa_index[i]
+      sa_idx[i + 1] += sa_idx[i]
     for i in range(len(sa) - 1, -1, -1):
       i = sa[i] - 1
       if i < 0 or not self.__is_s[i]: continue
       x = self.__a[i]
-      sa_index[x] -= 1
-      sa[sa_index[x]] = i
+      sa_idx[x] -= 1
+      sa[sa_idx[x]] = i
 
 
   def __make_bucket(
@@ -126,13 +124,13 @@ class SAIS():
   def __set_lms(
     self,
   ) -> typing.NoReturn:
-    sa_index = self.__b.copy()
+    sa_idx = self.__b.copy()
     for i in range(self.__m - 1):
-      sa_index[i + 1] += sa_index[i]
+      sa_idx[i + 1] += sa_idx[i]
     for i in self.__lms[::-1]:
       x = self.__a[i]
-      sa_index[x] -= 1
-      self.__sa[sa_index[x]] = i
+      sa_idx[x] -= 1
+      self.__sa[sa_idx[x]] = i
 
 
 
@@ -143,10 +141,10 @@ class Kasai():
     sa: typing.List[int],
   ) -> typing.List[int]:
     n = len(a)
-    assert len(sa) == n
+    assert n > 0 and len(sa) == n
     rank = [-1] * n
     for i, x in enumerate(sa): rank[x] = i
-    h, l = [0] * n, 0 
+    h, l = [0] * (n - 1), 0 
     for i in range(n):
       if l > 0: l -= 1
       r = rank[i]
@@ -155,15 +153,10 @@ class Kasai():
       while i + l < n and j + l < n:
         if a[i + l] != a[j + l]: break
         l += 1
-      h[r + 1] = l
+      h[r] = l
     return h
 
 
-
-@dataclasses.dataclass 
-class Node():
-  height: int
-  length: int
 
 
 
@@ -173,8 +166,8 @@ def solve(
 ) -> typing.NoReturn:
   s = [ord(x) - ord('a') + 1 for x in s]
   sa = SAIS()(s)
-  lcp = Kasai()(s, sa)[1:]
-  
+  lcp = Kasai()(s, sa)
+
   a = list(range(n, 0, -1))
   for i in range(2):
     s = 0
@@ -182,12 +175,12 @@ def solve(
     for i in range(n - 1):
       l = 1
       h = lcp[i]
-      while st and st[-1].height >= h:
+      while st and st[-1][0] >= h:
         x = st.pop()
-        l += x.length
-        s -= x.height * x.length
+        l += x[1]
+        s -= x[0] * x[1]
       s += h * l
-      st.append(Node(h, l))
+      st.append((h, l))
       a[sa[i + 1]] += s
     sa.reverse()
     lcp.reverse()

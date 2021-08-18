@@ -31,10 +31,11 @@ $ xsel | python3 <problem>.py
 - unsupported numpy functions
   - np.cumsum(a, out=a)
   - np.ufunc
-    - np.maximum
-    - np.minimum
+    - np.maximum()
+    - np.minimum()
     - axis
-  - 
+  - np.pad()
+
 
 - supported numpy feature 
   - np.cumsum(a)
@@ -46,6 +47,14 @@ $ xsel | python3 <problem>.py
   - ndarray.shape
   - ndarray.reshape()
   - ndarray.cumsum()
+  - np.ones()
+  - np.flatnonzero()
+  - ndarray.all()
+  - ndarray.any()
+  - ndarray.argmin()
+  - ndarray.min()
+  - ndarray.max()
+
 
 - supported standard feature 
   - min

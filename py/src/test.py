@@ -1,33 +1,30 @@
 
 
-import dataclasses
-import typing
-import heapq
+# import dataclasses
+# import typing
 
 
 
 
-class MergeSort():
+# class MergeSort():
   
-  def __call__(
-    self,
-    a: typing.List[int],
-  ):
-    ... 
-
-
-
-import typing
-import heapq
+#   def __call__(
+#     self,
+#     a: typing.List[int],
+#   ):
+#     ... 
 
 
 
 
+import numba as nb 
 
-
+@nb.njit
 def test():
-  a = True and False | True
-  print(a)
+  st = []
+  st.append((1, 1))
+  # a = True and False | True
+  # print(a)
   
 
 
