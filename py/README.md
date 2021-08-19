@@ -39,21 +39,22 @@ $ xsel | python3 <problem>.py
 
 - supported numpy feature 
   - np.cumsum(a)
+  - np.eye()
+  - np.flatnonzero()
+  - np.full()
+  - np.int64
+  - np.ones()
+  - np.searchsorted()
   - np.unique(a)
   - np.zeros()
-  - np.full()
-  - np.eye()
-  - np.int64
-  - ndarray.shape
-  - ndarray.reshape()
-  - ndarray.cumsum()
-  - np.ones()
-  - np.flatnonzero()
   - ndarray.all()
   - ndarray.any()
   - ndarray.argmin()
-  - ndarray.min()
+  - ndarray.cumsum()
   - ndarray.max()
+  - ndarray.min()
+  - ndarray.reshape()
+  - ndarray.shape
 
 
 - supported standard feature 
