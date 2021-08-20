@@ -7,12 +7,9 @@ class SADoubling():
     self,
     a: typing.List[int],
   ) -> typing.List[int]:
-    self.__a = a
+    n = len(a)
+    self.__n, self.__a = n, a
     self.__compress()
-    print(self.__a)
-    n = len(self.__a)
-    self.__cnt = [0] * (n + 1)
-    self.__n = n
     self.__doubling()
     return self.__sa
 
@@ -30,17 +27,16 @@ class SADoubling():
     self,
     a: typing.List[int],
   ) -> typing.List[int]:
-    c, n = self.__cnt, self.__n 
+    n = self.__n 
     assert len(a) == n
+    c = [0] * (n + 2)
     for x in a: c[x + 1] += 1
     for i in range(n): c[i + 1] += c[i]
     idx = [0] * n
     for i in range(n):
       x = a[i]
-      print(c[x])
       idx[c[x]] = i
       c[x] += 1
-    for i in range(n + 1): c[i] = 0
     return idx
   
 
@@ -49,7 +45,7 @@ class SADoubling():
   ) -> typing.NoReturn:
     rank, n = self.__a, self.__n 
     k = 1
-    while k < n:
+    while 1:
       b = [0] * n
       for i in range(n - k): 
         b[i] = rank[i + k] + 1
@@ -61,22 +57,65 @@ class SADoubling():
         a[ord_a[i]] << 30 | b[sa[i]] 
         for i in range(n)
       ]
-      rank = [0] * n
+      rank[sa[0]] = 0 
       for i in range(n - 1):
         rank[sa[i + 1]] = rank[sa[i]] + (c[i + 1] > c[i])
       k *= 2
+      if k >= n: break
+
     self.__sa = sa 
  
 
+
+class Kasai():
+  def __call__(
+    self,
+    a: typing.List[int],
+    sa: typing.List[int],
+  ) -> typing.List[int]:
+    n = len(a)
+    # assert n > 0 and len(sa) == n
+    rank = [0] * n
+    for i, x in enumerate(sa): rank[x] = i
+    h, l = [0] * (n - 1), 0
+    for i in range(n):
+      if l: l -= 1
+      r = rank[i]
+      if r == n - 1: continue
+      j = sa[r + 1]
+      while i + l < n and j + l < n:
+        if a[i + l] != a[j + l]: break
+        l += 1
+      h[r] = l
+    return h
+      
 
 
 def solve(
   n: int,
   s: str,
 ) -> typing.NoReturn:
-  s = [ord(x) for x in s]
-  sa = SADoubling()(s)
-  print(sa)
+  a = [ord(x) for x in s]
+  sa = SADoubling()(a)
+  lcp = Kasai()(a, sa)
+
+  a = list(range(n, 0, -1))
+  for _ in range(2):
+    st = []
+    s = 0 
+    for i in range(n - 1):
+      h, l = lcp[i], 1
+      while st and st[-1][0] >= h:
+        x = st.pop()
+        l += x[1]
+        s -= x[0] * x[1]
+      s += h * l
+      st.append((h, l))
+      a[sa[i + 1]] += s
+    sa.reverse()
+    lcp.reverse()
+  print(*a, sep='\n')
+
 
 
 
