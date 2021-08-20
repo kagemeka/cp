@@ -16,6 +16,10 @@
 - cummulatie sum
 - store height and the length.
 - online update with stack
+- SA-IS
+- doubling
+- counting sort
+
 
 
 # summary
@@ -45,6 +49,11 @@
 - numba (AOT)
 - import error?
 
+
+## sol_4
+- calc Suffix Array with Doubling and counting sort 
+- pypy
+- TLE 
 
 
 
