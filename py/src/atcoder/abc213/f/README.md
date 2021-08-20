@@ -56,6 +56,15 @@
 - TLE 
 
 
+## sol_5 
+- calc Suffix Array with Doubling and counting sort 
+- numba (JIT)
+
+
+## sol_6 
+- calc Suffix Array with Doubling and counting sort 
+- numba (AOT)
+
 
 
 # reference
