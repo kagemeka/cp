@@ -37,7 +37,8 @@ $ xsel | python3 <problem>.py
   - np.pad()
 
 
-- supported numpy feature 
+- supported numpy feature
+  - np.argsort()
   - np.cumsum(a)
   - np.eye()
   - np.flatnonzero()
@@ -46,6 +47,7 @@ $ xsel | python3 <problem>.py
   - np.ones()
   - np.searchsorted()
   - np.unique(a)
+  - np.where()
   - np.zeros()
   - ndarray.all()
   - ndarray.any()

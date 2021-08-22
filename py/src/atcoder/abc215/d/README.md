@@ -63,10 +63,10 @@
 
 
 ## sol_7
-- $O(N + \max{A}\log{M})$
+- $O(N + (\max{A} + M)\log{M})$
 
 
 
 ## sol_8
-- $O(N + \max{A}\log{M})$
+- $O(N + (\max{A} + M)\log{M})$
 - numba (JIT)
