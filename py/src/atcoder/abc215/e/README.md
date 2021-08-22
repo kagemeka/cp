@@ -21,5 +21,27 @@
   - $dp_{i, 1 << x, x} = dp_{i, \{x\}, x} + 1$ (x is used at first.)
 
 
+
+## sol_0
+- pypy
+- naive
+
+
+## sol_1
+- python
+- effective Space Complexity
+
+
+## sol_2
+- numba (JIT)
+- effective space complexity
+
+
+## sol_3
+- numba (AOT)
+- effective space complexity
+
+
+
 # similar 
 - [ABC180 E - Traveling Salesman among Aerial Cities](https://atcoder.jp/contests/abc180/tasks/abc180_e)
