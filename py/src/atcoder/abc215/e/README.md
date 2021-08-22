@@ -6,6 +6,7 @@
 # keywords 
 - bit DP 
 - similar to Traveling Salesperson problem.
+- permutations DP -> bits + last component DP
 
 
 # summary
