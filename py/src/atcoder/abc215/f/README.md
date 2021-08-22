@@ -54,3 +54,13 @@
 - shakutori method
 - numba (JIT)
 
+
+## sol_4
+- $O(N\log{N}\log{\max{d}})$
+- bisection
+- numpy
+
+
+
+# similar
+- [ABC149 E - Handshake](https://atcoder.jp/contests/abc149/tasks/abc149_e)
