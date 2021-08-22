@@ -59,3 +59,14 @@
 - prime factorize with lpf with sieve of eratosthenes.
 - $O(\max{A}\log{\log{\max{A}}} + N\log{\max{A}} + M\log{\log{M}})$
 - numba (JIT)
+
+
+
+## sol_7
+- $O(N + \max{A}\log{M})$
+
+
+
+## sol_8
+- $O(N + \max{A}\log{M})$
+- numba (JIT)
