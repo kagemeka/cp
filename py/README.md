@@ -35,10 +35,13 @@ $ xsel | python3 <problem>.py
     - np.minimum()
     - axis
   - np.pad()
+  - np.resize()
+  = ndarray.resize()
 
 
 - supported numpy feature
   - np.argsort()
+  - np.bincount()
   - np.cumsum(a)
   - np.eye()
   - np.flatnonzero()
@@ -57,6 +60,7 @@ $ xsel | python3 <problem>.py
   - ndarray.min()
   - ndarray.reshape()
   - ndarray.shape
+
 
 
 - supported standard feature 
