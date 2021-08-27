@@ -2,6 +2,23 @@
 
 
 
+
+## sol_0
+- using numpy fft module
+
+
+## sol_1
+- cooley-turkey
+- pypy
+
+
+## sol_2 
+- cooley-turkey
+- numpy
+
+
+
+
 # references
 - [numpy fft routines](https://numpy.org/doc/stable/reference/routines.fft.html)
 - [qiita kaage](https://qiita.com/ageprocpp/items/0d63d4ed80de4a35fe79)

@@ -1,67 +1,71 @@
 import typing 
-import collections
-
-
-
-import typing 
-import sys 
-import numpy as np
 import numba as nb 
+import numpy as np
 
 
 
 @nb.njit
-def prime_factorize(
-  n: int,
-) -> np.array:
-  p, c = [], []
-  i = 1
-  while i * i < n:
-    i += 1
-    if n % i: continue
-    p.append(i)
-    c.append(0)
-    while n % i == 0:
-      n //= i
-      c[-1] += 1
-  if n > 1: 
-    p.append(n)
-    c.append(1)
-  return np.vstack((
-    np.array(p),
-    np.array(c),
-  )).T
+def mod_matrix_dot(
+  a: np.ndarray,
+  b: np.ndarray,
+  mod: int,
+) -> np.ndarray:
+  r, c = a.shape
+  h, w = b.shape
+  assert c == h
+  c = np.zeros(
+    (r, w), 
+    dtype=np.int64,
+  )
+  for i in range(r):
+    for j in range(w):
+      c[i, j] = np.sum(a[i] * b[:, j] % mod) % mod 
+  return c
+      
+
+# @nb.njit
+# def mod_matrix_pow(
+#   a: np.ndarray,
+#   n: int,
+#   mod: int,
+# ) -> np.ndarray:
+#   if n == 0:
+#     return np.eye(
+#       a.shape[0],
+#       dtype=np.int64,
+#     )  
+#   x = mod_matrix_pow(a, n >> 1, mod)
+#   x = mod_matrix_dot(x, x, mod)
+#   if n & 1: 
+#     x = mod_matrix_dot(x, a, mod)
+#   return x
 
 
 @nb.njit
-def prime_factorize_factorial(
+def mod_matrix_pow(
+  a: np.ndarray,
   n: int,
-) -> np.array:
-  prime, cnt = [], []
-  idx = np.full(n + 1, -1, dtype=np.int32)
-  for i in range(n + 1):
-    for p, c in prime_factorize(i):
-      i = idx[p]
-      if i != -1:
-        cnt[i] += c
-        continue
-      idx[p] = len(prime)
-      prime.append(p)
-      cnt.append(c)
-  return np.vstack((
-    np.array(prime),
-    np.array(cnt),
-  )).T 
-
+  mod: int,
+) -> np.ndarray:
+  x = np.eye(
+    a.shape[0],
+    dtype=np.int64,
+  )
+  while n:
+    if n & 1:
+      x = mod_matrix_dot(x, a, mod)
+    x = mod_matrix_dot(x, x, mod)
+    n >>= 1
+  return x
 
 
 @nb.njit(
   cache=True,
 )
 def test():
-  f = prime_factorize_factorial(1000000)
-  print(f)
-  
+  a = np.arange(1, 10).reshape(3, 3)
+  mod = 998244353
+  print(mod_matrix_pow(a, 2, mod))
 
 
 if __name__ == '__main__':

@@ -3,21 +3,21 @@ import sys
 import numpy as np 
 
 
-
 def solve(
   a: np.array,
   b: np.array,
 ) -> typing.NoReturn:
   n = a.size
   m = 1 << 18
+  a = np.pad(a, (1, 0))
+  b = np.pad(b, (1, 0))
   a = np.fft.rfft(a, m)
   b = np.fft.rfft(b, m)
   c = a * b
   c = np.fft.irfft(c)
   c = np.real(c)
   c = np.round(c).astype(int)
-  c = np.pad(c, (1, 0))
-  print(*c[:2 * n], sep='\n')
+  print(*c[1:2 * n + 1], sep='\n')
 
 
 def main() -> typing.NoReturn:
@@ -27,6 +27,7 @@ def main() -> typing.NoReturn:
     dtype=np.int64,
   ).reshape(n, 2).T
   solve(a, b)
+
 
 
 main()
