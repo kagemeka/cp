@@ -78,3 +78,6 @@ $ xsel | python3 <problem>.py
 
 
 - strict dtype
+
+
+- using recursive function and enabling cache with numba might occurs segmentation fault.
