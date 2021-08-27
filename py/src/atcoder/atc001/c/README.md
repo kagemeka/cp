@@ -5,6 +5,7 @@
 
 ## sol_0
 - using numpy fft module
+- rfft
 
 
 ## sol_1
@@ -15,6 +16,28 @@
 ## sol_2 
 - cooley-turkey
 - numpy
+
+
+
+## sol_3
+- recursive fft
+- pypy/python 
+
+
+## sol_4
+- using numpy fft module
+- fft
+- define convolve 
+
+
+## sol_5 
+- cooley-turkey 
+- numba (JIT)
+
+
+## sol_6 
+- recursive fft
+- numba (JIT)
 
 
 
