@@ -36,7 +36,7 @@ $ xsel | python3 <problem>.py
     - axis
   - np.pad()
   - np.resize()
-  = ndarray.resize()
+  - ndarray.resize()
 
 
 - supported numpy feature
@@ -48,6 +48,8 @@ $ xsel | python3 <problem>.py
   - np.full()
   - np.int64
   - np.ones()
+  - np.real()
+  - np.rint()
   - np.searchsorted()
   - np.unique(a)
   - np.where()
@@ -55,6 +57,7 @@ $ xsel | python3 <problem>.py
   - ndarray.all()
   - ndarray.any()
   - ndarray.argmin()
+  - ndarray.astype()
   - ndarray.cumsum()
   - ndarray.max()
   - ndarray.min()
