@@ -40,6 +40,11 @@
 - numba (JIT)
 
 
+## sol_7
+- scipy.signal.fftconvolve
+- numpy
+
+
 
 
 # references
