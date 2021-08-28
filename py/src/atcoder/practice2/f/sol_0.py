@@ -1,8 +1,6 @@
 import typing 
 import sys 
 import numpy as np
-from scipy import signal
-
 
 
 class ModConvolve():
@@ -24,10 +22,8 @@ class ModConvolve():
     h1 = self.__conv(f0 + f1, g0 + g1) - h0 - ha
     h3 = self.__conv(f1 + f2, g1 + g2) - ha - h4
     h2 = self.__conv(f0 + f2, g0 + g2) - h0 - h4 + ha
-    h = (h4 << N) + h3
-    h = (h % mod << N) + h2
-    h = (h % mod << N) + h1
-    h = (h % mod << N) + h0
+    h = (h4 << N * 2) + (h3 << N) + h2
+    h = (h % mod << N * 2) + (h1 << N) + h0
     return h % mod
     
   
@@ -36,6 +32,7 @@ class ModConvolve():
     f: np.ndarray,
     g: np.ndarray,
   ) -> np.ndarray:
+    from scipy import signal
     h = signal.fftconvolve(f, g)
     return np.rint(h).astype(np.int64) % self.__mod
 
@@ -45,6 +42,7 @@ class ModConvolve():
     mod: int, 
   ) -> typing.NoReturn:
     self.__mod = mod
+
 
 
 mod = 998_244_353
@@ -60,9 +58,8 @@ def main() -> typing.NoReturn:
     sys.stdin.readline().split(),
     dtype=np.int64,
   )
-  convolve = ModConvolve(mod)
-  
-  print(*convolve(a, b))
+  conv = ModConvolve(mod)
+  print(*conv(a, b))
 
 
 main()
