@@ -42,12 +42,12 @@
 
 ## sol_2
 - numba (JIT)
-- slow
+- SA-IS (non recursive)
 
 
 ## sol_3
 - numba (AOT)
-- import error?
+- SA-IS (non recursive)
 
 
 ## sol_4
