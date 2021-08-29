@@ -1,7 +1,7 @@
 import typing 
+import sys 
 import numpy as np
-import sys
-
+  
 
 def sa_is(
   a: np.ndarray,
@@ -122,44 +122,25 @@ def lcp_kasai(
     h[r] = l
   return h
 
-  
+
 
 def solve(
-  a: np.array,
+  a: np.ndarray,
 ) -> typing.NoReturn:
-  n = a.size
   sa = sa_is(a)
   lcp = lcp_kasai(a, sa)
-
-  a = np.arange(n, 0, -1)
-  for i in range(2):
-    s = 0 
-    st = []
-    for i in range(n - 1):
-      h = lcp[i]
-      l = 1
-      while st and st[-1][0] >= h:
-        x = st.pop()
-        l += x[1]
-        s -= x[0] * x[1]
-      s += h * l
-      st.append((h, l))
-      a[sa[i + 1]] += s
-    sa = sa[::-1]
-    lcp = lcp[::-1]
-
-  for i in range(n):
-    print(a[i])
+  n = a.size
+  s = n * (n + 1) // 2
+  print(s - lcp.sum())
 
 
 
 def main() -> typing.NoReturn:
-  n = int(sys.stdin.buffer.readline().rstrip())
-  a = np.frombuffer(
+  s = np.frombuffer(
     sys.stdin.buffer.readline().rstrip(),
     dtype='b',
-  ).astype(np.int64) - ord(b'a')
-  solve(a)
+  ).astype(np.int64) - ord('a') + 1
+  solve(s)
 
 
 
