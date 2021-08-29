@@ -5,25 +5,38 @@ import numba as nb
 
 
 
-
-@nb.njit
-def _induce(
-  a: np.ndarray,
-  is_s: np.ndarray,
-  lms: np.ndarray,
-  bucket: np.ndarray,
-) -> np.ndarray:
-  n, m = a.size, bucket.size
-  sa = np.full(n, -1, np.int32)
   
-  def _set_lms():
+
+@nb.njit((nb.i8[:], ))
+def sa_is(
+  a: np.ndarray,
+) -> np.ndarray:
+  if a.min() <= 0: a += 1
+  assert (a > 0).all()
+  a = np.hstack((a, np.array([0])))
+  n, m = a.size, a.max() + 1
+
+  is_s = np.ones(n, np.bool8)
+  for i in range(n - 1, 0, -1):
+    is_s[i - 1] = (
+      is_s[i] if a[i - 1] == a[i] else
+      a[i - 1] < a[i]
+    )
+  is_lms = np.zeros(n, np.bool8)
+  for i in range(1, n): is_lms[i] = is_s[i] & ~is_s[i - 1]
+  lms = np.flatnonzero(is_lms)
+  bucket = np.zeros(m, np.int32)
+  for x in a: bucket[x] += 1  
+
+  def _induce():
+    sa = np.full(n, -1, np.int64)
+    
     sa_idx = bucket.cumsum()
     for i in lms[::-1]:
       x = a[i] 
       sa_idx[x] -= 1
       sa[sa_idx[x]] = i
-  
-  def _induce_l():
+      
     sa_idx = bucket.copy()
     s = 0 
     for i in range(m):
@@ -35,7 +48,6 @@ def _induce(
       sa[sa_idx[x]] = i
       sa_idx[x] += 1
 
-  def _induce_s():
     sa_idx = bucket.cumsum()
     for i in range(n - 1, -1, -1):
       i = sa[i] - 1
@@ -44,37 +56,10 @@ def _induce(
       sa_idx[x] -= 1
       sa[sa_idx[x]] = i
   
-  _set_lms()
-  _induce_l()
-  _induce_s()
-  return sa
-  
+    return sa
 
-@nb.njit
-def _preprocess(
-  a: np.ndarray
-) -> typing.Tuple[np.ndarray]:
-  n = a.size
-  is_s = np.ones(n, np.bool8)
-  for i in range(n - 1, 0, -1):
-    is_s[i - 1] = (
-      is_s[i] if a[i - 1] == a[i] else
-      a[i - 1] < a[i]
-    )
-  is_lms = np.zeros(n, np.bool8)
-  is_lms[np.arange(1, n)[~is_s[:-1] & is_s[1:]]] = True
-  lms = np.flatnonzero(is_lms)
-  bucket = np.bincount(a)
-  return is_s, is_lms, lms, bucket
-  
+  sa = _induce()
 
-@nb.njit
-def _compute_next_array(
-  a: np.ndarray, 
-  sa: np.ndarray, 
-  is_lms: np.ndarray,
-) -> np.ndarray:
-  n = a.size
   lms_idx = sa[is_lms[sa]]
   l = lms_idx.size
   na = np.full(n, -1, dtype=np.int64)
@@ -89,39 +74,16 @@ def _compute_next_array(
       if d > 0 and j_is_lms | k_is_lms: break
     na[k] = i
   na = na[na > 0]
-  return na
+  if i == l:
+    lms_order = np.empty(l, np.int64)
+    for i in range(l):
+      lms_order[na[i] - 1] = i
+  else:
+    lms_order = sa_is(na)
+  lms = lms[lms_order]
 
-
-@nb.njit
-def sa_is(
-  a: np.ndarray,
-) -> np.ndarray:
-  if a.min() <= 0: a += 1
-  assert (a > 0).all()
-  a = np.hstack((a, np.array([0])))
-
-  st: typing.List[typing.Tuple[np.ndarray]] = []
-  while True:
-    is_s, is_lms, lms, b = _preprocess(a)
-    sa = _induce(a, is_s, lms, b)
-    st.append((a, is_s, lms, b))
-
-    a = _compute_next_array(a, sa, is_lms)
-    l = lms.size
-    if a.max() < l:
-      a = np.hstack((a, np.array([0]))) 
-      continue
-    lms_order = np.empty(l, np.int32)
-    for i in range(l): lms_order[a[i] - 1] = i
-    break
-
-  while st:
-    a, is_s, lms, b = st.pop()
-    lms = lms[lms_order]
-    lms_order = _induce(a, is_s, lms, b)[1:]
-
-  return lms_order
-
+  sa = _induce()
+  return sa[1:]
 
 
 @nb.njit
@@ -131,7 +93,7 @@ def lcp_kasai(
 ) -> np.array:
   n = a.size
   assert n > 0 and sa.size == n
-
+  
   rank = np.empty(n, np.int32)
   for i in range(n): rank[sa[i]] = i
   h, l = np.empty(n - 1, np.int32), 0

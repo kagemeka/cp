@@ -78,7 +78,7 @@ def _compute_next_array(
   lms_idx = sa[is_lms[sa]]
   l = lms_idx.size
   na = np.full(n, -1, dtype=np.int64)
-  na[-1] = i = 1
+  na[-1] = i = 0
   for j in range(l - 1):
     j, k = lms_idx[j], lms_idx[j + 1]
     for d in range(n):
@@ -88,7 +88,7 @@ def _compute_next_array(
         i += 1; break
       if d > 0 and j_is_lms | k_is_lms: break
     na[k] = i
-  na = na[na > 0]
+  na = na[na >= 0]
   return na
 
 
@@ -105,22 +105,19 @@ def sa_is(
     is_s, is_lms, lms, b = _preprocess(a)
     sa = _induce(a, is_s, lms, b)
     st.append((a, is_s, lms, b))
-
     a = _compute_next_array(a, sa, is_lms)
     l = lms.size
-    if a.max() < l:
-      a = np.hstack((a, np.array([0]))) 
-      continue
+    if a.max() < lms.size - 1: continue
     lms_order = np.empty(l, np.int32)
-    for i in range(l): lms_order[a[i] - 1] = i
+    for i in range(l): lms_order[a[i]] = i
     break
 
   while st:
     a, is_s, lms, b = st.pop()
     lms = lms[lms_order]
-    lms_order = _induce(a, is_s, lms, b)[1:]
+    lms_order = _induce(a, is_s, lms, b)
 
-  return lms_order
+  return lms_order[1:]
 
 
 
