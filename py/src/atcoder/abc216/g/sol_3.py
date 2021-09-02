@@ -10,7 +10,7 @@ import numba as nb
   (nb.i8, nb.i8[:, :], nb.i8),
   cache=True,
 )
-def shortest_path_dijkstra(
+def shortest_dist_dijkstra(
   n: int,
   edges: np.ndarray,
   src: int,
@@ -35,7 +35,7 @@ def shortest_path_dijkstra(
 
 
 @nb.njit(
-  (nb.i8, nb.i8[:, :]), 
+  (nb.i8, nb.i8[:, :]),
   cache=True,
 )
 def solve(
@@ -44,18 +44,27 @@ def solve(
 ) -> typing.NoReturn:
   m = len(lrx)
   edges = np.zeros((2 * n + m, 3), np.int64)
-  lrx[:, -1] = lrx[:, 1] - lrx[:, 0] + 1 - lrx[:, -1]
-  lrx[:, 0] -= 1
-  edges[:m] = lrx
-  edge_idx = m
+
+  edge_idx = 0
+  def add_edge(u, v, w):
+    nonlocal edge_idx 
+    edges[edge_idx] = (u, v, w)
+    edge_idx += 1
+  
   for i in range(n):
-    edges[edge_idx] = (i, i + 1, 1)
-    edge_idx += 1
-    edges[edge_idx] = (i + 1, i, 0)
-    edge_idx += 1
-  sort_idx = np.argsort(edges[:, 0], kind='mergesort')
+    add_edge(i, i + 1, 1)
+    add_edge(i + 1, i, 0)
+  
+  for i in range(m):
+    l, r, x = lrx[i]
+    add_edge(l - 1, r, r - l + 1 - x) 
+    
+  sort_idx = np.argsort(
+    edges[:, 0],
+    kind='mergesort',
+  )
   edges = edges[sort_idx]
-  b = shortest_path_dijkstra(n + 1, edges, 0)
+  b = shortest_dist_dijkstra(n + 1, edges, 0)
   a = b[1:] - b[:-1] ^ 1
   return a 
 
@@ -69,5 +78,4 @@ def main() -> typing.NoReturn:
   a = solve(n, lrx)
   print(*a)
   
-
 main()
