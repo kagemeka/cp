@@ -38,7 +38,9 @@
 - pypy
 
 
-## sol_2 
+## sol_2, sol_3
+- numba (JIT)
+
 
 
 
