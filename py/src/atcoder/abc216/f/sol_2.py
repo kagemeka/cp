@@ -19,19 +19,15 @@ def solve(
   idx = np.argsort(a)
   a, b = a[idx], b[idx]
   
-  dp = np.zeros((n + 1, m, 2), dtype=np.int64)
-  dp[0, 0, 0] = 1
+  dp = np.zeros(m, dtype=np.int64)
   s = 0 
+  dp[0] = 1
   for i in range(n):
     x, y = a[i], b[i]
-    for j in range(m):
-      dp[i + 1, j, 0] = dp[i, j, 0] + dp[i, j, 1]
-      if j - y >= 0:
-        dp[i + 1, j, 1] = dp[i, j - y, 0] + dp[i, j - y, 1]
-    dp[i + 1] %= mod
-    s += dp[i + 1, :x + 1, 1].sum() % mod 
+    s += dp[:max(x - y + 1, 0)].sum()
+    dp[::-1][:-y] += dp[::-1][y:]
+    dp %= mod
   print(s % mod)
-    
 
 
 def main() -> typing.NoReturn:
