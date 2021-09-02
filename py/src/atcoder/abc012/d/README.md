@@ -19,19 +19,12 @@
 
 
 
-## sol_1 
+## sol_1, sol_2
 - scipy.sparse.csgraph.floyd_warshall
-
-
-
-## sol_2 
-- scipy.sparse.csgraph.floyd_warshall
-- v2
 
 
 ## sol_3
 - scipy.sparse.csgraph.shortest_path
-
 
 
 ## sol_4
@@ -40,6 +33,17 @@
 
 
 ## sol_5
+- pypy
+
+
+## sol_6
+- numba (JIT)
+- sparse graph
+
+
+## sol_7, sol_8
+- numba (JIT)
+- dense graph
 
 
 # similar 

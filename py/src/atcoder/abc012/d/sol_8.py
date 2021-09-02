@@ -5,25 +5,23 @@ import numba as nb
 
 
 
-
-
 @nb.njit(
-  (nb.i8, nb.i8[:, :]),
+  (nb.i8[:, :], ),
   cache=True,
 )
 def floyd_warshall(
-  n: int,
   g: np.ndarray,
 ) -> np.ndarray:
-  m = len(g)
-  assert g.shape == (m, 3)
+  n = len(g)
+  assert g.shape == (n, n)
   inf = 1 << 60
-  assert inf > g[:, 2].max() * n
+  assert inf > g.max() * n 
   dist = np.full((n, n), inf, np.int64)
   for i in range(n): dist[i, i] = 0
-  for i in range(m):
-    u, v, w = g[i]
-    dist[u, v] = min(dist[u, v], w)
+  for u in range(n):
+    for v in range(n):
+      if g[u, v] == 0: continue
+      dist[u, v] = g[u, v]
   for k in range(n):
     for i in range(n):
       for j in range(n):
@@ -35,18 +33,20 @@ def floyd_warshall(
 
 
 @nb.njit(
-  (nb.i8[:, :], ),
+  (nb.i8[:, :], nb.i8),
   cache=True,
 )
-def csgraph_to_undirected(
-  g: np.ndarray,
+def csgraph_to_dense(
+  csgraph: np.ndarray,
+  n: int,
 ) -> np.ndarray:
-  n = len(g)
-  assert g.shape == (n, 3)
-  g = np.vstack((g, g))
-  g[n:, :2] = g[n:, 1::-1]
-  return g  
-  
+  m = len(csgraph)
+  assert csgraph.shape == (m, 3)
+  g = np.zeros((n, n), np.int64)
+  for i in range(m):
+    u, v, w = csgraph[i]
+    g[u, v] = g[v, u] = w 
+  return g 
 
 
 @nb.njit(
@@ -57,8 +57,8 @@ def solve(
   n: int,
   g: np.ndarray,
 ) -> typing.NoReturn:
-  g = csgraph_to_undirected(g)
-  dist = floyd_warshall(n, g)
+  g = csgraph_to_dense(g, n)
+  dist = floyd_warshall(g)
   res = 1 << 60
   for i in range(n):
     res = min(res, dist[i].max())
