@@ -1,32 +1,41 @@
-from __future__ import annotations
 import typing 
-import dataclasses
 
 
-@dataclasses.dataclass
 class Node(): ...
 
 
 
-@dataclasses.dataclass 
 class Edge():
-  from_: int
-  to: int
-  weight: int = 1
-  capacity: typing.Optional[int] = None
+  def __init__(
+    self,
+    from_: int,
+    to: int,
+    weight: typing.Optional[int] = None,
+    capacity: typing.Optional[int] = None,
+  ) -> typing.NoReturn:
+    self.from_ = from_
+    self.to = to
+    self.weight = weight 
+    self.capacity = capacity
 
 
 
-@dataclasses.dataclass 
+
 class Graph():
-  nodes: typing.List[Node]
-  edges: typing.List[typing.List[Edge]]
+  def __init__(
+    self,
+    nodes: typing.List[Node],
+    edges: typing.List[typing.List[Edge]],
+  ) -> typing.NoReturn:
+    self.nodes = nodes 
+    self.edges = edges 
+
 
   @classmethod  
   def from_size(
     cls,
     n: int,
-  ) -> Graph:
+  ) -> typing.Any:
     nodes = [Node() for _ in range(n)]
     edges = [[] for _ in range(n)]
     return cls(nodes, edges)
@@ -54,9 +63,12 @@ class Graph():
     
 
 
-@dataclasses.dataclass 
 class Config():
-  inf: int = 1 << 60
+  def __init__(
+    self,
+    inf: int = 1 << 60,
+  ) -> typing.NoReturn:
+    self.inf = inf
 
 
 
@@ -119,7 +131,7 @@ def solve(
     Config(inf=1 << 60),
   )
   b = dijkstra(g, 0)
-  a = [(b[i + 1] - b[i]) ^ 1 for i in range(n)]
+  a = [b[i + 1] - b[i] ^ 1 for i in range(n)]
   print(*a)
   
   
