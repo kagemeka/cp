@@ -9,7 +9,7 @@
 
 
 # summary
-## scanline
+## greedy scanline
 - $O(N\log{N})$ (sort is bottoleneck)
 - sort A in descending order
 - sol_0
