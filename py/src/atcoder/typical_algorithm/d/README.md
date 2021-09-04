@@ -8,7 +8,7 @@
 
 
 # summary 
-
+- $O(E\log{V})$
 
 
 # code 
