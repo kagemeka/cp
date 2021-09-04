@@ -15,7 +15,7 @@ def solve(
     shape=(n, n),
     dtype=np.int64,
   )
-  dist = scipy.sparse.csgraph.floyd_warshall(
+  dist = scipy.sparse.csgraph.bellman_ford(
     csgraph=g,
     directed=True,
   ).astype(np.int64)
