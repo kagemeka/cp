@@ -1,53 +1,47 @@
 import typing 
 import sys 
 import numpy as np
+import numba as nb 
 
 
-
-
-q = np.empty(
-  (1 << 20, 3),
-  dtype=np.int64,
-)
-qn = 0
-def swap(i, j):
-  tmp = q[i].copy()
-  q[i] = q[j]
-  q[j] = tmp
-
-
+T = typing.TypeVar('T')
+@nb.njit
 def heappush(
-  h: typing.List,
-  x: typing.Any,
+  hq: typing.List[T],
+  x: T,
 ) -> typing.NoReturn:
-  i = qn
-  q[i] = x
+  i = len(hq)
+  hq.append(x)
   while i > 0:
-    j = (i - 1) // 2
-    if q[i][0] >= q[j][0]:
-      break
-    swap(i, j)
+    j = (i - 1) >> 1
+    if hq[i] >= hq[j]: break 
+    hq[i], hq[j] = hq[j], hq[i]
     i = j
 
 
-def heappop():
-  n = qn - 1
-  swap(0, n)
-  i = 0
+T = typing.TypeVar('T')
+@nb.njit
+def heappop(
+  hq: typing.List[T],
+) -> T:
+  hq[0], hq[-1] = hq[-1], hq[0]
+  x = hq.pop()
+  i, n = 0, len(hq)
   while 1:
-    j = i * 2 + 1
+    j = (i << 1) + 1
     if j >= n: break
-    dj = q[j, 0]
-    if j < n - 1:
-      j += q[j + 1][0] < q[j][0]
-    dj = q[j][0]
-    if q[i][0] <= dj: break
-    swap(i, j)
-    i = j
-  return q[n]
+    j += j < n - 1 and hq[j + 1] < hq[j]
+    if hq[i] <= hq[j]: break
+    hq[i], hq[j] = hq[j], hq[i]
+    i = j 
+  return x
 
 
 
+@nb.njit(
+  (nb.i8[:], nb.i8[:]),
+  cache=True,
+)
 def solve(
   l: np.ndarray,
   r: np.ndarray,
@@ -57,20 +51,15 @@ def solve(
   l = l[idx]
   r = r[idx]
 
-
-  h = []
+  h = [0]
+  h.pop()
   i, j = 0, 1
   for _ in range(n):
-    if i < n and l[i] == j:
-      while i < n and l[i] == j:
-        heapq.heappush(h, r[i])
-        i += 1
-    elif not h:
-      j = l[i] 
-      while i < n and l[i] == j:
-        heapq.heappush(h, r[i])
-        i += 1
-    if heapq.heappop(h) < j:
+    if not h: j = l[i]
+    while i < n and l[i] == j:
+      heappush(h, r[i])
+      i += 1
+    if heappop(h) < j:
       print('No')
       return 
     j += 1
