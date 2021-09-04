@@ -51,6 +51,19 @@
 - floyd_warshall
 
 
+## sol_10
+- python
+- dijkstra
+
+## sol_11
+- python
+- bellman_ford
+- TLE
+
+## sol_12
+- pypy
+- bellman_ford
+
 
 
 # similar 

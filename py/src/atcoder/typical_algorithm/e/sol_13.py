@@ -98,6 +98,35 @@ class ShortestDistBellmanFord():
     return dist
            
 
+
+class ShortestDistJohnson():
+  def __call__(
+    self,
+    g: Graph,
+  ) -> typing.List[typing.List[int]]:
+    n = g.size
+    new_g = Graph.from_size(n + 1)
+    for u in range(n):
+      for e in g.edges[u]:
+        new_g.add_edge(e)
+
+    for i in range(n):
+      new_g.add_edge(Edge(n, i, 0)) 
+    h = ShortestDistBellmanFord()(new_g, n)[:-1]
+
+    for u in range(n):
+      for e in g.edges[u]:
+        e.weight += h[u] - h[e.to]
+
+    dist = [None] * n
+    dijkstra = ShortestDistDijkstra()
+    for i in range(n):
+      d = dijkstra(g, i)
+      dist[i] = [d[j] - h[i] + h[j] for j in range(n)]  
+    return dist
+
+
+
 def solve(
   n: int,
   uvc: typing.Iterator[typing.Tuple[int]],
@@ -106,11 +135,9 @@ def solve(
   for u, v, c in uvc:
     g.add_edge(Edge(u, v, c))
   
-  bellman_ford = ShortestDistBellmanFord()
-  s = 0
-  for i in range(n):
-    s += sum(bellman_ford(g, i))
-  print(s)
+
+  dist = ShortestDistJohnson()(g)
+  print(sum(map(sum, dist)))
 
 import sys 
 
