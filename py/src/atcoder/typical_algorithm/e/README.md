@@ -38,6 +38,18 @@
 - floyd_warshall (dense)
 
 ## sol_7
+- numba (JIT)
+- bellman ford
+
+## sol_8
+- numba (JIT)
+- johnson
+
+
+## sol_9
+- python
+- floyd_warshall
+
 
 
 
