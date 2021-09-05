@@ -6,23 +6,79 @@ import numba as nb
 
 
 @nb.njit
-def mst_prim(
+def uf_build(
+  n: int,
+) -> np.ndarray:
+  return np.full(n, -1, np.int64)
+
+
+@nb.njit
+def uf_find(
+  uf: np.ndarray,
+  u: int,
+) -> int:
+  if uf[u] < 0: return u
+  uf[u] = uf_find(uf, uf[u])
+  return uf[u]
+
+
+@nb.njit
+def uf_unite(
+  uf: np.ndarray,
+  u: int,
+  v: int,
+) -> typing.NoReturn:
+  u = uf_find(uf, u)
+  v = uf_find(uf, v)
+  if u == v: return 
+  if uf[u] > uf[v]: u, v = v, u
+  uf[u] += uf[v]
+  uf[v] = u
+
+
+@nb.njit(
+  (nb.i8, nb.i8[:, :]),
+  cache=True,
+)
+def mst_kruskal(
   n: int,
   csgraph: np.ndarray,
 ) -> np.ndarray:
   m = len(csgraph)
   assert csgraph.shape == (m, 3)
+  sort_idx = np.argsort(csgraph[:, 2], kind='mergesort')
+  csgraph = csgraph[sort_idx]
+  uf = uf_build(n)
+
+  edge_indices = np.zeros(m, np.int64)
+  j = 0
+
+  def add_edge(i):
+    nonlocal edge_indices, j
+    edge_indices[j] = i
+    j += 1
+
+  for i in range(m):
+    u, v, _ = csgraph[i]
+    if uf_find(uf, u) == uf_find(uf, v): continue
+    uf_unite(uf, u, v)
+    add_edge(i)
+
+  return csgraph[edge_indices[:j]]
   
 
 
-
-@nb.njit
+@nb.njit(
+  (nb.i8, nb.i8[:, :]),
+  cache=True,
+)
 def solve(
   n: int,
   uvc: np.ndarray,
 ) -> typing.NoReturn:
-  g = mst_prim(n, uvc)
-  print(g[:, 2].sum())
+  mst = mst_kruskal(n, uvc)
+
+  print(mst[:, 2].sum())
 
 
 def main() -> typing.NoReturn:
