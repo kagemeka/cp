@@ -20,6 +20,22 @@
 - kruskal
 
 ## sol_1
+- numba (JIT)
+- kruskal
+- $O(E\log{V})$
+
+
+## sol_2
+- numba (JIT)
+- prim (sparse)
+- $O(E\log{V})$
+
+
+## sol_3
+- numba (JIT)
+- prim (dense)
+- $O(V^2)$
+- RE
 
 
 

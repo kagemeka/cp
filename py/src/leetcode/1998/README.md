@@ -6,11 +6,13 @@
 # keywords
 - GCD
 - UnionFind
+  - its values are not index but prime factors and elements of an array.
 - Disjoint Set 
 - prime factorization
 - LPF (Least Prime Factor)
 - sort
 - connected components
+  - connect values with prime factors
 
 
 # summary
