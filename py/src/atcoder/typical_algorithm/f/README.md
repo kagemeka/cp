@@ -38,5 +38,12 @@
 - RE
 
 
+## sol_4
+- numba (JIT)
+- kruskal 
+- $O(E\log{E} + V^2)$
+- TLE
+
+
 
 # similar 
