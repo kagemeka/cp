@@ -45,5 +45,24 @@
 - TLE
 
 
+## sol_5
+- numba (JIT)
+- boruvka (with UnionFind)
+- $O(E\log{E})$
+
+
+## sol_6
+- numba (JIT)
+- boruvka (with DFS)
+- $O(E\log{E})$
+
+
+## sol_7
+- python
+- kruskal
+- $O(E\log{V})$
+
+
+
 
 # similar 
