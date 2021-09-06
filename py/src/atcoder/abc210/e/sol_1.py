@@ -7,8 +7,10 @@ import numba as nb
 
 @nb.njit
 def gcd(a: int, b: int) -> int:
-  return gcd(b, a % b) if b else a
+  while b: a, b = b, a % b
+  return a 
 
+  
 
 @nb.njit(
   (nb.i8, nb.i8[:, :]),
