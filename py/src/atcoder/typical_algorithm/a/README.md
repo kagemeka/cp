@@ -10,10 +10,21 @@
 
 
 # code 
-## sol_0, sol_1
+## sol_0
 - numba (JIT)
+- np.searchsorted
+
+## sol_1
+- numba (JIT)
+- naive 
 
 
 ## sol_2
 - python
+- bisect 
+
+
+## sol_3 
+- numba (JIT)
+- fenwick tree
 
