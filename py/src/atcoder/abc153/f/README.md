@@ -5,7 +5,7 @@
 # keywords 
 - Greedy 
 - sort by coordinates
-- Range Add Point Get Query
+- Range Set Point Get Query (Range Add Point Get)
 - imos method 
 - fenwick tree
 - segment tree 
@@ -16,4 +16,26 @@
 
 # summary 
 - sort X, H by X
-- from left to right 
+- from left to right, bomb [l, r)if the $\text{monster}_l\text{'s HP} \gt 0$ greedly.
+- r can be updated in $O(N)$ by using shakutori method 
+- bomb [l, r) can be calculated lazily by using imos method, segment tree, or fenwick tree.
+
+
+# code 
+## sol_0
+- numba (JIT)
+- imos method 
+- shakutori method 
+- cumsum 
+- $O(N)$
+
+## sol_1
+- numba (JIT)
+- fenwick tree
+- shakutori method 
+- cumsum 
+- $O(N\log{N})$
+
+
+
+# similar 
