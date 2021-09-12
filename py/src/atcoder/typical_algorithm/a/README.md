@@ -28,3 +28,7 @@
 - numba (JIT)
 - fenwick tree
 
+
+## sol_4
+- numba (JIT)
+- abstract fenwick tree
