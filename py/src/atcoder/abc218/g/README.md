@@ -1,4 +1,4 @@
-# [AtCoder ABC218 ](https://atcoder.jp/contests/abc218)
+# [AtCoder ABC218 G - Game on Tree 2](https://atcoder.jp/contests/abc218/tasks/abc218_g)
 
 
 
@@ -11,6 +11,9 @@
 - multiset
 - median 
 - find k-th smallest element (online)
+- array compression
+- euler_tour
+
 
 
 # summary
@@ -30,12 +33,13 @@
 - after calculating each median of leaves, calculate game result with Tree DP (dfs).
 
 
-
 # code 
 ## sol_0
 - numba (JIT)
 - fenwick tree 
 - binary search
+- fenwick $\text{get}(i) = \sum_{j \le i} \text{count}(j)$
+
 
 
 # similar 
