@@ -1,47 +1,13 @@
-import sys
-from heapq import heappush, heappop, heapify
-from bisect import (
-  bisect_left as bi_l, 
-  bisect_right as bi_r,
-)
-from collections import (
-  deque, 
-  Counter, 
-  defaultdict,
-)
-import itertools 
-import string 
-import math 
-from operator import xor, or_
-from functools import (
-  lru_cache, 
-  reduce,
-)
-# from dataclasses import dataclass 
-# from typing import *
-
-sys.setrecursionlimit(10**8)
-inf = float('inf')
-MOD = 1_000_000_007
-# MOD = 998_244_353
-
-using_numpy = 1
-import numpy as np
 from scipy.sparse.csgraph import (
-  shortest_path, 
-  csgraph_to_dense, 
   maximum_flow, 
-  minimum_spanning_tree,
   connected_components
 )
-from scipy.sparse import csr_matrix
 from scipy.spatial import ConvexHull
 from scipy import optimize
 from scipy.special import comb
 from scipy.ndimage import (
   distance_transform_cdt,
 )
-from numba import njit, i8
 import networkx as nx
 
 

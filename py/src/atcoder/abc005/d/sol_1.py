@@ -55,18 +55,50 @@ def fw_get(fw: np.ndarray, i: int, j:int) -> int:
   return v 
 
 
-@nb.njit(cache=True)
-def test():
-  fw = fw_build(10, 10)
-  fw_set(fw, 5, 5, 4)
-  print(fw)
-  print(fw_get(fw, 10, 10))
-  a = np.zeros((11, 11), np.int64)
-  a[5, 5] = 4
-  fw = fw_build_from_array(a)
-  print(fw)
-  print(fw_get(fw, 10, 10))
+
+@nb.njit((nb.i8[:, :], nb.i8[:]), cache=True)
+def solve(
+  d: np.ndarray,
+  p: np.ndarray,
+) -> typing.NoReturn:
+  n = len(d) - 2
+  fw = fw_build_from_array(d)
+
+  def calc_max(h, w):
+    mx = 0
+    for y in range(n - h + 1):
+      for x in range(n - w + 1):
+        v = (
+          fw_get(fw, y + h, x + w) 
+          - fw_get(fw, y + h, x)
+          - fw_get(fw, y, x + w)
+          + fw_get(fw, y, x)
+        )
+        mx = max(mx, v)
+    return mx 
+        
+  res = np.zeros(n * n + 1, np.int64)
+  for h in range(1, n + 1):
+    for w in range(1, n + 1):
+      i = h * w
+      res[i] = max(res[i], calc_max(h, w))
+  for i in range(n * n):
+    res[i + 1] = max(res[i + 1], res[i])
+  
+  for x in res[p]:
+    print(x)
+
+  
+def main() -> typing.NoReturn:
+  n = int(input())
+  tmp = np.array(
+    sys.stdin.read().split(),
+    dtype=np.int64,
+  )
+  d = tmp[:n * n].reshape(n, n)
+  d = np.pad(d, pad_width=1)
+  p = tmp[n * n + 1:]
+  solve(d, p)
 
 
-if __name__ == '__main__':
-  test()
+main()
