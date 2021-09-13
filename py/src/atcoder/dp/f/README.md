@@ -25,5 +25,9 @@
 - numpy
 - class
 
-## sol_3
-- numba
+## sol_3, sol_5
+- numba (JIT)
+
+
+## sol_4
+- numba (AOT)
