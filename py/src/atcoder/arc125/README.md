@@ -1,1 +1,1 @@
-# [ARC 125](https://atcoder.jp/contests/arc125)
+# [AtCoder ARC 125](https://atcoder.jp/contests/arc125)

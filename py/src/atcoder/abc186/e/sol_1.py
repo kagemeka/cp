@@ -33,6 +33,12 @@ def mod_pow(x: int, n: int, mod: int) -> int:
   return y
 
 
+@nb.njit((nb.i8, nb.i8), cache=True)
+def mod_inverse(a: int, n: int) -> int:
+  phi = euler_totient(n)
+  return mod_pow(a, phi - 1, n)
+
+
 @nb.njit((nb.i8, ) * 3, cache=True)
 def solve(n: int, s: int, k: int) -> typing.NoReturn:
   g = gcd(k, n)
