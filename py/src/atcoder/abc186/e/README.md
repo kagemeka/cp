@@ -7,8 +7,9 @@
 - fermat little theorem
 - extended GCD 
 - CRT (chinese remainder theorem)
+- Garner algorithm 
 - math 
-- modular 
+- modular
 
 
 # summary 
@@ -66,6 +67,15 @@
 ## sol_2
 - numba (JIT)
 - crt
+
+
+## sol_3
+- python
+- std pow(k, -1, mod)
+
+## sol_4
+- numba (JIT)
+- Garner algorithm 
 
 
 # similar 
