@@ -15,6 +15,7 @@
 
 
 # summary
+- fast permutation simulation
 - consider fixing i-th character
   - if number of strings that start with 'a' is less thatn $k$, i-th character is 'b'
   - otherwise, i-th character is 'a' 
