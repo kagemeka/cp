@@ -42,17 +42,23 @@ $ xsel | python3 <problem>.py
 - np.pad()
 - np.resize()
 - ndarray.resize()
+- ndarray.tolist()
 
 
 ### supported numpy feature
+- np.arctan2()
+- np.argmax()
+- np.argmin()
 - np.argsort()
 - np.bincount()
 - np.cumsum(a)
+- np.deg2rad()
 - np.eye()
 - np.flatnonzero()
 - np.full()
 - np.int64
 - np.ones()
+- np.rad2deg()
 - np.real()
 - np.rint()
 - np.searchsorted()
