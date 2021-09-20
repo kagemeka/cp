@@ -1,4 +1,4 @@
-# [N - Slimes](https://atcoder.jp/contests/dp/tasks/dp_n)
+# [AtCoder EDPC N - Slimes](https://atcoder.jp/contests/dp/tasks/dp_n)
 
 
 
