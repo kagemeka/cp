@@ -35,3 +35,9 @@
 ## sol_0
 - numba (JIT)
 - fenwick tree
+
+
+
+# similar 
+- [AtCoder Typical90 017 - Crossing Segments（★7）](https://atcoder.jp/contests/typical90/tasks/typical90_q)
+
