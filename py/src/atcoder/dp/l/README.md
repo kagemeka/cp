@@ -1,4 +1,4 @@
-# [L - Deque](https://atcoder.jp/contests/dp/tasks/dp_l)
+# [AtCoder EDPC L - Deque](https://atcoder.jp/contests/dp/tasks/dp_l)
 
 
 
@@ -17,6 +17,8 @@
   ) (if (n - (r - l)) & 1 == 1 [l, r))
 
 
+
+# code 
 ## sol_0, sol_1
 - DFS
 - TLE
@@ -46,3 +48,6 @@
 ## sol_6
 - BFS
 - numba (AOT)
+
+
+# similar 
