@@ -880,33 +880,6 @@ class AtCoder:
       
 
 
-  class ABC042:
-    @staticmethod
-    def a():
-      a = [int(x) for x in sys.stdin.readline().split()]
-      c = Counter(a)
-      print('YES' if c[5]==2 and c[7]==1 else 'NO')
-    
-    @staticmethod
-    def b():
-      n, l, *s = sys.stdin.read().split()
-      print(''.join(sorted(s)))
-
-    @staticmethod
-    def c():
-      n, k, *d = sys.stdin.read().split()
-      l = len(n)
-      ok = sorted(set(string.digits)-set(d))
-      cand = [int(''.join(p)) for p in itertools.product(ok, repeat=l)] + [int(min(x for x in ok if x > '0')+min(ok)*l)]
-      print(cand[bi_l(cand, int(n))])
-    
-    @staticmethod
-    def d():
-      h, w, a, b = map(int, sys.stdin.read().split())
-      combinations = Combinatorics.CombinationsMod(n=2*10**5, mod=MOD)
-      i = np.arange(h-a, h)
-      ng = np.sum(combinations(i+b-1, i) * combinations(h-i+w-b-2, h-1-i) % MOD)
-      print((combinations(h+w-2, h-1)-ng)%MOD)
 
 
   class ABC043:
@@ -1413,35 +1386,6 @@ class AtCoder:
       print(sum(c(r-l, i) for i in range(r-n+a, r-max(l,n-b)+1)) if r==n else c(r-l, r-n+a))
       
 
-  class ABC058:
-    @staticmethod 
-    def a():
-      a, b, c = map(int, sys.stdin.readline().split())
-      print('YES' if c-b==b-a else 'NO')
-    
-    @staticmethod 
-    def b():
-      s, t = sys.stdin.read().split() 
-      a = '' 
-      for i in range(len(t)): a += s[i]+t[i]
-      if len(s)>len(t): a += s[-1]
-      print(a)
-    
-    @staticmethod 
-    def c():
-      n, *s = sys.stdin.read().split()
-      res = {c: 100 for c in string.ascii_lowercase}
-      for counter in map(Counter, s):
-        for c, x, in res.items(): res[c] = min(x, counter[c])
-      t = ''
-      for c, x in sorted(res.items()): t += c*x
-      print(t)
-
-    @staticmethod 
-    def d():
-      n, m, *xy = map(int, sys.stdin.read().split())
-      x, y = np.array(xy[:n]), np.array(xy[n:])
-      print((x*(np.arange(n)+1)-np.cumsum(x)).sum()%MOD*((y*(np.arange(m)+1)-np.cumsum(y)).sum()%MOD)%MOD) 
 
   class ABC059:
     @staticmethod 
