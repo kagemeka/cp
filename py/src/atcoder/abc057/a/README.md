@@ -2,12 +2,15 @@
 
 
 # keywords
-
+- modular 
 
 # summary
+- print $a + b \mod 24$
 
 
 # code 
+## sol_0 
+- python
 
 
 # similar 

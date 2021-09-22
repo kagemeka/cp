@@ -847,36 +847,7 @@ class AtCoder:
           uf.unite(i, j)
       print(*res, sep='\n')
 
-  class ABC041:
-    @staticmethod
-    def a():
-      s, i = sys.stdin.read().split()
-      i = int(i)
-      print(s[i-1])
-    
-    @staticmethod
-    def b():
-      a, b, c = map(int, sys.stdin.readline().split())
-      ans = a * b % MOD * c % MOD 
-      print(ans)
-    
-    @staticmethod
-    def c():
-      n, *a = map(int, sys.stdin.read().split())
-      for i, h in sorted(enumerate(a), key=lambda x: -x[1]):
-        print(i+1)
 
-    @staticmethod 
-    def d():
-      n, _, *xy = map(int, sys.stdin.read().split())
-      g = [0]*n
-      for x, y in zip(*[iter(xy)]*2): g[x-1] |= 1<<(y-1)
-      res = [0]*(1<<n); res[0] = 1
-      for i in range(1<<n):
-        for j in range(n):
-          if i>>j&1^1: continue 
-          if not(g[j]&i): res[i] += res[i&~(1<<j)]
-      print(res[-1])
       
 
 
@@ -1306,37 +1277,6 @@ class AtCoder:
 
       print(binary_search())
 
-
-
-  class ABC057:
-    @staticmethod 
-    def a():
-      a, b = map(int, sys.stdin.readline().split())
-      print((a+b)%24)
-
-    @staticmethod 
-    def b():
-      n, m, *I = map(int, sys.stdin.read().split())
-      I = np.array(I).reshape(-1, 2)
-      ab, cd = I[:n], I[n:]
-      print(*(np.argmin(np.absolute(ab[:,None]-cd).sum(axis=-1), axis=-1)+1), sep='\n')
-
-    @staticmethod 
-    def c():
-      n = int(sys.stdin.readline().rstrip())
-      divs = NumberTheory.find_divisors(n)
-      print(len(str(divs[bi_l(divs, math.sqrt(n))])))
-
-
-    @staticmethod 
-    def d():
-      c = Combinatorics.choose
-      n, a, b, *v = map(int, sys.stdin.read().split())
-      v.sort()
-      print(sum(v[-a:])/a)
-      l, r = bi_l(v, v[-a]), bi_r(v, v[-a])
-      print(sum(c(r-l, i) for i in range(r-n+a, r-max(l,n-b)+1)) if r==n else c(r-l, r-n+a))
-      
 
 
   class ABC059:
