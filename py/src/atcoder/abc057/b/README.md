@@ -2,12 +2,15 @@
 
 
 # keywords
+- brute force
 
 
 # summary
-
+- for each student, check distance to all checkpoints.
 
 # code 
+## sol_0 
+- numpy 
 
 
 # similar 
