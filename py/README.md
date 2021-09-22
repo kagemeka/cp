@@ -58,12 +58,15 @@ $ xsel | python3 <problem>.py
 - np.flatnonzero()
 - np.full()
 - np.int64
+- np.mean()
 - np.ones()
+- np.prod()
 - np.rad2deg()
 - np.real()
 - np.rint()
 - np.searchsorted()
 - np.sin()
+- np.sum()
 - np.unique(a)
 - np.where()
 - np.zeros()
@@ -76,6 +79,7 @@ $ xsel | python3 <problem>.py
 - ndarray.min()
 - ndarray.reshape()
 - ndarray.shape
+- ndarray.sum()
 
 
 
