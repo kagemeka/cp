@@ -1074,55 +1074,7 @@ class AtCoder:
       print('First' if len(s)&1^(s[0]==s[-1]) else 'Second')
 
 
-  class ABC049:
-    @staticmethod 
-    def a():
-      vowels = set('aeiou')
-      print('vowel' if sys.stdin.readline().rstrip() in vowels else 'consonant')
 
-    @staticmethod 
-    def b():
-      h, w, *s = sys.stdin.read().split() 
-      for l in s:
-        for _ in range(2): print(l)
-    
-    @staticmethod 
-    def c():
-      t = set('dream, dreamer, erase, eraser'.split(', '))
-      def obtainable(s):
-        while True:
-          for i in range(5, 8):
-            if s[-i:] in t:
-              s = s[:-i]
-              if not s: return True 
-              break 
-          else: return False
-
-      s = sys.stdin.readline().rstrip()
-      print('YES' if obtainable(s) else 'NO')
-
-    @staticmethod 
-    def d():
-      n, k, l = map(int, sys.stdin.readline().split())
-      uf1 = GeometryTopology.Graph(n); uf1.init_dsu()
-      uf2 = GeometryTopology.Graph(n); uf2.init_dsu()
-
-      def add_edges(uf, m):
-        for _ in range(m):
-          x, y = map(int, sys.stdin.readline().split())
-          x -= 1; y -= 1
-          uf.unite(x, y)
-    
-      add_edges(uf1, k); add_edges(uf2, l)
-
-      g = defaultdict(list)
-      for i in range(n): g[(uf1.find(i), uf2.find(i))].append(i)
-
-      res = [None] * n 
-      for a in g:
-        for i in g[a]: res[i] = len(g[a])
-      
-      print(*res, sep=' ')
 
 
   class ABC050:
