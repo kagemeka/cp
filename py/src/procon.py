@@ -985,38 +985,6 @@ class AtCoder:
 
 
 
-  class ABC047:
-    @staticmethod 
-    def a():
-      c = sorted(map(int, sys.stdin.readline().split()))
-      print('Yes' if c[0]+c[1]==c[2] else 'No')
-
-    @staticmethod 
-    def b():
-      w, h, n, *xyf = map(int, sys.stdin.read().split())
-      l, r, d, u = 0, w, 0, h 
-      for x, y, f in zip(*[iter(xyf)]*3):
-        if f == 1: l = max(l, x)
-        if f == 2: r = min(r, x)
-        if f == 3: d = max(d, y)
-        if f == 4: u = min(u, y)
-      print(max(0, r-l)*max(0, u-d))
-
-    @staticmethod 
-    def c():
-      s = sys.stdin.readline().rstrip()
-      print(sum(s[i]!=s[i+1] for i in range(len(s)-1)))
-    
-    @staticmethod 
-    def d():
-      mn, mx, c = inf, -1, 0
-      n, t, *a = map(int, sys.stdin.read().split())
-      for p in a:
-        if p-mn == mx: c += 1
-        elif p-mn>mx: mx, c = p-mn, 1
-        mn = min(mn, p)
-      print(c)
-
   class ABC048:
     @staticmethod 
     def a():
@@ -1044,35 +1012,6 @@ class AtCoder:
       s = sys.stdin.readline().rstrip()
       print('First' if len(s)&1^(s[0]==s[-1]) else 'Second')
 
-
-
-
-
-  class ABC050:
-    @staticmethod 
-    def a():
-      print(eval(sys.stdin.readline().rstrip()))
-
-    @staticmethod 
-    def b():
-      n = int(sys.stdin.readline().rstrip())
-      t = np.array(sys.stdin.readline().split(), dtype=np.int64)
-      m, *px = map(int, sys.stdin.read().split())
-      p, x = np.array(px).reshape(m, 2).T; p -= 1
-      print(*(t.sum()+x-t[p]), sep='\n')
-      
-    @staticmethod 
-    def c():
-      n, *a = map(int, sys.stdin.read().split())
-      a = Counter(a)
-      if n&1 and not(a[0]==1 and all(a[i]==2 for i in range(2, n, 2))):
-        print(0); return 
-      if ~n&1 and any(a[i]!= 2 for i in range(1, n, 2)):
-        print(0); return 
-      print(pow(2, n//2, MOD))
-
-    @staticmethod 
-    def d(): pass 
 
       
   class ABC051:
@@ -1234,49 +1173,6 @@ class AtCoder:
         if possible(t): print(''.join('S' if x==1 else 'W' for x in t)); return 
       print(-1)
   
-
-  class ABC056:
-    @staticmethod 
-    def a():
-      def to_i(c):
-        return 1 if c=='H' else 0
-      a, b = map(to_i, sys.stdin.readline().split())
-      print('D' if a^b else 'H')
-    
-    @staticmethod 
-    def b():
-      w, a, b = map(int, sys.stdin.readline().split())
-      if a>b: a,b = b,a 
-      print(max(b-(a+w), 0))
-    
-    @staticmethod 
-    def c():
-      x = int(sys.stdin.readline().rstrip())
-      print(int(math.ceil(math.sqrt(2*x+1/4)-.5)))
-
-    
-    @staticmethod 
-    def d():
-      n, k, *a = map(int, sys.stdin.read().split())
-      a = sorted(min(x,k) for x in a)
-      
-      def necessary(i):
-        dp = np.zeros(k, dtype=np.bool); dp[0] = True
-        for j in range(n):
-          if j==i: continue
-          dp[a[j]:] += dp[:-a[j]]
-        return np.any(dp[k-a[i]:])
-      
-      def binary_search():
-        lo, hi = -1, n
-        while hi-lo > 1:
-          i = (lo+hi)//2
-          if necessary(i): hi = i 
-          else: lo = i 
-        return hi
-
-      print(binary_search())
-
 
 
   class ABC059:
