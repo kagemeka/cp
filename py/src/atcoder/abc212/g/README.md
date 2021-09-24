@@ -38,9 +38,9 @@
     - let $f(n, g) = \sum_{x \in \{\gcd(x, n) = g, 1 \le x \le n\}} {1}$
     - when $\gcd(x, n) = g$, by letting $x = gx\prime, n = gn\prime$, then $\gcd(x\prime, n\prime) = 1$
     - thus, $f(n, g) = \sum_{x \in \{gcd(x, n\prime) = 1, 1 \le x \le n\prime\}} {1}$
-      $= \phi(n\prime) = \phi(\frac{n}{g})$
-    - ans $= 1 + \sum_{g \in \{gcd(p - 1, g) = g, 1 \le g \le p - 1 \}} {\phi(\frac{p - 1}{g}) * \frac{p - 1}{g}}$
-      $= 1 + \sum_{d|p - 1} {\phi(\frac{p - 1}{d}) * \frac{p - 1}{d}} = 1 + \sum_{d|p - 1} {\phi(d) * d}$
+      $= (n\prime) = \varphi(\frac{n}{g})$
+    - ans $= 1 + \sum_{g \in \{gcd(p - 1, g) = g, 1 \le g \le p - 1 \}} {\varphi(\frac{p - 1}{g}) * \frac{p - 1}{g}}$
+      $= 1 + \sum_{d|p - 1} {\varphi(\frac{p - 1}{d}) * \frac{p - 1}{d}} = 1 + \sum_{d|p - 1} {\varphi(d) * d}$
 
   - method 3: fast mobius transformation 
     - [for detail](https://youtu.be/hI8xC_1ZBf8?t=2871)
@@ -66,15 +66,11 @@
     - [drken blog](https://drken1215.hatenablog.com/entry/2021/08/01/163600)
     - [wiki](https://en.wikipedia.org/wiki/Euler%27s_totient_function)
     - [wolfman](https://mathworld.wolfram.com/TotientFunction.html)
-  - $\phi(n) = \sum_{x \in \{x\perp{n}, 1 \le x \le n \}} {1} = \sum_{x \in \{\gcd(x, n) = 1, 1 \le x \le n \}} {1}$
+  - $\varphi(n) = \sum_{x \in \{x\perp{n}, 1 \le x \le n \}} {1} = \sum_{x \in \{\gcd(x, n) = 1, 1 \le x \le n \}} {1}$
 
 - Red Black Tree
 
 
-
-
-# similar
-- [ABC020 D - LCM Rush](https://atcoder.jp/contests/abc020/tasks/abc020_d)
 
 
 
@@ -114,6 +110,7 @@
 
 ## sol_7
 - Euler's totient with prime numbers
+- standard
 
 
 ## sol_8
@@ -127,6 +124,7 @@
 
 ## sol_10
 - fast mobius transform
+- standard
 
 
 
@@ -134,4 +132,10 @@
 - fast mobius transform
 - numba (JIT)
 - rbtree (red black tree)
+
+
+
+# similar
+- [ABC020 D - LCM Rush](https://atcoder.jp/contests/abc020/tasks/abc020_d)
+
 

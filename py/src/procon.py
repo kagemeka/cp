@@ -9,36 +9,6 @@ from scipy.ndimage import (
   distance_transform_cdt,
 )
 import networkx as nx
-
-
-    
-  class ABC019:
-    @staticmethod 
-    def a():
-      *a, = map(int, sys.stdin.readline().split())
-      print(sorted(a)[1])
-
-    @staticmethod 
-    def b():
-      s = sys.stdin.readline().rstrip() + '$'
-      cnt = 0
-      prev = '$'
-      t = ''
-      for c in s:
-        if c == prev: cnt += 1; continue
-        t += prev+str(cnt)
-        prev = c; cnt = 1 
-      print(t[2:])
-    
-    @staticmethod 
-    def c():
-      n, *a = map(int, sys.stdin.read().split())
-      res = set()
-      for x in a:
-        while not x&1:
-          x >>= 1
-        res.add(x)
-      print(len(res))
     
     
   class ABC020:
