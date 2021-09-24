@@ -3,6 +3,7 @@
 
 # keywords
 - Dijkstra shortest path
+- A* shortest path
 - binary search 
 
 
