@@ -6,5 +6,13 @@
 
 
 
+# summary
+
+
+# code
+## sol_0, sol_1
+- python 
+
+
 # similar 
 - [AtCoder Typical90 003 - Longest Circular Road（★4）](https://atcoder.jp/contests/typical90/tasks/typical90_c)

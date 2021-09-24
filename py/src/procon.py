@@ -9,60 +9,6 @@ from scipy.ndimage import (
   distance_transform_cdt,
 )
 import networkx as nx
-
-
-
-
-class AtCoder:
-
-  
-  class ABC018:
-    @staticmethod 
-    def a():
-      *a, = map(int, sys.stdin.read().split())
-      a = sorted(enumerate(a), key=lambda x: -x[1])
-      res = [None] * 3
-      for i in range(3):
-        res[a[i][0]] = i+1
-      print(*res, sep='\n')
-    
-    @staticmethod 
-    def b():
-      s = sys.stdin.readline().rstrip()
-      n, *lr = map(int, sys.stdin.read().split())
-      for l, r in zip(*[iter(lr)]*2):
-        l -= 1; r -= 1
-        s = s[:l] + s[l:r+1][::-1] + s[r+1:]
-      print(s)
-
-    
-  class ABC019:
-    @staticmethod 
-    def a():
-      *a, = map(int, sys.stdin.readline().split())
-      print(sorted(a)[1])
-
-    @staticmethod 
-    def b():
-      s = sys.stdin.readline().rstrip() + '$'
-      cnt = 0
-      prev = '$'
-      t = ''
-      for c in s:
-        if c == prev: cnt += 1; continue
-        t += prev+str(cnt)
-        prev = c; cnt = 1 
-      print(t[2:])
-    
-    @staticmethod 
-    def c():
-      n, *a = map(int, sys.stdin.read().split())
-      res = set()
-      for x in a:
-        while not x&1:
-          x >>= 1
-        res.add(x)
-      print(len(res))
     
     
   class ABC020:

@@ -2,30 +2,23 @@ import typing
 
 
 class FindDivisors():
-  def __call__(
-    self,
-    n: int,
-  ) -> typing.List[int]:
-    a = []
+  def __call__(self, n: int) -> typing.List[int]:
+    divs = []
     i = 1
     while i * i < n:
-      if n % i:
+      if n % i: 
         i += 1
         continue
-      a.append(i)
-      a.append(n // i)
+      divs.append(i)
+      divs.append(n // i)
       i += 1
-    if i * i == n: a.append(i)
-    a.sort()
-    return a 
+    if i * i == n: divs.append(i)
+    return sorted(divs)
 
 
 
 class PrimeFactors():
-  def __call__(
-    self,
-    n: int,
-  ) -> typing.NoReturn:
+  def __call__(self, n: int) -> typing.NoReturn:
     a = []
     p = 2
     while p * p <= n:
