@@ -8,7 +8,7 @@
 - matrix rotation
 
 # summary 
-- for each square, calc minimum distance to any 'x'
+- for each square, calc minimum manhattan distance to any 'x'
 
 
 # code 
