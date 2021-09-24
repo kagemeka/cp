@@ -19,23 +19,38 @@ def solve(
 
   def on_grid(y, x):
     return 0 <= y < h and 0 <= x < w
+  
+  
+  def heuristic_func(y, x):
+    return abs(gy - y) + abs(gx - x)
+  
+  def is_goal(y, x):
+    return y == gy and x == gx
 
-  def possible(t2):
+
+  def a_star_shortest_dist(t2): 
     dist = np.full((h, w), inf, np.int64)
     dist[sy, sx] = 0 
-    hq = [(0, sy, sx)]
+    hs = heuristic_func(sy, sx)
+    hq = [(hs, hs, sy, sx)]
     dyx = ((-1, 0), (0, -1), (0, 1), (1, 0))
     while hq:
-      du, y, x = heapq.heappop(hq)
+      su, hu, y, x = heapq.heappop(hq)
+      du = su - hu
       if du > dist[y, x]: continue
+      if is_goal(y, x): return dist[y, x]
       for dy, dx in dyx:
         ny, nx = y + dy, x + dx
         if not on_grid(ny, nx): continue
         dv = du + (t2 if grid[ny, nx] else 1)
         if dv >= dist[ny, nx]: continue
         dist[ny, nx] = dv 
-        heapq.heappush(hq, (dv, ny, nx))
-    return dist[gy, gx] <= t
+        hv = heuristic_func(ny, nx)
+        heapq.heappush(hq, (hv + dv, hv, ny, nx))
+
+
+  def possible(x):
+    return a_star_shortest_dist(x) <= t
 
   def binary_search():
     lo, hi = 1, 1 << 30

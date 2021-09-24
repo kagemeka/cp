@@ -1,111 +1,13 @@
 from scipy.sparse.csgraph import (
   maximum_flow, 
-  connected_components
 )
 from scipy.spatial import ConvexHull
 from scipy import optimize
 from scipy.special import comb
-from scipy.ndimage import (
-  distance_transform_cdt,
-)
 import networkx as nx
     
-    
-  class ABC020:
-    @staticmethod 
-    def a():
-      print('ABC' if int(sys.stdin.readline().rstrip())==1 else 'chokudai')
-    
-    @staticmethod 
-    def b():
-      a, b = sys.stdin.readline().split()
-      print(int(a+b) * 2)
-    
-    @staticmethod 
-    def c():
-      h, w, t = map(int, sys.stdin.readline().split())
-      s = [list(s) for s in sys.stdin.read().split()]
-      for i in range(h):
-        for j in range(w):
-          if s[i][j] == 'S': sy, sx = i, j 
-          if s[i][j] == 'G': gy, gx = i, j
-      s[sy][sx] = s[gy][gx] = '.'
-      source, target = sy*w+sx, gy*w+gx
-      
-      def heuristic_function(u, v=target):
-        uy, ux = divmod(u, w)
-        vy, vx = divmod(v, w)
-        return abs(vy-uy) + abs(ux-vx)
-
-      def min_time(x):
-        g = GeometryTopology.Graph(h*w)
-        # g = nx.DiGraph()
-
-        for i in range(h):
-          for j in range(w):
-            u = i*w + j 
-            if i > 0: g.add_edge(u, (i-1)*w+j, weight=(1 if s[i-1][j]=='.' else x))
-            if i < h-1: g.add_edge(u, (i+1)*w+j, weight=(1 if s[i+1][j]=='.' else x))
-            if j > 0: g.add_edge(u, i*w+j-1, weight=(1 if s[i][j-1]=='.' else x))
-            if j < w-1: g.add_edge(u, i*w+j+1, weight=(1 if s[i][j+1]=='.' else x))
-
-        return g.dijkstra(source)[target]
-        return g.astar(source, target, heuristic_function)
-        # return nx.dijkstra_path_length(g, source, target)
-        # return nx.astar_path_length(g, source, target, heuristic_function)
-
-      def binary_search():
-        lo, hi = 1, t+1
-        while lo+1 < hi:
-          x = (lo+hi)//2
-          if min_time(x) > t:
-            hi = x 
-          else:
-            lo = x
-        return lo
-
-      print(binary_search())
 
 
-
-  class ABC021:
-    @staticmethod 
-    def a():
-      n  = int(sys.stdin.readline().rstrip())
-      s = [1<<i for i in range(5) if n>>i&1]
-      print(len(s), *s, sep='\n')
-    
-    @staticmethod 
-    def b():
-      n, a, b, k, *p = map(int, sys.stdin.read().split())
-      print('YES' if len(set(p)|set([a, b])) == k+2 else 'NO')
-
-    @staticmethod 
-    def c():
-      n, a, b, m, *xy = map(int, sys.stdin.read().split())
-      x, y = np.array(xy).reshape(m, 2).T - 1
-      a -= 1; b -= 1
-      g = csgraph_to_dense(csr_matrix((np.ones(m), (x, y)), (n, n), dtype=np.int8))
-      g = np.logical_or(g, g.T)
-      paths = np.zeros(n, dtype=np.int64).reshape(-1, 1)
-      paths[a, 0] = 1 
-      while not paths[b, 0]:
-        paths = np.dot(g, paths) % MOD
-      print(paths[b, 0])
-
-    @staticmethod 
-    def c_2():
-      n, a, b, m, *xy = map(int, sys.stdin.read().split())
-      a -= 1; b -= 1
-      g = GeometryTopology.Graph()
-
-      for x, y in zip(*[iter(xy)]*2):
-        x -= 1; y -= 1
-        g.add_edge(x, y, weight=1)
-        g.add_edge(y, x, weight=1)
-
-      dist, paths = g.dijkstra(a, paths_cnt=True, mod=MOD)
-      print(paths[b])
 
   
   class ABC022:
