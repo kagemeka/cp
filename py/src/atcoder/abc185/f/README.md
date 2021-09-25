@@ -26,6 +26,34 @@
 - xor fenwick tree
 
 
+## sol_2
+- python
+- abstract fenwick tree
+
+## sol_3
+- python
+- xor fenwick tree
+
+## sol_4, sol_5
+- numba (JIT)
+- xor segment tree
+
+## sol_6
+- numba (JIT)
+- abstract segment tree
+
+
+## sol_7
+- numba (JIT)
+- xor segment tree
+- recursive
+
+## sol_8
+- numba (JIT)
+- abstract segment tree
+- recursive
+
+
 # similar 
 
 
