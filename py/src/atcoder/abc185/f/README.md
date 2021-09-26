@@ -16,7 +16,7 @@
 
 
 # code 
-## sol_0
+## sol_0, sol_9
 - numba (JIT)
 - abstract fenwick tree
 
@@ -38,7 +38,7 @@
 - numba (JIT)
 - xor segment tree
 
-## sol_6
+## sol_6, sol_10
 - numba (JIT)
 - abstract segment tree
 
@@ -52,6 +52,27 @@
 - numba (JIT)
 - abstract segment tree
 - recursive
+
+
+## sol_11
+- python
+- abstract segment tree
+- recursive 
+- TLE 
+
+## sol_12
+- python
+- abstract segment tree
+- non_recursive
+- TLE
+
+## sol_13
+- python
+- abstract segment tree
+- non recursive
+- refactor
+- AC
+
 
 
 # similar 

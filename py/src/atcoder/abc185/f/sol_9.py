@@ -48,43 +48,79 @@ def fw_get(
   return v
 
 
+@nb.njit
+def fw_lower_bound(
+  fw: np.ndarray,
+  op: typing.Callable[[S, S], S],
+  e: typing.Callable[[], S],
+  search_fn: typing.Callable[[S], bool],
+  k: S, # cuz it's impossible to use closure on numba(v0.53.1).
+) -> int:
+  n = len(fw)
+  l = 1
+  while l << 1 < n: l <<= 1
+  v, i = e(), 0
+  while l:
+    if i + l < n and not search_fn(op(v, fw[i + l]), k):
+      i += l
+      v = op(v, fw[i])
+    l >>= 1
+  return i
+  
+
+@nb.njit
+def fw_op(a: int, b: int) -> int:
+  return a ^ b
 
 
 @nb.njit 
-def build_xor_fenwick(a: np.ndarray) -> np.ndarray:
-  op = lambda a, b: a ^ b 
-  return fw_build(op, a)
+def fw_e() -> int:
+  return 0 
 
 
 @nb.njit 
-def set_point_xor(
+def fw_inverse(a: int) -> int:
+  return a
+
+
+@nb.njit 
+def build_fw(a: np.ndarray) -> np.ndarray:
+  return fw_build(fw_op, a)
+
+
+@nb.njit 
+def set_point_fw(
   fw: np.ndarray, 
   i: int, 
-  x: int,
+  x: S,
 ) -> typing.NoReturn:
-  op = lambda a, b: a ^ b
-  fw_set(fw, op, i, x)
+  fw_set(fw, fw_op, i, x)
 
 
 @nb.njit 
-def get_range_xor(fw: np.ndarray, l: int, r: int) -> int:
-  op = lambda a, b: a ^ b
-  e = lambda: 0
-  return fw_get(fw, op, e, r - 1) ^ fw_get(fw, op, e, l - 1)
+def get_half_range_fw(fw: np.ndarray, i: int) -> S:
+  return fw_get(fw, fw_op, fw_e, i)
 
+
+@nb.njit 
+def get_range_fw(fw: np.ndarray, l: int, r: int) -> S:
+  return fw_op(
+    fw_inverse(get_half_range_fw(fw, l - 1)), 
+    get_half_range_fw(fw, r - 1),
+  )
 
   
 
 @nb.njit((nb.i8[:], nb.i8[:, :]), cache=True)
 def solve(a: np.ndarray, txy: np.ndarray) -> typing.NoReturn:
   n, q = len(a), len(txy)
-  fw = build_xor_fenwick(a)
+  fw = build_fw(a)
   for i in range(q):
     t, x, y = txy[i]
     if t == 1:
-      set_point_xor(fw, x - 1, y)
+      set_point_fw(fw, x - 1, y)
     else:
-      print(get_range_xor(fw, x - 1, y))
+      print(get_range_fw(fw, x - 1, y))
 
 
 
