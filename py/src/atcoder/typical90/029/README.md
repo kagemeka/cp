@@ -4,15 +4,20 @@
 # keywords 
 - RUQ (Range Update Query)
 - RMQ (Range Maximum Query)
-- segment tree
+- lazy segment tree
 - range set range get
 
 
 
 # summary
+- lazy segment tree
+- range update range minimum query
 
 
-# code 
+# code
+## sol_0
+- numba (JIT)  
+
 
 
 # similar 

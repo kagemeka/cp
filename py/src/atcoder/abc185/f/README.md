@@ -74,6 +74,20 @@
 - AC
 
 
+## sol_14
+- python
+- abstract segment tree
+- non recursive
+- Range Xor Query
+- TLE
+
+
+## sol_15
+- numba (JIT)
+- abstract lazy segment tree
+- bottom up
+
+
 
 # similar 
 
