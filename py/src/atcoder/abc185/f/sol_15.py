@@ -164,27 +164,27 @@ def seg_update(
 
 @nb.njit 
 def seg_op_s(a: S, b: S) -> S:
-  return max(a, b)
+  return a ^ b
 
 
 @nb.njit 
 def seg_e_s() -> S:
-  return -(1 << 60)
+  return 0
 
 
 @nb.njit 
 def seg_op_f(f: F, g: F) -> F:
-  return g if f == seg_e_f() else f
+  return g ^ f
 
 
 @nb.njit 
 def seg_e_f() -> F:
-  return -1
+  return 0
 
 
 @nb.njit 
 def seg_map(f: F, x: S) -> S:
-  return x if f == seg_e_f() else f
+  return x ^ f 
 
 
 @nb.njit 
@@ -237,25 +237,34 @@ def update_point_seg(
   )
 
 
-@nb.njit((nb.i8, nb.i8[:, :]), cache=True)
-def solve(w: int, lr: np.ndarray) -> typing.NoReturn:
-  n = len(lr)
-  a = np.zeros(w, np.int64)
+@nb.njit((nb.i8[:], nb.i8[:, :]), cache=True)
+def solve(a: np.ndarray, txy: np.ndarray) -> typing.NoReturn:
+  n, q = len(a), len(txy)
+
   seg, lazy = build_seg(a)
-  for i in range(n):
-    l, r = lr[i]
-    h = get_range_seg(seg, lazy, l, r + 1) + 1
-    print(h)
-    set_range_seg(seg, lazy, l, r + 1, h)
+  for i in range(q):
+    t, x, y = txy[i]
+    x -= 1
+    if t == 1:
+      set_range_seg(seg, lazy, x, x + 1, y)
+    else:
+      v = get_range_seg(seg, lazy, x, y)
+      print(v)
+
 
 
 def main() -> typing.NoReturn:
-  w, n = map(int, input().split())
-  lr = np.array(
+  n, q = map(int, input().split())
+  a = np.array(
+    sys.stdin.readline().split(),
+    dtype=np.int64,
+  )
+  txy = np.array(
     sys.stdin.read().split(),
     dtype=np.int64,
-  ).reshape(n, 2) - 1
-  solve(w, lr)
+  ).reshape(q, 3)
+
+  solve(a, txy)
 
 
 main()
