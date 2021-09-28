@@ -1,0 +1,30 @@
+# py
+__pycache__
+/data/*
+*.so
+!.gitkeep
+
+
+# cpp
+*.out
+
+
+# go
+pkg
+bin
+
+
+# kt
+*.class
+META-INF
+
+
+
+#rs
+[a-z]
+[a-z]_[0-9]
+[a-z]_[0-9][0-9]
+test_io
+
+
+!.gitkeep
