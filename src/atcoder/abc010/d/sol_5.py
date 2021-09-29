@@ -5,7 +5,7 @@ import numba as nb
 
 
 @nb.njit 
-def maximum_flow_ford_fulkerson(
+def maximum_flow_edmonds_karp(
   g: np.ndarray,
   src: int,
   sink: int,
@@ -14,21 +14,20 @@ def maximum_flow_ford_fulkerson(
   inf = 1 << 60
   g = g.copy()
   prev = np.empty(n, np.int32)
-  visited = np.zeros(n, np.bool8)
+  level = np.empty(n, np.int32)
 
   def find_path():
     prev[:] = -1
-    visited[:] = False
-    st = [src]
-    while st:
-      u = st.pop()
+    level[:] = -1
+    level[src] = 0
+    fifo_que = [src]
+    for u in fifo_que:
       if u == sink: return
-      if visited[u]: continue
-      visited[u] = True
-      for v in range(n - 1, -1, -1):
-        if g[u, v] == 0 or visited[v]: continue
+      for v in range(n):
+        if g[u, v] == 0 or level[v] != -1: continue
+        level[v] = level[u] + 1
         prev[v] = u
-        st.append(v)
+        fifo_que.append(v)
       
   def augment_flow():
     v = sink
@@ -66,7 +65,7 @@ def solve(
     a, b = ab[i]
     g[a, b] = g[b, a] = 1
   for i in p: g[i, n - 1] = 1
-  v = maximum_flow_ford_fulkerson(g, 0, n - 1)
+  v = maximum_flow_edmonds_karp(g, 0, n - 1)
   print(v)
 
   
