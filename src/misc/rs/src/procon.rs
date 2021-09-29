@@ -2,6 +2,7 @@ use std::io;
 // use std::mem;
 
 
+
 fn read() -> String {
   let mut s = String::new();
   io::stdin().read_line(&mut s).expect("cannot read.");

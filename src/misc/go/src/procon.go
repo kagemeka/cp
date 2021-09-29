@@ -7,7 +7,6 @@ import (
 
 
 
-
 // AtCoder .
 var AtCoder = proconSite{
 	Contests: map[string]Contest{

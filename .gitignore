@@ -1,6 +1,5 @@
 # py
 __pycache__
-/data/*
 *.so
 !.gitkeep
 
@@ -22,6 +21,7 @@ META-INF
 
 #rs
 [a-z]
+![a-z]/
 [a-z]_[0-9]
 [a-z]_[0-9][0-9]
 test_io
