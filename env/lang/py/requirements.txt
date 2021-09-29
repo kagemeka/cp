@@ -1,4 +1,4 @@
-networkx
-numba
-numpy 
-scipy
+networkx==2.6.3
+numba==0.54.0
+numpy==1.20.3
+scipy==1.7.1

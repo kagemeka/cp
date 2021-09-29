@@ -9,7 +9,7 @@
 
 
 # summary
-- 
+- 2d cumulative sum
 
 
 # code 
