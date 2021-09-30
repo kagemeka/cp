@@ -2,9 +2,15 @@
 
 
 # keywords 
+- brute-force
+- do while
 
 # summary
 
+
 # code 
+## sol_0
+- numba (JIT)
+
 
 # similar 

@@ -2,9 +2,19 @@
 
 
 # keywords 
+- brute-force
 
 # summary
+- for each path, calculate dist and check possibility.
+- be careful of floating point error.
+
 
 # code 
+## sol_0
+- numpy
+
+## sol_1
+- numba (JIT)
+
 
 # similar 

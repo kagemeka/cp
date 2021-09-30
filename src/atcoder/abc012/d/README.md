@@ -41,7 +41,7 @@
 - sparse graph
 
 
-## sol_7, sol_8
+## sol_7, sol_8, sol_9, sol_10
 - numba (JIT)
 - dense graph
 
