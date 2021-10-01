@@ -36,6 +36,9 @@ test_io
 main
 
 
+# scala
+.metals
+
 
 !.gitkeep
 
