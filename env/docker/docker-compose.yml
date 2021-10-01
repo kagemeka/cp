@@ -12,11 +12,11 @@ services:
     privileged: true
     tty: true
     volumes:
-      - type: tmpfs
-        target: /tmp/
-      - type: bind
-        source: /tmp/.X11-unix
-        target: /tmp/.X11-unix
+      # - type: tmpfs
+      #   target: /tmp/
+      # - type: bind
+      #   source: /tmp/.X11-unix
+      #   target: /tmp/.X11-unix
       - type: bind
         source: $ROOT
         target: /root/cp/

@@ -59,4 +59,7 @@
     "tab.inactiveBackground": "#0000ff32",
     "statusBarItem.hoverBackground": "#0000ff32"
   },
+  "files.watcherExclude": {
+    "**/target": true
+  },
 }

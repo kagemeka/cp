@@ -261,3 +261,53 @@ RUN \
   && echo \
   'export "PATH=/usr/local/swift/usr/bin:$PATH"' >> ~/.bashrc \
   && source ~/.bashrc
+
+
+
+FROM swift-stage AS hs-stage
+RUN \
+  apt update \
+  && apt install -y \
+  curl \
+  && curl --proto '=https' --tlsv1.2 -sSf \
+  https://get-ghcup.haskell.org | sh \
+  && curl -sSL https://get.haskellstack.org/ | sh
+
+
+FROM hs-stage AS d-stage
+RUN \
+  apt update \
+  && curl https://dlang.org/install.sh | bash -s
+
+
+
+FROM d-stage AS pl-stage 
+RUN \
+  apt-update 
+
+
+FROM pl-stage AS ml-stage
+RUN \
+  # apt-add-respository ppa:avsm/ppa \
+  apt-update \
+  && apt install -y \
+  ocaml \
+  opam \
+  && opam init -y \
+  && opam install -y \
+  dune \
+  ocaml-lsp-server
+
+
+FROM ml-stage AS php-stage
+RUN \
+  apt-update \
+  && apt install -y \
+  php
+
+FROM php-stage AS sc-stage
+RUN \
+  apt-update \
+  && apt install -y \
+  default-jdk \
+  scala

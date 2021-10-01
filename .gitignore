@@ -27,4 +27,18 @@ META-INF
 test_io
 
 
+# hs
+*.hi
+*.o
+
+
+# d
+main
+
+
+# scala
+.metals
+
+
 !.gitkeep
+
