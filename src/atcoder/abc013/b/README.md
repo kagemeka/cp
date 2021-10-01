@@ -2,12 +2,18 @@
 
 
 # keywords 
+- absolution function
+- math
 
 
 # summary 
+- $d := |b - a|$
+- ans = $\min{(d, 10 - d)}$
 
 
 # code 
+## sol_0, sol_1
+- python
 
 
 # similar 
