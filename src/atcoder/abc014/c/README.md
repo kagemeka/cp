@@ -2,11 +2,15 @@
 
 
 # keywords
+- imos method
+
 
 # summary
 
 
 # code 
+## sol_0, sol_1
+- numppy
 
 
 # similar
