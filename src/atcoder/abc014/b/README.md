@@ -2,11 +2,17 @@
 
 
 # keywords
+- bit 
 
 # summary
 
 
 # code 
+## sol_0
+- python
+
+## sol_1
+- numba (JIT)
 
 
 # similar
