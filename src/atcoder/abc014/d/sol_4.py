@@ -69,8 +69,8 @@ def sparse_table_get(
 
 
 @nb.njit 
-def sparse_table_op(x: S, y: S) -> S:
-  return x if x[0] <= y[0] else y 
+def sparse_table_op(a: S, b: S) -> S:
+  return a if a[0] <= b[0] else b 
   
 
 

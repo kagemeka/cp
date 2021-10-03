@@ -22,7 +22,7 @@
 - numba (JIT)
 
 
-## sol_1, sol_2, sol_3
+## sol_1, sol_2, sol_3, sol_5
 - numba (JIT)
 - with less memory space complexity
 
