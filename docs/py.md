@@ -60,6 +60,7 @@ $ xsel | python3 <problem>.py
 - np.int64
 - np.mean()
 - np.ones()
+- np.pi
 - np.prod()
 - np.rad2deg()
 - np.real()
