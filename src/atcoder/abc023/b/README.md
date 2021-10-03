@@ -2,12 +2,22 @@
 
 
 # keywords 
+- dp
+- similation
 
 
 # summary
+- similate a creation actually with dfs or bottomup.
 
 
 # code 
+## sol_0
+- python 
+- dfs
+
+## sol_1
+- python
+- bottomup
 
 
 # similar 
