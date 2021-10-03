@@ -4,7 +4,7 @@
 
 
 # keywords 
-- LCS (Longest Common Subsequence 
+- LCS (Longest Common Subsequence)
 - DP 
 
 
