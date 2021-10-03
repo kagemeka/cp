@@ -2,12 +2,15 @@
 
 
 # keywords 
+- divmod
 
 
 # summary
 
 
 # code 
+## sol_0
+- python
 
 
 # similar 

@@ -3,36 +3,6 @@ from scipy import optimize
 
 
 
-  class ABC024:
-    @staticmethod 
-    def a():
-      a, b, c, k, s, t = map(int, sys.stdin.read().split())
-      print(a*s + b*t - c*(s+t)*(s+t>=k)) 
-
-    @staticmethod 
-    def b():
-      n, t, *a = map(int, sys.stdin.read().split())
-      a = np.array(a)
-      print(np.minimum(a[1:]-a[:-1], t).sum() + t)
-
-    @staticmethod 
-    def c():
-      n, d, k, *lrst = map(int, sys.stdin.read().split())
-      lrst = np.array(lrst)
-      lr = lrst[:2*d].reshape(d,2) 
-      s, t = lrst[2*d:].reshape(k,2).T
-      day = np.zeros((k,),dtype=np.int32)
-      for i in range(d):
-        l, r = lr[i]
-        move = (l<=s)&(s<=r)&(s!=t)
-        reach = move&(l<=t)&(t<=r)
-        s[move&(s<t)] = r 
-        s[move&(s>t)] = l
-        s[reach] = t[reach]; day[reach] = i+1
-      print(*day, sep='\n')
-
-
-
   class ABC025:
     @staticmethod 
     def a():
