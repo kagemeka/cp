@@ -2124,7 +2124,6 @@ from scipy.spatial import ConvexHull
   class ABC140: pass
   class ABC141: pass
   class ABC142: pass
-  class ABC143: pass
   class ABC144: pass
   class ABC145: pass
   class ABC146: pass

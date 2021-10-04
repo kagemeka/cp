@@ -2,12 +2,14 @@
 
 
 # keywords 
-
+- cumulative sum
 
 # summary
 
 
 # code 
+## sol_0
+- numba (JIT)
 
 
 # similar

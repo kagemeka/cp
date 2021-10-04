@@ -8,9 +8,23 @@
 
 
 # summary
+- at first, compute all to all shortest dist with Floyd-Warshall algorithms
+- create a new graph from the shortest dist matrix.
+  - if $\text{dist}_{i, j} \le L$, add edge $i$ to $j$ with cost $1$.
+- apply second floyd-warshall to the graph.
 
 
 # code 
+## sol_0
+- numba (JIT)
+- dijkstra 
+- TLE
+
+
+## sol_1
+- numba (JIT)
+- floyd_warshall
+- AC
 
 
 # similar
