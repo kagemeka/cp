@@ -2,12 +2,16 @@
 
 
 # keywords 
+- greedy
 
 
 # summary
+- if adjacent slimes' color are different, increment answer
 
 
 # code 
+## sol_0
+- numba (JIT)
 
 
 # similar
