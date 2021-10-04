@@ -195,23 +195,6 @@ RUN \
   ts-node
 
 
-RUN \
-  apt -q=2 update \
-  && apt install -yq=2 \
-  curl \
-  git \
-  sudo \
-  && curl \
-  -sL https://deb.nodesource.com/setup_current.x \
-  | sudo -E bash - \
-  && apt install -y nodejs \
-  && git clone https://github.com/apple/sourcekit-lsp.git \
-  && cd sourcekit-lsp/Editors/vscode/ \
-  && npm install \
-  && npm run dev-package \
-  && mv sourcekit-lsp-development.vsix /root/
-
-
 FROM ubuntu:20.04 AS lsp-builder
 RUN \
   apt -q=2 update \
@@ -263,7 +246,6 @@ RUN \
   && source ~/.bashrc
 
 
-
 FROM swift-stage AS hs-stage
 RUN \
   apt update \
@@ -280,34 +262,33 @@ RUN \
   && curl https://dlang.org/install.sh | bash -s
 
 
-
 FROM d-stage AS pl-stage 
 RUN \
-  apt-update 
+  apt update 
 
 
 FROM pl-stage AS ml-stage
 RUN \
-  # apt-add-respository ppa:avsm/ppa \
-  apt-update \
+  apt update \
   && apt install -y \
   ocaml \
-  opam \
-  && opam init -y \
-  && opam install -y \
-  dune \
-  ocaml-lsp-server
+  opam 
+  # && opam init -y 
+  # && opam install -y \
+  # dune 
+  # ocaml-lsp-server
 
 
 FROM ml-stage AS php-stage
 RUN \
-  apt-update \
+  apt update \
   && apt install -y \
   php
 
+
 FROM php-stage AS sc-stage
 RUN \
-  apt-update \
+  apt update \
   && apt install -y \
   default-jdk \
   scala
