@@ -13,20 +13,12 @@ def solve(a: np.ndarray) -> typing.NoReturn:
   b.sort()
   s = np.hstack((np.array([0]), b)).cumsum()
 
-  def binary_search(k):
-    def possible(t):
-      i = np.searchsorted(b, t)
-      return t * (n - i) + s[i] >= t * k
-
-    lo, hi = 0, n // k + 1
-    while hi - lo > 1:
-      t = (lo + hi) >> 1
-      if possible(t): lo = t 
-      else: hi = t 
-    return lo
-
+  t = n + 1
+  i = n
   for k in range(1, n + 1):
-    t = binary_search(k)
+    while not t * (n - i) + s[i] >= t * k:
+      while i - 1 >= 0 and not b[i - 1] < t: i -= 1
+      t -= 1
     print(t)
 
 
