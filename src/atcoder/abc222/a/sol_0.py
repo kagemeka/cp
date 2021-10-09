@@ -1,9 +1,8 @@
 import typing 
 
 
-
 def main() -> typing.NoReturn:
-  print(pow(int(input()), 3))
-
+  n = int(input())
+  print(f'{n:04}')
 
 main()
