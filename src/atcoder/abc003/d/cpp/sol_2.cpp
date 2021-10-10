@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <bits/stdc++.h>
-using namespace std;
+
 
 template <typename T>
 class ChoosePascal {
@@ -17,16 +16,24 @@ public:
     }
   };
 
-  const T operator() (const int &n, const int &k) {
-    if (k < 0 or n < k) return 0;
-    return c[n][k];
-  }
+  const T operator() (const int &n, const int &k) {return k < 0 or n < k ? 0 : c[n][k];}
 };
 
 
+template <typename T, typename U>
+T pow(T x, U n) {
+  T y = 1;
+  while (n) {
+    if (n & 1) y *= x;
+    x *= x;
+    n >>= 1;
+  }
+  return y;
+}
+
 template<typename T>
 class Modular {
-  using Type = typename decay<decltype(T::value)>::type;
+  using Type = typename std::decay<decltype(T::value)>::type;
   template<typename U> static Type normalize(const U& x) {Type v = static_cast<Type>(x); return v % mod() + mod() % mod();}
   Type value;
 
@@ -50,27 +57,15 @@ public:
   Modular operator-() const {return Modular(-value);}
   Modular& operator*=(const Modular& rhs) {value *= rhs.value; value %= mod(); return *this;}
   Modular operator*(const Modular& rhs) const {return Modular(*this) *= rhs;} 
-
-  template<typename U>
-  Modular pow(const U& n) const {
-    if (!n) return 1;
-    Modular a = pow(n>>1); 
-    a *= a;
-    if (n&1) a *= *this;
-    return a;
-  }
-  Modular inverse() const {return pow(mod() - 2);}
-
+  Modular inverse() const {return pow(*this, mod() - 2);}
   Modular& operator/=(const Modular& rhs) {*this *= rhs.inverse(); return *this;}
   Modular operator/(const Modular& rhs) const {return Modular(*this) /= rhs;} 
-  template<typename U>
-  friend istream& operator>>(istream& is, Modular<U>& number) {return is >> number.value;}
-  friend ostream& operator<< (ostream& os, const Modular& number) {return os << number.value;}
+  template<typename U> friend std::istream& operator>>(std::istream& is, Modular<U>& number) {return is >> number.value;}
+  friend std::ostream& operator<< (std::ostream& os, const Modular& number) {return os << number.value;}
 };
 
 constexpr long long MOD = (long long)1e9 + 7;
 using Mint = Modular<std::integral_constant<std::decay<decltype(MOD)>::type, MOD>>;
-
 
 
 int main() {
