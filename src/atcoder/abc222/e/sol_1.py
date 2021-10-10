@@ -5,8 +5,6 @@ import numba as nb
 
 
 
-
-
 @nb.njit
 def euler_tour_edge(
   g: np.ndarray,
@@ -29,25 +27,6 @@ def euler_tour_edge(
       depth[v] = depth[u] + 1
       st.append(v)
   return tour, parent, depth
-
-
-
-@nb.njit 
-def path_on_tree(
-  g: np.ndarray,
-  edge_idx: np.ndarray,
-  src: int,
-  dst: int,
-) -> np.ndarray:
-  _, parent, depth = euler_tour_edge(g, edge_idx, src)
-  u = dst
-  d = depth[u]
-  path = np.empty(d + 1, np.int64)
-  for i in range(d + 1):
-    path[-1 - i] = u
-    u = parent[u]
-  return path
-
 
 
 @nb.njit 
@@ -87,44 +66,33 @@ def solve(
   uv: np.ndarray, 
   k: int,
 ) -> typing.NoReturn:
-  n, m = len(uv) + 1, len(a)
-
   mod = 998_244_353
+  n, m = len(uv) + 1, len(a)
   g = csgraph_to_directed(uv)
   g, edge_idx, _ = sort_csgraph(n, g)
 
-  cnt = np.zeros((n, n), np.int64)
-  total_edge_cnt = 0
+  _, parent, depth = euler_tour_edge(g, edge_idx, 0)
+  cnt = np.zeros(n, np.int64)
   for i in range(m - 1):
-    path = path_on_tree(g, edge_idx, a[i], a[i + 1])
-    for j in range(len(path) - 1):
-      cnt[path[j], path[j + 1]] += 1
-    total_edge_cnt += len(path) - 1
+    u, v = a[i], a[i + 1]
+    if depth[u] > depth[v]: u, v = v, u
+    while depth[v] > depth[u]:
+      cnt[v] += 1
+      v = parent[v]
+    while u != v:
+      cnt[u] += 1
+      cnt[v] += 1
+      u, v = parent[u], parent[v]
 
+  total_edge_cnt = cnt.sum()
   if total_edge_cnt + k < 0 or (total_edge_cnt + k) & 1:
     print(0)
     return
   
-  not_used_cnt = 0
-  for i in range(len(g)):
-    u, v = g[i]
-    not_used_cnt += cnt[u, v] == cnt[v, u] == 0
-  
-  not_used_cnt //= 2
-
   r = (k + total_edge_cnt) // 2
-
-  b = np.zeros(n * n, np.int64)
-  ptr = 0
-  for i in range(n - 1):
-    for j in range(i + 1, n):
-      s = cnt[i, j] + cnt[j, i]
-      if s == 0: continue
-      b[ptr] = s 
-      ptr += 1
-  b = b[:ptr]
-
   assert r >= 0
+  b = cnt[cnt > 0]
+  not_used_cnt = n - 1 - len(b)
   dp = np.zeros(r + 1, np.int64)
   dp[0] = 1
   for x in b:
@@ -136,13 +104,13 @@ def solve(
 
 
 def main() -> typing.NoReturn:
-  n, m, k = map(int, input().split())
+  n, m, k = map(int, sys.stdin.buffer.readline().split())
   a = np.array(
-    sys.stdin.readline().split(),
+    sys.stdin.buffer.readline().split(),
     dtype=np.int64,
   ) - 1
   uv = np.array(
-    sys.stdin.read().split(),
+    sys.stdin.buffer.read().split(),
     dtype=np.int64,
   ).reshape(n - 1, 2) - 1
   solve(a, uv, k)
