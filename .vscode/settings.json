@@ -7,4 +7,7 @@
   "files.watcherExclude": {
     "**/target": true
   },
+  "files.associations": {
+    "functional": "cpp"
+  },
 }
