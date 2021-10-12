@@ -477,25 +477,6 @@ void c() {
 }
 
 
-namespace ABC009 {
-
-
-void d() {
-  uint k, m; cin >> k >> m;
-  vector<vector<uint>> a(k, vector<uint>(1));
-  vector<uint> c(k);
-
-  for (uint i = 0; i < k; i++) cin >> a[i][0];
-  for (uint i = 0; i < k; i++) cin >> c[i];
-  vector<vector<uint>> d(k, vector<uint>(k)); d[0] = c;
-  uint inf = numeric_limits<uint>::max();
-  for (uint i = 1; i < k; i++) {d[i][i-1] = inf;}
-  if (m <= k) {cout << a[m-1][0] << '\n'; return;}
-  reverse(a.begin(), a.end());
-  d = bitwise_mat_pow(d, m-k);
-  cout << bitwise_dot(d, a)[0][0] << '\n';
-}
-}
 
 namespace ABC010 {
 void a() {
@@ -530,21 +511,7 @@ void c() {
   cout << "NO" << '\n';
 }
 
-void d() {
-  int n, q, m; cin >> n >> q >> m;
-  auto g = Graph<int>(n+1);
-  for (int i = 0; i < q; i++) {
-    int p; cin >> p;
-    g.add_edge(p, n, 1, 1);
-  }
-  for (int i = 0; i < m; i++) {
-    int a, b; cin >> a >> b;
-    g.add_edge(a, b, 1, 1);
-    g.add_edge(b, a, 1, 1);
-  }
-  cout << g.dinic(0, n) << '\n';
 
-}
 }
 
 namespace ABC011 {

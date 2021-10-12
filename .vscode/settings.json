@@ -8,6 +8,12 @@
     "**/target": true
   },
   "files.associations": {
-    "functional": "cpp"
+    "functional": "cpp",
+    "vector": "cpp",
+    "*.tcc": "cpp",
+    "cmath": "cpp",
+    "random": "cpp",
+    "regex": "cpp",
+    "type_traits": "cpp"
   },
 }
