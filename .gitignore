@@ -27,7 +27,7 @@ META-INF
 sol_[0-9]
 sol_[0-9][0-9]
 test_io
-/target/
+target/
 Cargo.lock
 
 
