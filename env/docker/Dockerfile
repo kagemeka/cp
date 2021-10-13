@@ -38,7 +38,7 @@ RUN \
   /usr/bin/python3 \
   /usr/bin/python
 
-COPY lang/py/requirements.txt .
+COPY lang/python/requirements.txt .
 RUN \
   pip3 install -U pip \
   && pip install -Uqr requirements.txt \

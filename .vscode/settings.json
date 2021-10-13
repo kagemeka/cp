@@ -16,4 +16,5 @@
     "regex": "cpp",
     "type_traits": "cpp"
   },
+  "go.inferGopath": false,
 }
