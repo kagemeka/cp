@@ -1,3 +1,53 @@
 .mypy_cache
 target
+
+
+# cpp
+*.out
+
+
+
+# haskell
+*.hi
+*.o
+
+
+# dlang
+main
+
+
+# kotlin
+*.class
+META-INF
+
+
+# scala
+.metals
+
+
+
+# go
+pkg
+bin
+
+
+# rust
+[a-z]
+[a-z]_[0-9]
+[a-z]_[0-9][0-9]
+sol_[0-9]
+sol_[0-9][0-9]
+test_io
+target/
+Cargo.lock
+![a-z]/
+
+
+# python
+__pycache__
+.mypy_cache
+.ipynb_checkpoints
+*.so
+
+
 !.gitkeep
