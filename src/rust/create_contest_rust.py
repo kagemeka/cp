@@ -42,6 +42,7 @@ def main() -> typing.NoReturn:
     parser.add_argument(
         '-w', '--workspace',
         type=str,
+        default='.',
         help='relative path from current directory to workspace.',
         required=False,
     )
@@ -55,8 +56,8 @@ def main() -> typing.NoReturn:
     args = parser.parse_args()
     workspace, members = args.workspace, args.crates
     
-    if workspace is not None:
-        create_workspace(workspace, members)
+    # if workspace is not None:
+    create_workspace(workspace, members)
     
     for member in members:
         path = member if workspace is None else f'{workspace}/{member}'
