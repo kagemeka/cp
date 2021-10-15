@@ -1,4 +1,3 @@
-use std::
 
 
 #[allow(unused_imports)]
@@ -16,13 +15,13 @@ struct Scanner {
 impl Scanner {
   fn next<T: std::str::FromStr>(&mut self) -> T {
     loop {
-      if let Some(token) = 
-      self.buffer.pop() {
+      if let Some(token) = self.buffer.pop() {
         return {token.parse().unwrap()};
       }
       let mut input = String::new();
       stdin().read_line(&mut input).unwrap();
-      self.buffer = input
+      self.buffer = 
+        input
         .split_whitespace().rev()
         .map(String::from)
         .collect();
