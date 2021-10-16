@@ -151,6 +151,7 @@ def solve(
 ) -> typing.NoReturn:
   n = a.size
   sa = sa_is(a)
+  print(sa)
   lcp = lcp_kasai(a, sa)
 
   a = np.arange(n, 0, -1)
