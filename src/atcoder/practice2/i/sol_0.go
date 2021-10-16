@@ -160,13 +160,13 @@ func SAIS(a []int) (sa []int) {
 }
 
 
-func LCPArrayKasai(a, sa []int) (lcp []int) {
+func LCPKasai(a, sa []int) (lcp []int) {
 	n := len(a)
 	// len(sa) == n
 	rank := make([]int, n)
 	for i := 0; i < n; i++ { rank[i] = -1 }
 	for i, j := range sa { rank[j] = i }
-	lcp = make([]int, n - 1)
+	lcp = make([]int, n)
 	h := 0
 	for i := 0; i < n; i++ {
 		if h > 0 { h-- }
@@ -177,64 +177,19 @@ func LCPArrayKasai(a, sa []int) (lcp []int) {
 			if a[i + h] != a[j + h] { break }
 			h++
 		}
-		lcp[r] = h
+		lcp[r + 1] = h
 	}
 	return 
 }
 
 
-// st := make(Stack, 0)
-type Stack []interface{}
-
-func (st *Stack) Push(x interface{}) { *st = append(*st, x) }
-
-func (st *Stack) Pop() interface{} {
-	n := len(*st)
-	x := (*st)[n - 1]
-	(*st)[n - 1] = nil
-	*st = (*st)[:n - 1]
-	return x
-}
-
-
-
-type node struct {
-	height, len int
-}
-
-
 func main() {
 	io := NewStdIO()
-	n, s := io.ScanInt(), io.Scan()
+	s := io.Scan()
+	n := len(s)
 	a := make([]int, n)
-	for i, c := range s { a[i] = int(c - 'a') }
+	for i, c := range s { a[i] = int(c - 'a') }	
 	sa := SAIS(a)
-	lcp := LCPArrayKasai(a, sa)
-
-	res := make([]int, n)
-	for i := 0; i < n; i++ { res[i] = n - i }
-	for z := 0; z < 2; z++ {
-		s := 0
-		st := Stack{}
-		for i := 0; i < n - 1; i++ {
-			l := 1
-			h := lcp[i]
-
-			for len(st) > 0 && st[len(st) - 1].(node).height >= h {
-				x := st.Pop().(node)
-				l += x.len
-				s -= x.height * x.len
-			}
-			s += h * l
-			st.Push(node{h, l})
-			res[sa[i + 1]] += s			
-		}
-		for i, j := 0, n - 1; i < j; i, j = i + 1, j - 1 {
-			sa[i], sa[j] = sa[j], sa[i]
-		}
-		for i, j := 0, n - 2; i < j; i, j = i + 1, j - 1 {
-			lcp[i], lcp[j] = lcp[j], lcp[i]
-		}
-	}
-	for _, x := range res { io.Write(x) }
+	lcp := LCPKasai(a, sa)
+	io.Write(n * (n + 1) / 2 - Sum(lcp...))
 }
