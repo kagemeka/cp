@@ -1,205 +1,170 @@
-import typing
-import dataclasses
+import typing 
 
 
+class CompressArray():
+    def __call__(self, a: typing.List[int]) -> typing.NoReturn:
+        import bisect 
+        v = sorted(set(a))
+        self.__v = v
+        return [bisect.bisect_left(v, x) for x in a]
 
-class SAIS():
-  def __call__(
-    self,
-    a: typing.List[int],
-  ) -> typing.List[int]:
-    self.__a = a
-    self.__preprocess()
-    self.__induce()
-    self.__correct_lms_order()
-    self.__induce()
-    return self.__sa[1:]
+    def __getitem__(self, i: int) -> int: return self.retrieve(i)
+    def retrieve(self, i: int) -> int: return self.__v[i]
 
-  
-  def __correct_lms_order(
-    self,
-  ) -> typing.NoReturn:
-    is_lms = self.__is_lms
-    lms_idx = [i for i in self.__sa if is_lms[i]]
-    a = self.__a 
+
+def sa_is(a: typing.List[int]) -> typing.List[int]:
+    mn = min(a)
+    a = [x - mn + 1 for x in a]
+    a.append(0)
     n = len(a)
-    m = len(lms_idx)
-    na = [-1] * n
-    na[-1] = i = 1
-    for j in range(m - 1):
-      j, k = lms_idx[j], lms_idx[j + 1]
-      for d in range(n):
-        j_is_lms = is_lms[j + d]
-        k_is_lms = is_lms[k + d]
-        if a[j + d] != a[k + d] or j_is_lms ^ k_is_lms: 
-          i += 1; break
-        if d > 0 and j_is_lms | k_is_lms: break
-      na[k] = i
-    na = [i for i in na if i > 0]
-    if i == m:
-      lms_order = [-1] * m
-      for i, j in enumerate(na):
-        lms_order[j - 1] = i
-    else:
-      lms_order = SAIS()(na)
-    self.__lms = [self.__lms[i] for i in lms_order]
-     
-
-  def __induce(
-    self,
-  ) -> typing.NoReturn:
-    self.__sa = [-1] * len(self.__a)
-    self.__set_lms()
-    self.__induce_l()
-    self.__induce_s()
-   
-
-  def __induce_l(
-    self,
-  ) -> typing.NoReturn:
-    sa = self.__sa
-    sa_index = self.__b.copy()
-    s = 0
-    for i in range(self.__m):
-      s += sa_index[i]
-      sa_index[i] = s - sa_index[i]
-    for i in range(len(sa)):
-      i = sa[i] - 1
-      if i < 0 or self.__is_s[i]: continue
-      x = self.__a[i]
-      sa[sa_index[x]] = i
-      sa_index[x] += 1
-
-
-  def __induce_s(
-    self,
-  ) -> typing.NoReturn:
-    sa = self.__sa
-    sa_index = self.__b.copy()
-    for i in range(self.__m - 1):
-      sa_index[i + 1] += sa_index[i]
-    for i in range(len(sa) - 1, -1, -1):
-      i = sa[i] - 1
-      if i < 0 or not self.__is_s[i]: continue
-      x = self.__a[i]
-      sa_index[x] -= 1
-      sa[sa_index[x]] = i
-
-
-  def __make_bucket(
-    self,
-  ) -> typing.NoReturn:
-    a = self.__a
-    b = [0] * self.__m
-    for x in a: b[x] += 1
-    self.__b = b
-
-  
-  def __preprocess(
-    self,
-  ) -> typing.NoReturn:
-    a = self.__a
-    if min(a) <= 0:
-      a = [x + 1 for x in a]
-    assert all(x > 0 for x in a)
-    self.__m = max(a) + 1
-    a = a + [0]
-    n = len(a)
-    self.__a = a
-
+    m = max(a) + 1
     is_s = [True] * n
     for i in range(n - 2, -1, -1):
-      is_s[i] = (
-        is_s[i + 1] if a[i] == a[i + 1] else 
-        a[i] < a[i + 1]
-      )
-
-    is_lms = [is_s[i] and not is_s[i - 1] for i in range(n)]
+        is_s[i] = is_s[i + 1] if a[i] == a[i + 1] else a[i] < a[i + 1]
+    is_lms = [not is_s[i - 1] and is_s[i] for i in range(n)]
     lms = [i for i in range(n) if is_lms[i]]
-
-    self.__is_s = is_s
-    self.__is_lms = is_lms 
-    self.__lms = lms
-    self.__make_bucket()
-
-
-  def __set_lms(
-    self,
-  ) -> typing.NoReturn:
-    sa_index = self.__b.copy()
-    for i in range(self.__m - 1):
-      sa_index[i + 1] += sa_index[i]
-    for i in self.__lms[::-1]:
-      x = self.__a[i]
-      sa_index[x] -= 1
-      self.__sa[sa_index[x]] = i
-
-
-
-class Kasai():
-  def __call__(
-    self,
-    a: typing.List[int],
-    sa: typing.List[int],
-  ) -> typing.List[int]:
-    n = len(a)
-    assert len(sa) == n
+    bucket = [0] * m
+    for x in a:
+        bucket[x] += 1
+    
+    def induce() -> typing.List[int]:
+        sa = [-1] * n
+        sa_idx = bucket.copy()
+        for i in range(m - 1): sa_idx[i + 1] += sa_idx[i]
+        for i in lms[::-1]:
+            sa_idx[a[i]] -= 1
+            sa[sa_idx[a[i]]] = i
+        
+        sa_idx = bucket.copy()
+        s = 0
+        for i in range(m): s, sa_idx[i] = s + sa_idx[i], s
+        for i in range(n):
+            i = sa[i] - 1
+            if i < 0 or is_s[i]: continue
+            sa[sa_idx[a[i]]] = i
+            sa_idx[a[i]] += 1
+        
+        sa_idx = bucket.copy()
+        for i in range(m - 1): sa_idx[i + 1] += sa_idx[i]
+        for i in range(n - 1, -1, -1):
+            i = sa[i] - 1
+            if i < 0 or not is_s[i]: continue
+            sa_idx[a[i]] -= 1
+            sa[sa_idx[a[i]]] = i
+        return sa
+    
+    sa = induce()
+    lms_idx = [i for i in sa if is_lms[i]]
+    l = len(lms_idx)
     rank = [-1] * n
-    for i, x in enumerate(sa): rank[x] = i
-    h, l = [0] * n, 0 
+    rank[-1] = r = 0
+    for i in range(l - 1):
+        j, k = lms_idx[i], lms_idx[i + 1]
+        for d in range(n):
+            j_is_lms, k_is_lms = is_lms[j + d], is_lms[k + d]
+            if a[j + d] != a[k + d] or j_is_lms ^ k_is_lms:
+                r += 1
+                break
+            if d > 0 and j_is_lms | k_is_lms: break
+        rank[k] = r
+    rank = [i for i in rank if i >= 0]
+    if r == l - 1:
+        lms_order = [-1] * l
+        for i, r in enumerate(rank): lms_order[r] = i
+    else:
+        lms_order = sa_is(rank)
+    lms = [lms[i] for i in lms_order]
+    return induce()[1:]
+
+
+def sa_doubling(a: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    rank, k = CompressArray()(a), 1
+    while True:
+        key = [r << 30 for r in rank]
+        for i in range(n - k): key[i] |= 1 + rank[i + k]
+        sa = sorted(range(n), key=lambda x: key[x])
+        rank[sa[0]] = 0
+        for i in range(n - 1):
+            rank[sa[i + 1]] = rank[sa[i]] + (key[sa[i + 1]] > key[sa[i]])
+        k <<= 1
+        if k >= n: break
+    return sa
+
+
+def sa_doubling_countsort(a: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    def counting_sort_key(a):
+        cnt = [0] * (n + 2)
+        for x in a: cnt[x + 1] += 1
+        for i in range(n): cnt[i + 1] += cnt[i]
+        key = [0] * n
+        for i in range(n):
+            key[cnt[a[i]]] = i
+            cnt[a[i]] += 1
+        return key
+
+    rank, k = CompressArray()(a), 1
+    while True:
+        second = [0] * n
+        for i in range(n - k): second[i] = 1 + rank[i + k]
+        rank_second = counting_sort_key(second)
+        first = [rank[i] for i in rank_second]
+        rank_first = counting_sort_key(first)
+        sa = [rank_second[i] for i in rank_first]
+        key = [first[i] << 30 | second[j] for i, j in zip(rank_first, sa)]
+        rank[sa[0]] = 0
+        for i in range(n - 1):
+            rank[sa[i + 1]] = rank[sa[i]] + (key[i + 1] > key[i])
+        k <<= 1
+        if k >= n: break
+    return sa
+
+
+def lcp_array_kasai(a: typing.List[int], sa: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    assert n > 0
+    rank = [0] * n
+    for i, j in enumerate(sa): rank[j] = i
+    lcp, h = [0] * (n - 1), 0
     for i in range(n):
-      if l > 0: l -= 1
-      r = rank[i]
-      if r == n - 1: continue
-      j = sa[r + 1]
-      while i + l < n and j + l < n:
-        if a[i + l] != a[j + l]: break
-        l += 1
-      h[r + 1] = l
-    return h
+        if h > 0: h -= 1
+        r = rank[i]
+        if r == n - 1: continue
+        j = sa[r + 1]
+        while i + h < n and j + h < n and a[i + h] == a[j + h]: h += 1
+        lcp[r] = h
+    return lcp
 
 
+def solve(s: str) -> typing.NoReturn:
+    n = len(s)
+    a = [ord(x) - ord('a') for x in s]
+    sa = sa_is(a)
+    lcp = lcp_array_kasai(a, sa)
 
-@dataclasses.dataclass 
-class Node():
-  height: int
-  length: int
-
-
-
-def solve(
-  n: int,
-  s: str,
-) -> typing.NoReturn:
-  s = [ord(x) - ord('a') + 1 for x in s]
-  sa = SAIS()(s)
-  lcp = Kasai()(s, sa)[1:]
-  
-  a = list(range(n, 0, -1))
-  for i in range(2):
-    s = 0
-    st = []
-    for i in range(n - 1):
-      l = 1
-      h = lcp[i]
-      while st and st[-1].height >= h:
-        x = st.pop()
-        l += x.length
-        s -= x.height * x.length
-      s += h * l
-      st.append(Node(h, l))
-      a[sa[i + 1]] += s
-    sa.reverse()
-    lcp.reverse()
-  print(*a, sep='\n')
-
+    a = list(range(n, 0, -1))
+    for i in range(2):
+        s = 0
+        st = []
+        for i in range(n - 1):
+            l = 1
+            h = lcp[i]
+            while st and st[-1][0] >= h:
+                x = st.pop()
+                l += x[1]
+                s -= x[0] * x[1]
+            s += h * l
+            st.append((h, l))
+            a[sa[i + 1]] += s
+        sa.reverse()
+        lcp.reverse()
+    print(*a, sep='\n')
 
 
 def main() -> typing.NoReturn:
-  n = int(input())
-  s = input()
-  solve(n, s)
-
+    n = int(input())
+    solve(input())
 
 
 main()
