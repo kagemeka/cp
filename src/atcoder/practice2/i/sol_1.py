@@ -1,174 +1,152 @@
 import typing 
 import sys 
-import numpy as np
-import numba as nb
+
+
+class CompressArray():
+    def __call__(self, a: typing.List[int]) -> typing.NoReturn:
+        from bisect import bisect_left
+        v = sorted(set(a))
+        self.__v = v
+        return [bisect_left(v, x) for x in a]
+
+    def __getitem__(self, i: int) -> int: return self.retrieve(i)
+    def retrieve(self, i: int) -> int: return self.__v[i]
 
 
 
+def sa_is(a: typing.List[int]) -> typing.List[int]:
+    mn = min(a)
+    a = [x - mn + 1 for x in a]
+    a.append(0)
+    n = len(a)
+    m = max(a) + 1
+    is_s = [True] * n
+    for i in range(n - 2, -1, -1):
+        is_s[i] = is_s[i + 1] if a[i] == a[i + 1] else a[i] < a[i + 1]
+    is_lms = [not is_s[i - 1] and is_s[i] for i in range(n)]
+    lms = [i for i in range(n) if is_lms[i]]
+    bucket = [0] * m
+    for x in a:
+        bucket[x] += 1
+    
+    def induce() -> typing.List[int]:
+        sa = [-1] * n
+        sa_idx = bucket.copy()
+        for i in range(m - 1): sa_idx[i + 1] += sa_idx[i]
+        for i in lms[::-1]:
+            sa_idx[a[i]] -= 1
+            sa[sa_idx[a[i]]] = i
+        
+        sa_idx = bucket.copy()
+        s = 0
+        for i in range(m): s, sa_idx[i] = s + sa_idx[i], s
+        for i in range(n):
+            i = sa[i] - 1
+            if i < 0 or is_s[i]: continue
+            sa[sa_idx[a[i]]] = i
+            sa_idx[a[i]] += 1
+        
+        sa_idx = bucket.copy()
+        for i in range(m - 1): sa_idx[i + 1] += sa_idx[i]
+        for i in range(n - 1, -1, -1):
+            i = sa[i] - 1
+            if i < 0 or not is_s[i]: continue
+            sa_idx[a[i]] -= 1
+            sa[sa_idx[a[i]]] = i
+        return sa
+    
+    sa = induce()
+    lms_idx = [i for i in sa if is_lms[i]]
+    l = len(lms_idx)
+    rank = [-1] * n
+    rank[-1] = r = 0
+    for i in range(l - 1):
+        j, k = lms_idx[i], lms_idx[i + 1]
+        for d in range(n):
+            j_is_lms, k_is_lms = is_lms[j + d], is_lms[k + d]
+            if a[j + d] != a[k + d] or j_is_lms ^ k_is_lms:
+                r += 1
+                break
+            if d > 0 and j_is_lms | k_is_lms: break
+        rank[k] = r
+    rank = [i for i in rank if i >= 0]
+    if r == l - 1:
+        lms_order = [-1] * l
+        for i, r in enumerate(rank): lms_order[r] = i
+    else:
+        lms_order = sa_is(rank)
+    lms = [lms[i] for i in lms_order]
+    return induce()[1:]
 
-@nb.njit
-def _induce(
-  a: np.ndarray,
-  is_s: np.ndarray,
-  lms: np.ndarray,
-  bucket: np.ndarray,
-) -> np.ndarray:
-  n, m = a.size, bucket.size
-  sa = np.full(n, -1, np.int32)
-  
-  def _set_lms():
-    sa_idx = bucket.cumsum()
-    for i in lms[::-1]:
-      x = a[i] 
-      sa_idx[x] -= 1
-      sa[sa_idx[x]] = i
-  
-  def _induce_l():
-    sa_idx = bucket.copy()
-    s = 0 
-    for i in range(m):
-      s, sa_idx[i] = s + sa_idx[i], s
+
+def sa_doubling(a: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    rank, k = CompressArray()(a), 1
+    while True:
+        key = [r << 30 for r in rank]
+        for i in range(n - k): key[i] |= 1 + rank[i + k]
+        sa = sorted(range(n), key=lambda x: key[x])
+        rank[sa[0]] = 0
+        for i in range(n - 1):
+            rank[sa[i + 1]] = rank[sa[i]] + (key[sa[i + 1]] > key[sa[i]])
+        k <<= 1
+        if k >= n: break
+    return sa
+
+
+def sa_doubling_countsort(a: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    def counting_sort_key(a):
+        cnt = [0] * (n + 2)
+        for x in a: cnt[x + 1] += 1
+        for i in range(n): cnt[i + 1] += cnt[i]
+        key = [0] * n
+        for i in range(n):
+            key[cnt[a[i]]] = i
+            cnt[a[i]] += 1
+        return key
+
+    rank, k = CompressArray()(a), 1
+    while True:
+        second = [0] * n
+        for i in range(n - k): second[i] = 1 + rank[i + k]
+        rank_second = counting_sort_key(second)
+        first = [rank[i] for i in rank_second]
+        rank_first = counting_sort_key(first)
+        sa = [rank_second[i] for i in rank_first]
+        key = [first[i] << 30 | second[j] for i, j in zip(rank_first, sa)]
+        rank[sa[0]] = 0
+        for i in range(n - 1):
+            rank[sa[i + 1]] = rank[sa[i]] + (key[i + 1] > key[i])
+        k <<= 1
+        if k >= n: break
+    return sa
+
+
+def lcp_array_kasai(a: typing.List[int], sa: typing.List[int]) -> typing.List[int]:
+    n = len(a)
+    assert n > 0
+    rank = [0] * n
+    for i, j in enumerate(sa): rank[j] = i
+    lcp, h = [0] * (n - 1), 0
     for i in range(n):
-      i = sa[i] - 1
-      if i < 0 or is_s[i]: continue
-      x = a[i]
-      sa[sa_idx[x]] = i
-      sa_idx[x] += 1
-
-  def _induce_s():
-    sa_idx = bucket.cumsum()
-    for i in range(n - 1, -1, -1):
-      i = sa[i] - 1
-      if i < 0 or not is_s[i]: continue
-      x = a[i] 
-      sa_idx[x] -= 1
-      sa[sa_idx[x]] = i
-  
-  _set_lms()
-  _induce_l()
-  _induce_s()
-  return sa
-  
-
-@nb.njit
-def _preprocess(
-  a: np.ndarray
-) -> typing.Tuple[np.ndarray]:
-  n = a.size
-  is_s = np.ones(n, np.bool8)
-  for i in range(n - 1, 0, -1):
-    is_s[i - 1] = (
-      is_s[i] if a[i - 1] == a[i] else
-      a[i - 1] < a[i]
-    )
-  is_lms = np.zeros(n, np.bool8)
-  is_lms[np.arange(1, n)[~is_s[:-1] & is_s[1:]]] = True
-  lms = np.flatnonzero(is_lms)
-  bucket = np.bincount(a)
-  return is_s, is_lms, lms, bucket
-  
-
-@nb.njit
-def _compute_next_array(
-  a: np.ndarray, 
-  sa: np.ndarray, 
-  is_lms: np.ndarray,
-) -> np.ndarray:
-  n = a.size
-  lms_idx = sa[is_lms[sa]]
-  l = lms_idx.size
-  na = np.full(n, -1, dtype=np.int64)
-  na[-1] = i = 1
-  for j in range(l - 1):
-    j, k = lms_idx[j], lms_idx[j + 1]
-    for d in range(n):
-      j_is_lms = is_lms[j + d]
-      k_is_lms = is_lms[k + d]
-      if a[j + d] != a[k + d] or j_is_lms ^ k_is_lms: 
-        i += 1; break
-      if d > 0 and j_is_lms | k_is_lms: break
-    na[k] = i
-  na = na[na > 0]
-  return na
-
-
-@nb.njit
-def sa_is(
-  a: np.ndarray,
-) -> np.ndarray:
-  if a.min() <= 0: a += 1
-  assert (a > 0).all()
-  a = np.hstack((a, np.array([0])))
-
-  st: typing.List[typing.Tuple[np.ndarray]] = []
-  while True:
-    is_s, is_lms, lms, b = _preprocess(a)
-    sa = _induce(a, is_s, lms, b)
-    st.append((a, is_s, lms, b))
-
-    a = _compute_next_array(a, sa, is_lms)
-    l = lms.size
-    if a.max() < l:
-      a = np.hstack((a, np.array([0]))) 
-      continue
-    lms_order = np.empty(l, np.int32)
-    for i in range(l): lms_order[a[i] - 1] = i
-    break
-
-  while st:
-    a, is_s, lms, b = st.pop()
-    lms = lms[lms_order]
-    lms_order = _induce(a, is_s, lms, b)[1:]
-
-  return lms_order
-
-
-
-@nb.njit
-def lcp_kasai(
-  a: np.array,
-  sa: np.array,
-) -> np.array:
-  n = a.size
-  assert n > 0 and sa.size == n
-
-  rank = np.empty(n, np.int32)
-  for i in range(n): rank[sa[i]] = i
-  h, l = np.empty(n - 1, np.int32), 0
-  for i in range(n):
-    if l: l -= 1
-    r = rank[i]
-    if r == n - 1: continue
-    j = sa[r + 1]
-    while i + l < n and j + l < n:
-      if a[i + l] != a[j + l]: break 
-      l += 1
-    h[r] = l
-  return h
-
-
-
-@nb.njit(
-  (nb.i8[:], ),
-  cache=True,
-)
-def solve(
-  a: np.ndarray,
-) -> typing.NoReturn:
-  sa = sa_is(a)
-  lcp = lcp_kasai(a, sa)
-  n = a.size
-  s = n * (n + 1) // 2
-  print(s - lcp.sum())
-
+        if h > 0: h -= 1
+        r = rank[i]
+        if r == n - 1: continue
+        j = sa[r + 1]
+        while i + h < n and j + h < n and a[i + h] == a[j + h]: h += 1
+        lcp[r] = h
+    return lcp
 
 
 def main() -> typing.NoReturn:
-  s = np.frombuffer(
-    sys.stdin.buffer.readline().rstrip(),
-    dtype='b',
-  ).astype(np.int64) - ord('a') + 1
-  solve(s)
+  a = [ord(c) - ord('a') for c in input()]
+  n = len(a)
+  # sa = sa_doubling_countsort(a)
+  # sa = sa_doubling(a)
+  sa = sa_is(a)
+  lcp = lcp_array_kasai(a, sa)
+  print(n * (n + 1) // 2 - sum(lcp))
 
 
 main()

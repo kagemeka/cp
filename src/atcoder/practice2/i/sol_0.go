@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sort"
 )
 
 
-// io := NewStdIO()
+// stdio := NewStdIO()
+// defer stdio.Flush()
 type StdIO struct {
 	scanner *bufio.Scanner
 	writer *bufio.Writer
@@ -27,21 +29,21 @@ func NewStdIO() *StdIO {
 	}
 }
 
-func (io *StdIO) Scan() string {
-	io.scanner.Scan()
-	return io.scanner.Text()
+func (stdio *StdIO) Scan() string {
+	stdio.scanner.Scan()
+	return stdio.scanner.Text()
 }
 
-func (io *StdIO) ScanInt() int {
-	v, _ := strconv.Atoi(io.Scan())
+func (stdio *StdIO) ScanInt() int {
+	v, _ := strconv.Atoi(stdio.Scan())
 	return v
 }
 
-func (io *StdIO) Write(a ...interface{}) {
-	fmt.Fprintln(io.writer, a...)
-	io.writer.Flush()
+func (stdio *StdIO) Write(a ...interface{}) {
+	fmt.Fprintln(stdio.writer, a...)
 }
 
+func (stdio *StdIO) Flush() { stdio.writer.Flush() }
 
 
 func Max(a ...int) int {
@@ -67,6 +69,27 @@ func Sum(a ...int) int {
 }
 
 
+// ac := new(ArrayCompression)
+// ac.Compress(a []int)
+// ac.Retrieve(i int)
+type ArrayCompression struct { v []int }
+
+func (ac *ArrayCompression) Compress(a []int) []int {
+	buf := make(map[int]bool)
+	for _, x := range a { buf[x] = true }
+	v := make([]int, 0, len(buf))
+	for k := range buf { v = append(v, k) }
+	sort.Ints(v)
+	n := len(a)
+	rank := make([]int, n)
+	for i := 0; i < n; i++ { rank[i] = sort.SearchInts(v, a[i]) }
+	ac.v = v
+	return rank
+}
+
+func (ac *ArrayCompression) Retrieve(i int) int { return ac.v[i] }
+
+
 func SAIS(a []int) (sa []int) {
 	mn := Min(a...)
 	for i, x := range a { a[i] = x - mn + 1 }
@@ -86,15 +109,15 @@ func SAIS(a []int) (sa []int) {
 	}
 	for i := 1; i < n; i++ { isLms[i] = !isS[i - 1] && isS[i] }
 	for i := 0; i < n; i++ { if isLms[i] { lms = append(lms, i) } }
-	bin := make([]int, m)
-	for _, x := range a { bin[x]++ }
+	bucket := make([]int, m)
+	for _, x := range a { bucket[x]++ }
 
 	induce := func() []int {
 		sa := make([]int, n)
 		for i := 0; i < n; i++ { sa[i] = -1 }
 
 		saIdx := make([]int, m)
-		copy(saIdx, bin)
+		copy(saIdx, bucket)
 		for i := 0; i < m - 1; i++ { saIdx[i + 1] += saIdx[i] }
 		for j := len(lms) - 1; j > -1; j-- {
 			i := lms[j]
@@ -103,7 +126,7 @@ func SAIS(a []int) (sa []int) {
 			sa[saIdx[x]] = i
 		}
 		
-		copy(saIdx, bin)
+		copy(saIdx, bucket)
 		s := 0
 		for i := 0; i < m; i++ { s, saIdx[i] = s + saIdx[i], s }
 		for j := 0; j < n; j++ {
@@ -114,7 +137,7 @@ func SAIS(a []int) (sa []int) {
 			saIdx[x]++
 		}
 
-		copy(saIdx, bin)
+		copy(saIdx, bucket)
 		for i := 0; i < m - 1; i++ { saIdx[i + 1] += saIdx[i] }
 		for j := n - 1; j > -1; j-- {
 			i := sa[j] - 1
@@ -132,64 +155,130 @@ func SAIS(a []int) (sa []int) {
 	lmsIdx := make([]int, 0, len(sa))
 	for _, i := range sa { if isLms[i] { lmsIdx = append(lmsIdx, i) } }
 	l := len(lmsIdx)
-	order := make([]int, n)
-	for i := 0; i < n; i++ { order[i] = -1 }
-	ord := 0; order[n - 1] = ord
+	rank := make([]int, n)
+	for i := 0; i < n; i++ { rank[i] = -1 }
+	r := 0; rank[n - 1] = r
 	for i := 0; i < l - 1; i++ {
 		j, k := lmsIdx[i], lmsIdx[i + 1]
 		for d := 0; d < n; d++ {
 			jIsLms, kIsLms := isLms[j + d], isLms[k + d]
-			if a[j + d] != a[k + d] || jIsLms != kIsLms { ord++; break }
+			if a[j + d] != a[k + d] || jIsLms != kIsLms { r++; break }
 			if d > 0 && (jIsLms || kIsLms) { break }
 		}
-		order[k] = ord
+		rank[k] = r
 	}
-	b := make([]int, 0, l)
-	for _, i := range order { if i >= 0 { b = append(b, i) } }
+	buf := make([]int, 0, l)
+	for _, r := range rank { if r >= 0 { buf = append(buf, r) } }
 	var lmsOrder []int
-	if ord == l - 1 {
+	if r == l - 1 {
 		lmsOrder = make([]int, l)
-		for i, ord := range b { lmsOrder[ord] = i }
+		for i, r := range buf { lmsOrder[r] = i }
 	} else {
-		lmsOrder = SAIS(b)
+		lmsOrder = SAIS(buf)
 	}
-	buf := make([]int, len(lms))
+	buf = make([]int, len(lms))
 	for i, j := range lmsOrder { buf[i] = lms[j] }
 	lms = buf
 	return induce()[1:]
 }
 
 
-func LCPKasai(a, sa []int) (lcp []int) {
+func SADoubling(a []int) (sa []int) {
 	n := len(a)
-	// len(sa) == n
+	ac := new(ArrayCompression)
+	rank, k := ac.Compress(a), 1
+	key := make([]int, n)
+	for {
+		for i := 0; i < n; i++ {
+			key[i] = rank[i] << 30
+			if i + k < n { key[i] |= 1 + rank[i + k] } 
+		}
+		sa = make([]int, n)
+		for i := 0; i < n; i++ { sa[i] = i }
+		sort.SliceStable(sa, func(i, j int) bool { return key[sa[i]] < key[sa[j]] } )
+		rank[sa[0]] = 0
+		for i := 0; i < n - 1; i++ {
+			rank[sa[i + 1]] = rank[sa[i]] 
+			if key[sa[i + 1]] > key[sa[i]] { rank[sa[i + 1]]++ }
+		}
+		k <<= 1
+		if k >= n { break }
+	}
+	return
+}
+
+
+func SADoublingCountsort(a []int) (sa []int) {
+	n := len(a)
+	countingSortKey := func(a []int) (key []int) {
+		cnt := make([]int, n + 2)
+		for _, x := range a { cnt[x + 1]++ }
+		for i := 0; i < n; i++ { cnt[i + 1] += cnt[i] }
+		key = make([]int, n)
+		for i := 0; i < n; i++ {
+			key[cnt[a[i]]] = i
+			cnt[a[i]]++
+		}
+		return key 
+	}
+
+	ac := new(ArrayCompression)
+	rank, k := ac.Compress(a), 1
+	first := make([]int, n)
+	second := make([]int, n)
+	sa = make([]int, n)
+	key := make([]int, n)
+	for {
+		for i := 0; i < n - k; i++ { second[i] = 1 + rank[i + k] }
+		for i := n - k; i < n; i++ { second[i] = 0 }
+		rankSecond := countingSortKey(second)
+		for i, j := range rankSecond { first[i] = rank[j] }
+		rankFirst := countingSortKey(first)
+		for i, j := range rankFirst { sa[i] = rankSecond[j] }
+		for i := 0; i < n; i++ {
+			key[i] = first[rankFirst[i]] << 30 | second[sa[i]]
+		}
+		rank[sa[0]] = 0
+		for i := 0; i < n - 1; i++ {
+			rank[sa[i + 1]] = rank[sa[i]] 
+			if key[i + 1] > key[i] { rank[sa[i + 1]]++ }
+		}
+		k <<= 1
+		if k >= n { break }
+	}
+	return
+}
+
+
+func LCPArrayKasai(a, sa []int) (lcp []int) {
+	n := len(a)
+	// n > 0 && len(sa) == n
 	rank := make([]int, n)
-	for i := 0; i < n; i++ { rank[i] = -1 }
 	for i, j := range sa { rank[j] = i }
-	lcp = make([]int, n)
+	lcp = make([]int, n - 1)
 	h := 0
 	for i := 0; i < n; i++ {
 		if h > 0 { h-- }
 		r := rank[i]
 		if r == n - 1 { continue }
 		j := sa[r + 1]
-		for i + h < n && j + h < n {
-			if a[i + h] != a[j + h] { break }
-			h++
-		}
-		lcp[r + 1] = h
+		for i + h < n && j + h < n && a[i + h] == a[j + h] { h++ }
+		lcp[r] = h
 	}
 	return 
 }
 
 
 func main() {
-	io := NewStdIO()
-	s := io.Scan()
+	stdio := NewStdIO()
+	defer stdio.Flush()
+	s := stdio.Scan()
 	n := len(s)
 	a := make([]int, n)
 	for i, c := range s { a[i] = int(c - 'a') }	
+	// sa := SADoublingCountsort(a)
+	// sa := SADoubling(a)
 	sa := SAIS(a)
-	lcp := LCPKasai(a, sa)
-	io.Write(n * (n + 1) / 2 - Sum(lcp...))
+	lcp := LCPArrayKasai(a, sa)
+	stdio.Write(n * (n + 1) / 2 - Sum(lcp...))
 }
