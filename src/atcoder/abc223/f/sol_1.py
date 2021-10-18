@@ -12,147 +12,218 @@ def bit_length(n: int) -> int:
     return l
 
 
+
 S = typing.TypeVar('S')
+F = typing.TypeVar('F')
 @nb.njit
 def seg_build(
-    op: typing.Callable[[S, S], S],
-    e: typing.Callable[[], S],
+    op_s: typing.Callable[[S, S], S],
+    e_s: typing.Callable[[], S],
+    e_f: typing.Callable[[], F],
     a: np.ndarray,
-) -> np.ndarray:
+) -> typing.Tuple[np.ndarray, np.ndarray]:
     n = 1 << bit_length(len(a) - 1)
     seg = np.empty((n << 1, ) + a.shape[1:], np.int64)
-    for i in range(n << 1): seg[i] = e()
+    for i in range(n << 1):
+        seg[i] = e_s()
     seg[n:n + len(a)] = a.copy()
     for i in range(n - 1, 0, -1):
-        seg[i] = op(seg[i << 1], seg[i << 1 | 1])
-    return seg
+        seg[i] = op_s(seg[i << 1], seg[i << 1 | 1])
+    lazy = np.empty(n, np.int64)
+    for i in range(n):
+        lazy[i] = e_f()
+    return seg, lazy
+
+
+@nb.njit
+def __seg_apply(
+    op_f: typing.Callable[[F, F], F],
+    map_: typing.Callable[[F, S], S],
+    seg: np.ndarray,
+    lazy: np.ndarray,
+    i: int,
+    f: F,
+) -> typing.NoReturn:
+    seg[i] = map_(f, seg[i])
+    if i < len(lazy):
+        lazy[i] = op_f(f, lazy[i])
+
+
+@nb.njit
+def __seg_propagate(
+    op_f: typing.Callable[[F, F], F],
+    e_f: typing.Callable[[], F],
+    map_: typing.Callable[[F, S], S],
+    seg: np.ndarray,
+    lazy: np.ndarray,
+    i: int,
+) -> typing.NoReturn:
+    __seg_apply(op_f, map_, seg, lazy, i << 1, lazy[i])
+    __seg_apply(op_f, map_, seg, lazy, i << 1 | 1, lazy[i])
+    lazy[i] = e_f()
+
+
+@nb.njit
+def __seg_merge(
+    op_s: typing.Callable[[S, S], S],
+    seg: np.ndarray,
+    i: int,
+) -> typing.NoReturn:
+    seg[i] = op_s(seg[i << 1], seg[i << 1 | 1])
 
 
 @nb.njit
 def seg_set(
-    op: typing.Callable[[S, S], S],
+    op_s: typing.Callable[[S, S], S],
+    op_f: typing.Callable[[F, F], F],
+    e_f: typing.Callable[[], F],
+    map_: typing.Callable[[F, S], S],
     seg: np.ndarray,
-    i: int,
-    x: S,
+    lazy: np.ndarray,
+    l: int,
+    r: int,
+    f: F,
 ) -> typing.NoReturn:
-    i += len(seg) >> 1
-    seg[i] = x
-    while i > 1:
-        i >>= 1
-        seg[i] = op(seg[i << 1], seg[i << 1 | 1])
+    n = len(seg) >> 1
+    assert 0 <= l <= r <= n
+    l, r = l + n, r + n
+    h = bit_length(n)
+
+    for i in range(h, 0, -1):
+        if (l >> i) << i != l:
+            __seg_propagate(op_f, e_f, map_, seg, lazy, l >> i)
+        if (r >> i) << i != r:
+            __seg_propagate(op_f, e_f, map_, seg, lazy, (r - 1) >> i)
+
+    l0, r0 = l, r
+    while l < r:
+        if l & 1:
+            __seg_apply(op_f, map_, seg, lazy, l, f)
+            l += 1
+        if r & 1:
+            r -= 1
+            __seg_apply(op_f, map_, seg, lazy, r, f)
+        l, r = l >> 1, r >> 1
+    l, r = l0, r0
+    for i in range(1, h + 1):
+        if (l >> i) << i != l:
+            __seg_merge(op_s, seg, l >> i)
+        if (r >> i) << i != r:
+            __seg_merge(op_s, seg, (r - 1) >> i)
 
 
 @nb.njit
 def seg_get(
-    op: typing.Callable[[S, S], S],
-    e: typing.Callable[[], S],
+    op_s: typing.Callable[[S, S], S],
+    e_s: typing.Callable[[], S],
+    op_f: typing.Callable[[F, F], F],
+    e_f: typing.Callable[[], F],
+    map_: typing.Callable[[F, S], S],
     seg: np.ndarray,
+    lazy: np.ndarray,
     l: int,
     r: int,
-) -> int:
+) -> S:
     n = len(seg) >> 1
+    assert 0 <= l <= r <= n
     l, r = l + n, r + n
-    vl, vr = e(), e()
+    h = bit_length(n)
+
+    for i in range(h, 0, -1):
+        if (l >> i) << i != l:
+            __seg_propagate(op_f, e_f, map_, seg, lazy, l >> i)
+        if (r >> i) << i != r:
+            __seg_propagate(op_f, e_f, map_, seg, lazy, (r - 1) >> i)
+
+    vl, vr = e_s(), e_s()
     while l < r:
-        if l & 1: vl = op(vl, seg[l]); l += 1
-        if r & 1: r -= 1; vr = op(seg[r], vr)
+        if l & 1:
+            vl = op_s(vl, seg[l])
+            l += 1
+        if r & 1:
+            r -= 1
+            vr = op_s(seg[r], vr)
         l, r = l >> 1, r >> 1
-    return op(vl, vr)
+    return op_s(vl, vr)
 
 
 @nb.njit
-def seg_max_right(
-    op: np.ndarray,
-    e: np.ndarray,
+def seg_update(
+    op_s: typing.Callable[[S, S], S],
+    op_f: typing.Callable[[F, F], F],
+    e_f: typing.Callable[[], F],
+    map_: typing.Callable[[F, S], S],
     seg: np.ndarray,
-    is_ok: typing.Callable[[S], bool],
-    x: S,
-    l: int,
-    size: int,
-) -> int:
-    n = len(seg) >> 1
-    assert 0 <= l < size
-    v, i = e(), n + l
-    while True:
-        i //= i & -i
-        if is_ok(op(v, seg[i]), x):
-            v = op(v, seg[i])
-            i += 1
-            if i & -i == i: return size
-            continue
-        while i < n:
-            i <<= 1
-            if not is_ok(op(v, seg[i]), x): continue
-            v = op(v, seg[i])
-            i += 1
-        return i - n
-
-
-@nb.njit
-def build_seg(a: np.ndarray) -> np.ndarray:
-    return seg_build(seg_op, seg_e, a)
-
-
-@nb.njit
-def set_seg(seg: np.ndarray, i: int, x: S) -> typing.NoReturn:
-    seg_set(seg_op, seg, i, x)
-
-
-@nb.njit
-def get_seg(seg: np.ndarray, l: int, r: int) -> S:
-    return seg_get(seg_op, seg_e, seg, l, r)
-
-
-@nb.njit
-def operate_seg(
-    seg: np.ndarray,
+    lazy: np.ndarray,
     i: int,
     x: S,
 ) -> typing.NoReturn:
-    set_seg(seg, i, seg_op(get_seg(seg, i, i + 1), x))
+    n = len(seg) >> 1
+    assert 0 <= i <= n
+    i += n
+    h = bit_length(n)
+    for j in range(h, 0, -1):
+        __seg_propagate(op_f, e_f, map_, seg, lazy, i >> j)
+    seg[i] = x
+    for j in range(1, h + 1):
+        __seg_merge(op_s, seg, i >> j)
+
+
+# lazy segment tree interface.
+@nb.njit
+def build_seg(a: np.ndarray) -> typing.Tuple[np.ndarray, np.ndarray]:
+    return seg_build(seg_op_s, seg_e_s, seg_e_f, a)
 
 
 @nb.njit
-def max_right_seg(
-    seg: np.ndarray,
-    is_ok: typing.Callable[[S], bool],
-    x: S,
-    l: int,
-    size: int,
-) -> int:
-    return seg_max_right(seg_op, seg_e, seg, is_ok, x, l, size)
+def set_seg(seg: np.ndarray, lazy: np.ndarray, l: int, r: int, f: F) -> typing.NoReturn:
+    seg_set(seg_op_s, seg_op_f, seg_e_f, seg_map, seg, lazy, l, r, f)
 
 
 @nb.njit
-def seg_op(a: S, b: S) -> S: 
-    c = a.copy()
-    c[1] = min(c[1], c[0] + b[1])
-    c[0] += b[0]
-    return c
+def get_seg(seg: np.ndarray, lazy: np.ndarray, l: int, r: int) -> S:
+    return seg_get(seg_op_s, seg_e_s, seg_op_f, seg_e_f, seg_map, seg, lazy, l, r)
 
 
 @nb.njit
-def seg_e() -> S: 
-    inf = 1 << 60
-    return np.array([0, inf])
+def update_point_seg(seg: np.ndarray, lazy: np.ndarray, i: int, x: S) -> typing.NoReturn:
+    seg_update(seg_op_s, seg_op_f, seg_e_f, seg_map, seg, lazy, i, x)
+
+
+# set range add, get range mininum.
+@nb.njit
+def seg_op_s(a: S, b: S) -> S: return min(a, b)
+
+@nb.njit
+def seg_e_s() -> S: return 1 << 60
+
+@nb.njit
+def seg_op_f(f: F, g: F) -> F: return f + g
+
+@nb.njit
+def seg_e_f() -> F: return 0
+
+@nb.njit
+def seg_map(f: F, x: S) -> S: return x + f
 
 
 @nb.njit((nb.i8[:], nb.i8[:, :]), cache=True)
 def solve(a: np.ndarray, q: np.ndarray) -> typing.NoReturn:
     n = len(a)
-    s = np.empty((n, 2), np.int64)
-    s[:, 0] = a
-    s[:, 1] = a
-    seg = build_seg(s)
+    s = np.zeros(n + 1, np.int64)
+    s[1:] = a.cumsum()
+    
+    seg, lazy = build_seg(s)
     for i in range(len(q)):
         t, l, r = q[i]
-        if t == 0:
-            set_seg(seg, l, s[r])
-            set_seg(seg, r, s[l])
-            s[l], s[r] = s[r], s[l].copy()
+        if t == 1:
+            set_seg(seg, lazy, l, r, a[r - 1] - a[l - 1])
+            a[l - 1], a[r - 1] = a[r - 1], a[l - 1]
         else:
-            res = get_seg(seg, l, r + 1)
-            ans = 'Yes' if res[0] == 0 and res[1] >= 0 else 'No'
+            base = get_seg(seg, lazy, l - 1, l)
+            mn = get_seg(seg, lazy, l - 1, r + 1) - base
+            tot = get_seg(seg, lazy, r, r + 1) - base 
+            ans = 'Yes' if tot == 0 and mn >= 0 else 'No'
             print(ans)
 
 
@@ -163,7 +234,7 @@ def main() -> typing.NoReturn:
     q = np.array(
         sys.stdin.read().split(),
         dtype=np.int64,
-    ).reshape(q, 3) - 1
+    ).reshape(q, 3)
     solve(s, q)
 
 

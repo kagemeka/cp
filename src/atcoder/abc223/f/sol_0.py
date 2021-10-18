@@ -125,16 +125,10 @@ def max_right_seg(
 
 @nb.njit
 def seg_op(a: S, b: S) -> S: 
-    c = a.copy()
-    c[1] = min(c[1], c[0] + b[1])
-    c[0] += b[0]
-    return c
-
+    return np.array([a[0] + b[0], min(a[1], a[0] + b[1])])
 
 @nb.njit
-def seg_e() -> S: 
-    inf = 1 << 60
-    return np.array([0, inf])
+def seg_e() -> S: return np.array([0, 1 << 60])
 
 
 @nb.njit((nb.i8[:], nb.i8[:, :]), cache=True)
