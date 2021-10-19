@@ -1,7 +1,7 @@
 template <typename T>
 int bit_length(T n) {
   int l = 0;
-  while (1 << l <= n) ++l;
+  while (1LL << l <= n) ++l;
   return l;
 }
 
