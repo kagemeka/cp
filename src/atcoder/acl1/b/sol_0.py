@@ -41,7 +41,7 @@ def crt(r: np.ndarray, m: np.ndarray) -> typing.Tuple[int, int]:
         r1, m1 = r[i], m[i]
         assert m1 >= 1
         r1 %= m1
-        if m0 < m1: # avoid overfow
+        if m0 < m1: # avoid overflow
             r0, r1 = r1, r0
             m0, m1 = m1, m0
         g, p, q = extgcd(m0, m1)
