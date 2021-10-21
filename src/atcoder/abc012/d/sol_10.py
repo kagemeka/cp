@@ -5,16 +5,13 @@ import numba as nb
 
 
 @nb.njit((nb.i8[:, :], ), cache=True)
-def shortest_dist_floyd_warshall(g: np.ndarray) -> np.ndarray:
+def floyd_warshall(g: np.ndarray) -> typing.NoReturn:
   n = len(g)
   assert g.shape == (n, n)
-  g = g.copy()
-  for i in range(n): g[i, i] = 0
   for k in range(n):
     for i in range(n):
       for j in range(n):
         g[i, j] = min(g[i, j], g[i, k] + g[k, j])
-  return g
 
 
 @nb.njit 
@@ -26,37 +23,28 @@ def csgraph_to_directed(g: np.ndarray) -> np.ndarray:
 
 
 @nb.njit 
-def csgraph_to_dense(n: int, g: np.ndarray) -> np.ndarray:
-  inf = 1 << 60
+def csgraph_to_dense(n: int, g: np.ndarray, fill: int) -> np.ndarray:
   m = len(g)
   assert g.shape == (m, 3)
-  t = np.full((n, n), inf, np.int64)
-  for i in range(m):
-    u, v, w = g[i]
-    t[u, v] = w
+  t = np.full((n, n), fill, np.int64)
+  for i in range(m): t[g[i, 0], g[i, 1]] = g[i, 2]
   return t 
-
 
 
 @nb.njit((nb.i8, nb.i8[:, :]), cache=True) 
 def solve(n: int, abt: np.ndarray) -> typing.NoReturn:
   inf = 1 << 60
-  g = csgraph_to_dense(n, csgraph_to_directed(abt))
-  
-  dist = shortest_dist_floyd_warshall(g)
+  g = csgraph_to_dense(n, csgraph_to_directed(abt), inf)
+  for i in range(n): g[i, i] = 0
+  floyd_warshall(g)
   mn = inf
-  for i in range(n):
-    mn = min(mn, dist[i].max())
+  for i in range(n): mn = min(mn, g[i].max())
   print(mn)
   
 
-
 def main() -> typing.NoReturn:
   n, m = map(int, input().split())
-  abt = np.array(
-    sys.stdin.read().split(),
-    dtype=np.int64,
-  ).reshape(m, 3)
+  abt = np.array(sys.stdin.read().split(), dtype=np.int64).reshape(m, 3)
   abt[:, :2] -= 1
   solve(n, abt)
 
