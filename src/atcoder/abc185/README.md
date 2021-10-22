@@ -1,1 +1,0 @@
-# [AtCoder ABC 185](https://atcoder.jp/contests/abc185)
