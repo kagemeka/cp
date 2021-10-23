@@ -4,32 +4,27 @@ import numpy as np
 import numba as nb 
 
 
+@nb.njit((nb.i8[:], ), cache=True)
+def solve(a: np.ndarray) -> typing.NoReturn:
+    n = len(a)
+    prev = np.empty(n, np.int64)
+    last = np.zeros(26, np.int64)
+    for i in range(n):
+        prev[i] = last[a[i]]
+        last[a[i]] = i + 1
+    mod = 10 ** 9 + 7
 
-@nb.njit(
-  (nb.i8[:], ),
-  cache=True,
-)
-def solve(      
-  s: np.ndarray,
-) -> typing.NoReturn:
-  mod = 10 ** 9 + 7
-  n = s.size 
-  prev = np.zeros(26, np.int64)
-  dp = np.zeros(1 << 18, np.int64)
-  dp[0] = 1; dp[1] += dp[0]
-  for i in range(n):
-    dp[i + 2] = dp[i] - dp[prev[s[i]] - 2] + dp[i + 1]
-    dp[i + 2] %= mod
-    prev[s[i]] = i + 2
-  print((dp[n + 1] - 1) % mod)
-
+    dp = np.zeros(n + 3, np.int64)
+    for i in range(2, n + 2):
+        j = prev[i - 2]
+        dp[i] = dp[i - 2] - (-1 if j == 0 else dp[j - 1])
+        dp[i] = (dp[i] + dp[i - 1]) % mod
+    print(dp[n + 1])
 
 def main() -> typing.NoReturn:
-  s = np.frombuffer(
-    sys.stdin.buffer.readline().rstrip(),
-    dtype='b',
-  ).astype(np.int64) - ord('a')
-  solve(s)
+    a = np.array([ord(x) - 97 for x in input()])
+    solve(a)
 
 
 main()
+    

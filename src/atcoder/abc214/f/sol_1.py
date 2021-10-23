@@ -14,15 +14,15 @@ def solve(
 ) -> typing.NoReturn:
   mod = 10 ** 9 + 7
   n = s.size 
-  prev = np.zeros(26, np.int64)
-  dp = np.zeros(1 << 18, np.int64)
-  dp[0] = 1; dp[1] += dp[0]
+  dp = np.zeros(n, np.int64)
   for i in range(n):
-    dp[i + 2] = dp[i] - dp[prev[s[i]] - 1]
-    dp[i + 2] += dp[i + 1]
-    dp[i + 2] %= mod
-    prev[s[i]] = i + 1
-  print((dp[n + 1] - 1) % mod)
+    for j in range(i - 1, -1, -1):
+      if j > 0: dp[i] += dp[j - 1]
+      if s[j] == s[i]: break
+    else:
+      dp[i] += 1
+    dp[i] %= mod
+  print(dp.sum() % mod)
 
 
 def main() -> typing.NoReturn:
