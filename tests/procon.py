@@ -1983,19 +1983,7 @@ from scipy.spatial import ConvexHull
     def d():
       pass
       
-  class ABC125: pass
-  class ABC126: pass
-  class ABC127: pass
-  class ABC128: pass
-  class ABC129: pass
-  class ABC130: pass
-  class ABC131: pass
-  class ABC132: pass
-  class ABC133: pass
-  class ABC134: pass
-  class ABC135: pass
-  class ABC136: pass
-  class ABC137: pass
+
   class ABC138:
     @staticmethod 
     def d():
@@ -2014,37 +2002,6 @@ from scipy.spatial import ConvexHull
           parent[v] = u; c[v] += c[u]; dfs(v)
       dfs(0)
       print(*c)
-
-  class ABC139: pass
-  class ABC140: pass
-  class ABC141: pass
-  class ABC142: pass
-  class ABC144: pass
-  class ABC145: pass
-  class ABC146: pass
-  class ABC147: pass
-  class ABC148: pass
-  class ABC149: pass
-  class ABC150: pass
-  class ABC151: pass
-  class ABC152: pass
-  class ABC153: pass
-  class ABC154: pass
-  class ABC155: pass
-  class ABC156: pass
-  class ABC157: pass
-  class ABC158: pass
-  class ABC159: pass
-  class ABC160: pass
-  class ABC161: pass
-  class ABC162: pass
-  class ABC163: pass
-  class ABC164: pass
-  class ABC165: pass
-  class ABC166: pass
-  class ABC167: pass
-  class ABC168: pass
-  class ABC169: pass
 
   class ABC170:
     @staticmethod
@@ -2960,20 +2917,6 @@ from scipy.spatial import ConvexHull
 
     
 
-      
-
-
-
-
-  class ACL001:
-    @staticmethod 
-    def a():
-      n, *xy = map(int, sys.stdin.read().split())
-      *xy, = zip(*[iter(xy)]*2)
-      print(xy)
-      pass
-  
-
 
   class TDPC:
     @staticmethod
@@ -2991,38 +2934,6 @@ from scipy.spatial import ConvexHull
         c += bit.sum(1,n) - bit.sum(1,x)
         bit.add(x,1)
       print(c)
-
-  class ALPC: # AtCoder Library Practice Contest\
-    @staticmethod 
-    def a():
-      n, q, *tuv = map(int, sys.stdin.read().split())
-      uf = GeometryTopology.Graph(n); uf.init_dsu()
-      for t, u, v in zip(*[iter(tuv)]*3):
-        if t == 0: uf.unite(u,v)
-        else: print(int(uf.same(u,v)))
-
-
-    @staticmethod 
-    def b():
-      n, q = map(int, sys.stdin.readline().split())
-      a = [int(x) for x in sys.stdin.readline().split()]
-      bit = GeometryTopology.FenwickTree(n)
-      for i in range(n): bit.add(i+1, a[i])
-      for t, i, j in zip(*[map(int, sys.stdin.read().split())]*3):
-        if t==0: bit.add(i+1,j)
-        else: print(bit.sum(i+1,j))    
-
-
-    @staticmethod 
-    def g():
-      n, m, *ab = map(int, sys.stdin.read().split())
-      a, b = np.array(ab).reshape(m,2).T
-      _, r = connected_components(csr_matrix(([1]*m, (a,b)), (n,n)), connection='strong')
-      groups = [[] for _ in range(n)]
-      for u in range(n): groups[r[u]].append(u)
-      groups = [group for group in groups if group]
-      print(len(groups))
-      for group in groups[::-1]: print(len(group), *group)
 
 
   class MSolutions2020:
@@ -3239,13 +3150,6 @@ class ProjectEuler:
   
   pass
 
-class Yukicoder:
-  def __init__(self):
-    pass
-
-  def __call__(self):
-    print(1)
-
 
 class AOJ:
   @staticmethod 
@@ -3282,35 +3186,4 @@ class AOJ:
       if t==0: bit.add(x, y)
       else: print(bit.sum(x,y))
 
-
-class YosupoJudge:
-
-  @staticmethod 
-  def PointAddRangeSum():
-    n, q = map(int, sys.stdin.readline().split())
-    a = [int(x) for x in sys.stdin.readline().split()]
-    bit = GeometryTopology.FenwickTree(n)
-    for i in range(n): bit.add(i+1, a[i])
-    for t, i, j in zip(*[map(int, sys.stdin.read().split())]*3):
-      if t==0: bit.add(i+1,j)
-      else: print(bit.sum(i+1,j))
-    
-  @staticmethod 
-  def Directed_MST():
-    n, m, s, *abc = map(int, sys.stdin.read().split())
-    g = GeometryTopology.Graph(n)
-    for a, b, c in zip(*[iter(abc)]*3):g.add_edge(a, b, weight=c)
-    _, d, p = g.prim(src=s, return_parent=True)
-    print(d)
-    print(*p)
-
-  @staticmethod 
-  def Manhattan_MST():
-      n, *xy = map(int, sys.stdin.read().split())
-      g = GeometryTopology.Graph(n)
-
-
-if __name__ == '__main__':
-  AtCoder.ARC110.b() 
-  pass
   
