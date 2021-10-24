@@ -7,7 +7,7 @@ pub fn readline() -> String {
 
 #[derive(Default)]
 pub struct Scanner {
-  buffer: Vec<String>,
+    buffer: Vec<String>,
 }
 
 
@@ -29,13 +29,9 @@ impl Scanner {
         }
     }
 
-    pub fn i32(&mut self) -> i32 {
-        self.scan::<i32>()
-    }
+    pub fn i32(&mut self) -> i32 { self.scan::<i32>() }
 
-    pub fn string(&mut self) -> String {
-        self.scan::<String>()
-    }
+    pub fn string(&mut self) -> String { self.scan::<String>() }
 }
 
 
