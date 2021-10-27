@@ -61,6 +61,23 @@ pub fn scan<T: ::std::str::FromStr>() -> T {
 
 // #[allow(warnings)]
 fn main() {
+    let (r, g, b) = (scan::<usize>(), scan::<usize>(), scan::<usize>()); 
+    let k: usize = 1 << 10;
+
+    let inf = 1 << 30;
+    let mut dp = vec![inf; k];
+    dp[0] = 0;
+    // let mut dp: Vec<Vec<i32>> = (0..k).map(|_| vec![0; k]).collect();
+    let mut x = vec![-1; k];
+    for j in 0..k {
+        x[j] = if j <= r { 400 } else if j <= r + g { 500 } else { 600 };
+    }
+    for i in 0..k {
+        let mut ndp = dp.clone();
+        for j in 1..k {
+            ndp[j] = std::cmp::min(ndp[j], dp[j - 1] + (i as i32 - x[j]).abs());
+        }     
+        std::mem::swap(&mut dp, &mut ndp);
+    }
+    println!("{}", dp[r + g + b]);
 }
-
-

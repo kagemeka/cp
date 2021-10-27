@@ -55,12 +55,21 @@ pub fn scan<T: ::std::str::FromStr>() -> T {
 }
 
 
-// use std::io::Write;
+use std::io::Write;
 /// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
-
+use std::vec::*;
 // #[allow(warnings)]
 fn main() {
+    let n = 4usize;
+    let mut board: Vec<Vec<char>> = vec![vec!['a'; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            board[i][j] = scan();
+        }
+    }
+    board.reverse();
+    for i in 0..n {
+        println!("{}", board[i].iter().rev().map(|c| c.to_string()).collect::<Vec<_>>().join(" "));
+    }
 }
-
-
