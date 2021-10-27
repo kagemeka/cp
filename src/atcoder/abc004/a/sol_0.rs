@@ -1,3 +1,4 @@
+
 pub fn readline() -> String {
     let mut buf: String = String::new();
     std::io::stdin().read_line(&mut buf).unwrap();
@@ -55,12 +56,12 @@ pub fn scan<T: ::std::str::FromStr>() -> T {
 }
 
 
-// use std::io::Write;
+use std::io::Write;
 /// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
 
 // #[allow(warnings)]
 fn main() {
+    let n = scan::<i32>();
+    println!("{}", n * 2);
 }
-
-

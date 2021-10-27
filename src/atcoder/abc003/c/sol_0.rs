@@ -1,3 +1,4 @@
+
 pub fn readline() -> String {
     let mut buf: String = String::new();
     std::io::stdin().read_line(&mut buf).unwrap();
@@ -14,10 +15,9 @@ pub struct Scanner {
     buffer: Vec<String>,
 }
 
-/// ```
-/// let mut sc: Scanner = Scanner::default();
-/// let a: i32 = sc.scan::<i32>();
-/// ```
+/// example
+/// let mut scanner: Scanner = Scanner::default();
+/// let a: i32 = scanner.next::<i32>();
 impl Scanner {
     pub fn scan<T: std::str::FromStr>(&mut self) -> T 
     where 
@@ -55,12 +55,23 @@ pub fn scan<T: ::std::str::FromStr>() -> T {
 }
 
 
-// use std::io::Write;
+use std::io::Write;
 /// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
 
 // #[allow(warnings)]
 fn main() {
+    let mut sc = Scanner::default();
+    let n = sc.i32();
+    let k = sc.i32();
+    let mut r = vec![0; n as usize];
+    for i in 0..n as usize {
+        r[i] = sc.i32();
+    }
+    let mut rate: f32 = 0f32;
+    r.sort();
+    for i in (n - k) as usize..n as usize {
+        rate = (rate + r[i] as f32) / 2.0;
+    }
+    println!("{:.16}", rate);
 }
-
-

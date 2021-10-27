@@ -55,12 +55,19 @@ pub fn scan<T: ::std::str::FromStr>() -> T {
 }
 
 
-// use std::io::Write;
+use std::io::Write;
 /// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
-
+use std::vec::*;
 // #[allow(warnings)]
 fn main() {
+    let n: usize = 6;
+    let mut k: usize = scan();
+    k %= n * (n - 1);
+    let mut a = vec!['1', '2', '3', '4', '5', '6'];
+    for mut i in 0..k {
+        i %= n - 1;
+        a.swap(i, i + 1);
+    }
+    println!("{}", a.iter().collect::<String>());
 }
-
-

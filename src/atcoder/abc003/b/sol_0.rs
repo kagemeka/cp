@@ -1,3 +1,4 @@
+
 pub fn readline() -> String {
     let mut buf: String = String::new();
     std::io::stdin().read_line(&mut buf).unwrap();
@@ -14,10 +15,9 @@ pub struct Scanner {
     buffer: Vec<String>,
 }
 
-/// ```
-/// let mut sc: Scanner = Scanner::default();
-/// let a: i32 = sc.scan::<i32>();
-/// ```
+/// example
+/// let mut scanner: Scanner = Scanner::default();
+/// let a: i32 = scanner.next::<i32>();
 impl Scanner {
     pub fn scan<T: std::str::FromStr>(&mut self) -> T 
     where 
@@ -46,21 +46,23 @@ impl Scanner {
 }
 
 
-pub fn scan<T: ::std::str::FromStr>() -> T {
-    use std::io::Read;
-    std::io::stdin().lock().bytes().map(|c|c.unwrap()as char)
-    .skip_while(|c|c.is_whitespace())
-    .take_while(|c|!c.is_whitespace())
-    .collect::<String>().parse::<T>().ok().unwrap()
-}
-
-
-// use std::io::Write;
+use std::io::Write;
 /// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
 
 // #[allow(warnings)]
 fn main() {
+    let mut sc = Scanner::default();
+    let s: Vec<char> = sc.string().chars().collect();
+    let t: Vec<char> = sc.string().chars().collect();
+    
+    let n = s.len();
+    for i in 0..n {
+        if s[i] == t[i] { continue; }
+        if s[i] == '@' && "atcoder".contains(t[i]) { continue; }
+        if t[i] == '@' && "atcoder".contains(s[i]) { continue; }
+        println!("You will lose");
+        return;
+    }
+    println!("You can win");
 }
-
-
