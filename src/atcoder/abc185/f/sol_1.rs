@@ -72,93 +72,73 @@ pub struct Monoid<S> {
 
 /// explicit lifetime for Monoid<S>.
 /// S implements Copy trait for convenience.
-pub struct SegmentTree<'a, S: Copy> {
+pub struct FenwickTree<'a, S: Copy> {
     m: &'a Monoid<S>,
     data: Vec<S>,
-    size: usize,
 }
 
 
-impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<'a, S> {
+impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for FenwickTree<'a, S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("SegmentTree").field(&self.data).finish()
+        f.debug_tuple("FenwickTree").field(&self.data).finish()
     }
 }
 
-impl<'a, S: Copy> SegmentTree<'a, S> {
+impl<'a, S: Copy> FenwickTree<'a, S> {
 
     pub fn new(m: &'a Monoid<S>, n: usize) -> Self {
         Self::from_vec(m, vec![(m.e)(); n])
     }
 
     pub fn from_vec(m: &'a Monoid<S>, a: Vec<S>) -> Self {
-        let size = a.len();
-        let n = size.next_power_of_two();
-        let mut data = vec![(m.e)(); n << 1];
-        for i in 0..size { data[n + i] = a[i]; }
-        let mut seg = Self { m, data, size };
-        for i in (0..n).rev() { seg.merge(i); }
-        seg        
-    }
-
-    fn merge(&mut self, i: usize) {
-        self.data[i] = (self.m.op)(&self.data[i << 1], &self.data[i << 1 | 1]);
-    }
-
-    pub fn set(&mut self, mut i: usize, x: S) {
-        assert!(i < self.size);
-        i += self.data.len() >> 1;
-        self.data[i] = x;
-        while i > 1 { i >>= 1; self.merge(i); }
-    }
-
-    pub fn get(&self, mut l: usize, mut r: usize) -> S {
-        assert!(l <= r && r <= self.size);
-        let n = self.data.len() >> 1;
-        l += n; r += n;
-        let mut vl = (self.m.e)();
-        let mut vr = (self.m.e)();
-        while l < r {
-            if l & 1 == 1 { vl = (self.m.op)(&vl, &self.data[l]); l += 1; }
-            if r & 1 == 1 { r -= 1; vr = (self.m.op)(&self.data[r], &vr); }
-            l >>= 1; r >>= 1; 
+        let n = a.len();
+        let mut data = vec![(m.e)(); n + 1];
+        for i in 0..n { data[i + 1] = a[i]; }
+        for i in 1..=n as i32 {
+            let j = (i + (i & -i)) as usize;
+            if j < n + 1 { data[j] = (m.op)(&data[j], &data[i as usize]); }
         }
-        (self.m.op)(&vl, &vr)
+        Self { m, data }
     }
 
-    pub fn max_right(&self, is_ok: Box<dyn Fn(&S) -> bool>, l: usize) -> usize {
-        assert!(l < self.size);
-        let n = self.data.len() >> 1;
+
+    pub fn set(&mut self, mut i: usize, x: &S) {
+        assert!(i < self.data.len() - 1);
+        i += 1;
+        while i < self.data.len() {
+            self.data[i] = (self.m.op)(&self.data[i], x);
+            i += (i as i32 & -(i as i32)) as usize;
+        }
+    }
+
+    pub fn get(&self, mut i: usize) -> S {
+        assert!(i < self.data.len());
         let mut v = (self.m.e)();
-        let mut i = (l + n) as i32;
-        loop {
-            i /= i & -i;
-            if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                v = (self.m.op)(&v, &self.data[i as usize]);
-                i += 1;
-                if i & -i == i { return self.size; }
-                continue;
-            }
-            while i < n as i32 {
-                i <<= 1;
-                if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                    v = (self.m.op)(&v, &self.data[i as usize]);
-                }
-            }
-            return i as usize - n;
+        while i > 0 {
+            v = (self.m.op)(&v, &self.data[i]);
+            i -= (i as i32 & -(i as i32)) as usize;
         }
+        v
+    }
+
+    pub fn max_right(&self, is_ok: Box<dyn Fn(&S) -> bool>) -> usize {
+        let n = self.data.len();
+        let mut l = 1;
+        while l << 1 < n { l <<= 1; }
+        let mut v = (self.m.e)();
+        let mut i = 0usize;
+        while l > 0 {
+            if i + l < n && is_ok(&(self.m.op)(&v, &self.data[i + l])) {
+                i += l;
+                v = (self.m.op)(&v, &self.data[i + 1]);
+            }
+            l >>= 1;
+        }
+        i
     }
 }
 
 
-impl<'a, S: Copy> std::ops::Index<usize> for SegmentTree<'a, S> {
-    type Output = S; 
-    
-    fn index(&self, i: usize) -> &Self::Output {
-        assert!(i < self.size);
-        &self.data[i + (self.data.len() >> 1)]
-    }
-}
 
 
 
@@ -173,21 +153,23 @@ mod tests {
         let m = Monoid::<i32> { op: Box::new(op), e: Box::new(e), commutative: true};
         let mut a = vec![0i32; 10];
         for i in 0..10i32 { a[i as usize] = i; }
-        let mut seg = SegmentTree::from_vec(&m, a);
-        assert_eq!(seg.get(0, 10), 45);
+        let mut fw = FenwickTree::from_vec(&m, a);
+        assert_eq!(fw.get(10), 45);
         assert_eq!(
-            seg.data,
-            [45, 45, 28, 17, 6, 22, 17, 0, 1, 5, 9, 13, 17, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0],
+            fw.data,
+            vec![0, 0, 1, 2, 6, 4, 9, 6, 28, 8, 17],
         );
-        println!("{:?}", seg);
-        seg.set(4, 8);
-        assert_eq!(seg.get(3, 8), 29);
+        println!("{:?}", fw);
+        fw.set(4, &4);
+        assert_eq!(fw.get(8) - fw.get(3), 29);
     }
 }
 
 
 // #[allow(warnings)]
 fn main() {
+    use std::io::Write;
+    let out = &mut std::io::BufWriter::new(std::io::stdout());
     let op = |x: &u32, y: &u32| { x ^ y };
     let e = || { 0u32 };
     let m = Monoid::<u32> { op: Box::new(op), e: Box::new(e), commutative: true};
@@ -195,15 +177,16 @@ fn main() {
     let q: usize = scan();
     let mut a = vec![0u32; n];
     for i in 0..n { a[i] = scan(); }
-    let mut seg = SegmentTree::from_vec(&m, a);
+    let mut fw = FenwickTree::from_vec(&m, a);
     for _ in 0..q {
         let t: u8 = scan();
         let x: usize = scan::<usize>() - 1;
         let y: usize = scan();
         if t == 1 {
-            seg.set(x, seg[x] ^ y as u32);
+            let y = y as u32;
+            fw.set(x, &y);
         } else {
-            // println!("{}", seg.get(x, y));
+            writeln!(out, "{}", (fw.get(y) ^ fw.get(x))).unwrap();
         }  
     }
 }

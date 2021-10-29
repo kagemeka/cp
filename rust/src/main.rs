@@ -188,6 +188,8 @@ mod tests {
 
 // #[allow(warnings)]
 fn main() {
+    use std::io::Write;
+    let out = &mut std::io::BufWriter::new(std::io::stdout());
     let op = |x: &u32, y: &u32| { x ^ y };
     let e = || { 0u32 };
     let m = Monoid::<u32> { op: Box::new(op), e: Box::new(e), commutative: true};
@@ -203,7 +205,7 @@ fn main() {
         if t == 1 {
             seg.set(x, seg[x] ^ y as u32);
         } else {
-            // println!("{}", seg.get(x, y));
+            writeln!(out, "{}", seg.get(x, y)).unwrap();
         }  
     }
 }
