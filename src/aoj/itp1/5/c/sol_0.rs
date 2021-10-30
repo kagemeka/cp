@@ -22,28 +22,23 @@ fn main() {
     let stdin = std::io::stdin();
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
-    let out = &mut std::io::BufWriter::new(stdout.lock());  
+    let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut a = vec![vec![0; m]; n];
-    for i in 0..n {
-        for j in 0..m {
-            a[i][j] = sc.scan();
+    loop {
+        let h: usize = sc.scan();
+        let w: usize = sc.scan();
+        if h == 0 && w == 0 { break; }
+        for i in 0..h {
+            let mut s = String::new();
+            for j in 0..w {
+                s += if (i + j) & 1 == 1 { "." } else { "#" };
+            }
+            writeln!(out, "{}", s).unwrap();
         }
+        writeln!(out, "").unwrap();
     }
-    let mut b = vec![0; m];
-    for j in 0..m { 
-        b[j] = sc.scan();
-    }
-    for i in 0..n {
-        let mut s = 0;
-        for j in 0..m {
-            s += a[i][j] * b[j];
-        }
-        writeln!(out, "{}", s).unwrap();
-    }
-    
+        
 }
+
 
 
