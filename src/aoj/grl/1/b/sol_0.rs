@@ -27,25 +27,21 @@ fn main() {
 
     let n: usize = sc.scan();
     let m: usize = sc.scan();
-    let inf = std::i64::MAX;
-    let mut g: Vec<Vec<i64>> = vec![vec![inf; n]; n];
+    let r: usize = sc.scan();
+    let mut g: Vec<Vec<(usize, i64)>> = vec![vec![]; n];
     for _ in 0..m {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
         let d: i64 = sc.scan();
-        g[s][t] = std::cmp::min(g[s][t], d);
+        g[s].push((t, d));
     }
-    for i in 0..n { g[i][i] = 0; }
-    if let Ok(dist) = floyd_warshall(g) {
-       for i in 0..n {
-           for j in 0..n {
-               if dist[i][j] == inf { 
-                   write!(out, "INF").unwrap();
-               } else {
-                   write!(out, "{}", dist[i][j]).unwrap();
-               }
-               write!(out, "{}", if j < n - 1 { ' ' } else { '\n' }).unwrap();
-           }
+    if let Ok(dist) = bellman_ford_sparse(&g, r) {
+        for d in dist.iter() {
+            if *d < std::i64::MAX {
+                writeln!(out, "{}", d).unwrap();
+            } else {
+                writeln!(out, "INF").unwrap();
+            }
         }
     } else {
         writeln!(out, "NEGATIVE CYCLE").unwrap();
@@ -75,19 +71,24 @@ impl std::error::Error for NegativeCycleError {
 }
 
 
-pub fn floyd_warshall(mut g: Vec<Vec<i64>>) -> Result<Vec<Vec<i64>>, NegativeCycleError> {
-    let inf = std::i64::MAX;
+pub fn bellman_ford_sparse(g: &Vec<Vec<(usize, i64)>>, src: usize) -> Result<Vec<i64>, NegativeCycleError> {
     let n = g.len();
-    for k in 0..n {
-        for i in 0..n {
-            for j in 0..n {
-                if g[i][k] == inf || g[k][j] == inf { continue; }
-                g[i][j] = std::cmp::min(g[i][j], g[i][k] + g[k][j]);
+    let inf = std::i64::MAX;
+    let mut dist = vec![inf; n];
+    dist[src] = 0;
+    for _ in 0..n - 1 {
+        for u in 0..n {
+            for (v, w) in g[u].iter() {
+                if dist[u] == inf || dist[u] + w >= dist[*v] { continue; }
+                dist[*v] = dist[u] + w;
             }
         }
     }
-    for i in 0..n {
-        if g[i][i] < 0 { return Err(NegativeCycleError::new()); }
+    for u in 0..n {
+        for (v, w) in g[u].iter() {
+            if dist[u] == inf || dist[u] + w >= dist[*v] { continue; }
+            return Err(NegativeCycleError::new());
+        }
     }
-    Ok(g)
+    Ok(dist)
 }
