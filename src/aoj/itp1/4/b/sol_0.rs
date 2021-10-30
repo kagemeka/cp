@@ -24,11 +24,8 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let n: usize = sc.scan();
-    let mut a = vec![0; n];
-    for i in 0..n { a[i] = sc.scan(); }
-    writeln!(out, "{} {} {}", a.iter().min().unwrap(), a.iter().max().unwrap(), a.iter().sum::<i64>()).unwrap();
-        
+    let r: f64 = sc.scan();
+    writeln!(out, "{:.16} {:.16}", r * r * std::f64::consts::PI, 2. * r * std::f64::consts::PI).unwrap();
 }
 
 
