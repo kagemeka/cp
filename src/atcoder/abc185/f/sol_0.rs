@@ -1,63 +1,21 @@
-pub fn readline() -> String {
-    let mut buf: String = String::new();
-    std::io::stdin().read_line(&mut buf).unwrap();
-    buf
+pub struct Scanner<R: std::io::Read> {
+    reader: R,
 }
 
-pub fn read_int() -> i64 {
-    readline().trim().parse::<i64>().unwrap()
-}
+impl<R: std::io::Read> Scanner<R> {
+    /// let stdin = std::io::stdin();
+    /// let mut sc = Scanner::new(stdin.lock());
+    pub fn new(reader: R) -> Self { Self { reader: reader } }
 
-
-#[derive(Default)]
-pub struct Scanner {
-    buffer: Vec<String>,
-}
-
-/// ```
-/// let mut sc: Scanner = Scanner::default();
-/// let a: i32 = sc.scan::<i32>();
-/// ```
-impl Scanner {
-    pub fn scan<T>(&mut self) -> T 
-    where 
-        T: std::str::FromStr,
-        T::Err: std::fmt::Debug,
-    {
-        loop {
-            if let Some(token) = self.buffer.pop() {
-                return token.parse::<T>().unwrap();
-            }
-            self.buffer = 
-                readline()   
-                .trim()
-                .split_whitespace().rev()
-                .map(String::from)
-                .collect();
-        }
-    }
-
-    pub fn i32(&mut self) -> i32 {
-        self.scan::<i32>()
-    }
-
-    pub fn string(&mut self) -> String {
-        self.scan::<String>()
+    pub fn scan<T: std::str::FromStr>(&mut self) -> T {
+        use std::io::Read;
+        self.reader.by_ref().bytes().map(|c|c.unwrap()as char)
+        .skip_while(|c|c.is_whitespace())
+        .take_while(|c|!c.is_whitespace())
+        .collect::<String>().parse::<T>().ok().unwrap()
     }
 }
 
-
-pub fn scan<T: std::str::FromStr>() -> T {
-    use std::io::Read;
-    std::io::stdin().lock().bytes().map(|c|c.unwrap()as char)
-    .skip_while(|c|c.is_whitespace())
-    .take_while(|c|!c.is_whitespace())
-    .collect::<String>().parse::<T>().ok().unwrap()
-}
-
-
-// use std::io::Write;
-/// let out = &mut std::io::BufWriter::new(std::io::stdout());
 
 
 /// Fn(&S, &S) -> S is a trait.
@@ -188,22 +146,31 @@ mod tests {
 
 // #[allow(warnings)]
 fn main() {
+    use std::io::Write;
+    let stdin = std::io::stdin();
+    let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
+    let stdout = std::io::stdout();
+    let out = &mut std::io::BufWriter::new(stdout.lock());
+
     let op = |x: &u32, y: &u32| { x ^ y };
     let e = || { 0u32 };
     let m = Monoid::<u32> { op: Box::new(op), e: Box::new(e), commutative: true};
-    let n: usize = scan();
-    let q: usize = scan();
+
+    let n: usize = sc.scan();
+    let q: usize = sc.scan();
     let mut a = vec![0u32; n];
-    for i in 0..n { a[i] = scan(); }
+    for i in 0..n { a[i] = sc.scan(); }
     let mut seg = SegmentTree::from_vec(&m, a);
     for _ in 0..q {
-        let t: u8 = scan();
-        let x: usize = scan::<usize>() - 1;
-        let y: usize = scan();
+        let t: u8 = sc.scan();
+        let x: usize = sc.scan::<usize>() - 1;
+        let y: usize = sc.scan();
         if t == 1 {
             seg.set(x, seg[x] ^ y as u32);
         } else {
-            // println!("{}", seg.get(x, y));
+            writeln!(out, "{}", seg.get(x, y)).unwrap();
         }  
     }
 }
+
+

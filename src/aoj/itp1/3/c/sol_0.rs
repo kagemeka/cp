@@ -24,15 +24,13 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: i32 = sc.scan();
-    let b: i32 = sc.scan();
-    let c: i32 = sc.scan();
-
-    let mut cnt = 0;
-    for x in a..=b {
-        if c % x == 0 { cnt += 1; }
+    loop {
+        let mut x: i32 = sc.scan();
+        let mut y: i32 = sc.scan();
+        if x == 0 && y == 0 { break; }
+        if x > y { std::mem::swap(&mut x, &mut y); }
+        writeln!(out, "{} {}", x, y).unwrap();
     }
-    writeln!(out, "{}", cnt);
 }
 
 

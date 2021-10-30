@@ -24,15 +24,13 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: i32 = sc.scan();
-    let b: i32 = sc.scan();
-    let c: i32 = sc.scan();
-
-    let mut cnt = 0;
-    for x in a..=b {
-        if c % x == 0 { cnt += 1; }
+    let mut i = 0;
+    loop {
+        i += 1;
+        let x: i32 = sc.scan();
+        if x == 0 { break; }
+        writeln!(out, "Case {}: {}", i, x).unwrap();
     }
-    writeln!(out, "{}", cnt);
 }
 
 
