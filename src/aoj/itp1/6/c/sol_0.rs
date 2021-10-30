@@ -24,24 +24,23 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
+
+    let mut a = vec![vec![vec![0; 10]; 3]; 4];
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut a = vec![vec![0; m]; n];
-    for i in 0..n {
-        for j in 0..m {
-            a[i][j] = sc.scan();
-        }
+    for _ in 0..n {
+        let b: usize = sc.scan();
+        let f: usize = sc.scan();
+        let r: usize = sc.scan();
+        let v: i32 = sc.scan();
+        a[b - 1][f - 1][r - 1] += v;   
     }
-    let mut b = vec![0; m];
-    for j in 0..m { 
-        b[j] = sc.scan();
-    }
-    for i in 0..n {
-        let mut s = 0;
-        for j in 0..m {
-            s += a[i][j] * b[j];
+    for i in 0..4 {
+        for j in 0..3 {
+            writeln!(out, "{}", String::from(" ") + &a[i][j].iter().map(|x| x.to_string()).collect::<Vec<_>>().join(" ")).unwrap();
         }
-        writeln!(out, "{}", s).unwrap();
+        if i < 3 {
+            writeln!(out, "{}", "#".repeat(20)).unwrap();
+        }
     }
     
 }

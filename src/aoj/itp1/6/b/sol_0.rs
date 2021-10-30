@@ -24,26 +24,21 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
+
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut a = vec![vec![0; m]; n];
-    for i in 0..n {
-        for j in 0..m {
-            a[i][j] = sc.scan();
+    let a = vec!['S', 'H', 'C', 'D'];
+    let mut b = vec![vec![true; 13]; 4];
+    for _ in 0..n {
+        let c: char = sc.scan();
+        let x: usize = sc.scan();
+        b[a.iter().position(|x| x == &c).unwrap()][x - 1] = false;
+    }
+    for i in 0..4usize {
+        for j in 0..13usize {
+            if !b[i][j] { continue; }
+            writeln!(out, "{} {}", a[i], j + 1).unwrap();
         }
     }
-    let mut b = vec![0; m];
-    for j in 0..m { 
-        b[j] = sc.scan();
-    }
-    for i in 0..n {
-        let mut s = 0;
-        for j in 0..m {
-            s += a[i][j] * b[j];
-        }
-        writeln!(out, "{}", s).unwrap();
-    }
-    
 }
 
 
