@@ -24,23 +24,15 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-
-    let n: usize = sc.scan();
-    for i in 1..=n {
-        let mut x = i;
-        if x % 3 == 0 {
-            write!(out, " {}", i).unwrap();
-            continue;
+    loop {
+        let h: usize = sc.scan();
+        let w: usize = sc.scan();
+        if h == 0 && w == 0 { break; }
+        for _ in 0..h {
+            writeln!(out, "{}", "#".repeat(w)).unwrap();
         }
-        while x != 0 {
-            if x % 10 == 3 {
-                write!(out, " {}", i).unwrap();
-                break;
-            }
-            x /= 10;
-        }
+        writeln!(out, "").unwrap();
     }
-    writeln!(out, "").unwrap();
         
 }
 
