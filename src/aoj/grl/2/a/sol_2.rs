@@ -17,7 +17,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -29,7 +28,6 @@ fn main() {
     let inf = std::i64::MAX;
     let n: usize = sc.scan();
     let m: usize = sc.scan();
-    // let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(m);
     let mut g: Vec<Vec<i64>> = vec![vec![inf; n]; n];
     for _ in 0..m {
         let s: usize = sc.scan();
@@ -37,13 +35,10 @@ fn main() {
         let d: i64 = sc.scan();
         g[s][t] = d;
         g[t][s] = d;
-        // g.push((s, t, d));
     }
     let mst = prim_dense(&g);
     writeln!(out, "{}", mst.iter().map(|x| x.2).sum::<i64>()).unwrap();
 }
-
-
 
 
 pub fn prim_dense(g: &Vec<Vec<i64>>) -> Vec<(usize, usize, i64)> {
@@ -75,32 +70,5 @@ pub fn prim_dense(g: &Vec<Vec<i64>>) -> Vec<(usize, usize, i64)> {
         }
     }
     assert_eq!(mst.len(), n - 1);
-    mst
-}
-
-
-
-pub fn prim_sparse(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
-    let mut t: Vec<Vec<(usize, i64)>> = vec![vec![]; n];
-    for (u, v, w) in g.iter() {
-        t[*u].push((*v, *w));
-        t[*v].push((*u, *w));
-    }
-    let mut mst: Vec<(usize, usize, i64)> = Vec::with_capacity(n - 1);
-    let mut hq = std::collections::BinaryHeap::new();
-    hq.push((0, 0, 0));
-    let inf = std::i64::MAX;
-    let mut weight = vec![inf; n];
-    let mut visited = vec![false; n];
-    while let Some((wu, pre, u)) = hq.pop() {
-        if visited[u] { continue; }
-        visited[u] = true;
-        if pre != u { mst.push((pre, u, -wu)); }
-        for (v, wv) in t[u].iter() {
-            if visited[*v] || *wv >= weight[*v] { continue; }
-            weight[*v] = *wv;
-            hq.push((-wv, u, *v));
-        }
-    }
     mst
 }

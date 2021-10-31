@@ -26,56 +26,17 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
-    let inf = std::i64::MAX;
     let n: usize = sc.scan();
     let m: usize = sc.scan();
-    // let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(m);
-    let mut g: Vec<Vec<i64>> = vec![vec![inf; n]; n];
+    let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(m);
     for _ in 0..m {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
         let d: i64 = sc.scan();
-        g[s][t] = d;
-        g[t][s] = d;
-        // g.push((s, t, d));
+        g.push((s, t, d));
     }
-    let mst = prim_dense(&g);
+    let mst = prim_sparse(n, &g);
     writeln!(out, "{}", mst.iter().map(|x| x.2).sum::<i64>()).unwrap();
-}
-
-
-
-
-pub fn prim_dense(g: &Vec<Vec<i64>>) -> Vec<(usize, usize, i64)> {
-    let n = g.len();
-    for u in 1..n {
-        for v in 0..u { assert_eq!(g[u][v], g[v][u]); }
-    }
-    let inf = std::i64::MAX;
-    let mut mst: Vec<(usize, usize, i64)> = Vec::with_capacity(n - 1);
-    let mut min_edge = vec![(n, inf); n];
-    min_edge[0] = (0, 0);
-    let mut visited = vec![false; n];
-    for _ in 0..n {
-        let mut pre = n;
-        let mut u = n;
-        let mut wu = inf;
-        for i in 0..n {
-            if visited[i] || min_edge[i].1 >= wu { continue; }
-            u = i;
-            pre = min_edge[i].0;
-            wu = min_edge[i].1
-        }
-        assert!(wu < inf);
-        visited[u] = true;
-        if pre != u { mst.push((pre, u, wu)); }
-        for v in 0..n {
-            if visited[v] || g[u][v] >= min_edge[v].1 { continue; }
-            min_edge[v] = (u, g[u][v]);
-        }
-    }
-    assert_eq!(mst.len(), n - 1);
-    mst
 }
 
 
