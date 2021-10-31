@@ -17,8 +17,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -32,67 +30,44 @@ fn main() {
     let m: usize = sc.scan();
     let r: usize = sc.scan();
     let mut g: Vec<Vec<i64>> = vec![vec![inf; n]; n];
-
     for _ in 0..m {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
         let d: i64 = sc.scan();
         g[s][t] = d;
     }
-    if let Ok(dist) = bellman_ford_dense(&g, r) {
-        for d in dist.iter() {
-            if *d < std::i64::MAX {
-                writeln!(out, "{}", d).unwrap();
-            } else {
-                writeln!(out, "INF").unwrap();
-            }
+    let dist = dijkstra_dense(&g, r);
+    for d in dist.iter() {
+        if *d < std::i64::MAX {
+            writeln!(out, "{}", d).unwrap();
+        } else {
+            writeln!(out, "INF").unwrap();
         }
-    } else {
-        writeln!(out, "NEGATIVE CYCLE").unwrap();
     }
 }
 
 
-#[derive(Debug)]
-pub struct NegativeCycleError {
-    msg: &'static str,
-}
-
-impl NegativeCycleError {
-    fn new() -> Self {
-        Self { msg: "Negative Cycle Found." }
-    }  
-}
-
-impl std::fmt::Display for NegativeCycleError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.msg)
-    }
-}
-
-impl std::error::Error for NegativeCycleError {
-    fn description(&self) -> &str { &self.msg }
-}
-
-/// O(v^3)
-pub fn bellman_ford_dense(g: &Vec<Vec<i64>>, src: usize) -> Result<Vec<i64>, NegativeCycleError> {
+pub fn dijkstra_dense(g: &Vec<Vec<i64>>, src: usize) -> Vec<i64> {
     let n = g.len();
     let inf = std::i64::MAX;
     let mut dist = vec![inf; n];
     dist[src] = 0;
-    for _ in 0..n - 1 {
-        for u in 0..n {
-            for v in 0..n {
-                if dist[u] == inf || g[u][v] == inf || dist[u] + g[u][v] >= dist[v] { continue; }
-                dist[v] = dist[u] + g[u][v];
-            }
+    let mut visited = vec![false; n];
+    loop {
+        let mut u = -1;
+        let mut du = inf;
+        for i in 0..n {
+            if !visited[i] && dist[i] < du { u = i as i32; du = dist[i]; }
         }
-    }
-    for u in 0..n {
+        if u == -1 { break; }
+        let u = u as usize;
+        visited[u] = true;
         for v in 0..n {
-            if dist[u] == inf || g[u][v] == inf || dist[u] + g[u][v] >= dist[v] { continue; }
-            return Err(NegativeCycleError::new());
+            if g[u][v] == inf { continue; }
+            let dv = du + g[u][v];
+            if dv >= dist[v] { continue; }
+            dist[v] = dv;
         }
     }
-    Ok(dist)
+    dist
 }
