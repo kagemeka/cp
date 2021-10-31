@@ -35,13 +35,13 @@ fn main() {
         let d: i64 = sc.scan();
         g.push((s, t, d));
     }
-    let mst = prim_sparse(n, &g);
+    let mst = prim(n, &g);
     writeln!(out, "{}", mst.iter().map(|x| x.2).sum::<i64>()).unwrap();
 }
 
 
 
-pub fn prim_sparse(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
+pub fn prim(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
     let mut t: Vec<Vec<(usize, i64)>> = vec![vec![]; n];
     for (u, v, w) in g.iter() {
         t[*u].push((*v, *w));

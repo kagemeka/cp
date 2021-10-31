@@ -16,7 +16,7 @@ RUN \
   && echo "bind '\"\t\":menu-complete'" >> ~/.bashrc
 
 
-FROM base-stage AS py-stage
+FROM base-stage AS python-stage
 WORKDIR /root/ 
 ARG PYVER=3.9
 RUN \
@@ -45,7 +45,7 @@ RUN \
   && rm requirements.txt
 
 
-FROM py-stage AS rs-stage
+FROM python-stage AS rust-stage
 ENV RUST_BACKTRACE=full
 RUN \
   apt -q=2 update \
@@ -59,7 +59,7 @@ RUN \
   && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc 
 
 
-FROM rs-stage AS go-stage
+FROM rust-stage AS go-stage
 ARG GOVER=1.17.1
 RUN \
   apt -q=2 update \
@@ -84,7 +84,7 @@ RUN \
   xsel 
 
 
-FROM cpp-stage AS cs-stage
+FROM cpp-stage AS csharp-stage
 RUN \
   apt update -q=2 \
   && apt install -yq=2 \
@@ -99,7 +99,7 @@ RUN \
   && dotnet tool install -g dotnet-script
 
 
-FROM cs-stage AS dart-stage
+FROM csharp-stage AS dart-stage
 RUN \
   apt -q=2 update \
   && apt install -yq=2 \
@@ -122,10 +122,10 @@ RUN \
   >> ~/.bashrc
 
 
-FROM dart-stage AS jl-stage
+FROM dart-stage AS julia-stage
 ARG MAJOR=1
 ARG MINOR=6
-ARG PATCH=1
+ARG PATCH=3
 ARG MM_VER=${MAJOR}.${MINOR}
 ARG VER=${MM_VER}.${PATCH}
 RUN \
@@ -143,7 +143,7 @@ RUN \
   /usr/bin/julia
 
 
-FROM jl-stage AS java-stage
+FROM julia-stage AS java-stage
 RUN \
   apt -q=2 update \
   && apt install -yq=2 \
@@ -151,7 +151,7 @@ RUN \
   default-jre
 
 
-FROM java-stage AS kt-stage
+FROM java-stage AS kotlin-stage
 RUN \
   apt install -yq=2 \
   curl \
@@ -166,7 +166,7 @@ RUN \
   && sdk install kotlin 
 
 
-FROM kt-stage AS js-stage
+FROM kotlin-stage AS javascript-stage
 RUN \
   apt update -q=2 \
   && apt install -yq=2 \
@@ -179,7 +179,7 @@ RUN \
   && apt install -y nodejs
 
 
-FROM js-stage AS ts-stage
+FROM javascript-stage AS typescript-stage
 RUN \
   apt update -q=2 \
   && apt install -yq=2 \
@@ -213,7 +213,7 @@ RUN \
   && mv sourcekit-lsp-development.vsix /root/
 
 
-FROM ts-stage AS swift-stage
+FROM typescript-stage AS swift-stage
 ENV SOURCEKIT_TOOLCHAIN_PATH=/usr/local/swift
 ARG SWIFT_VER=5.4.2
 COPY --from=lsp-builder /root/sourcekit-lsp-development.vsix .
@@ -246,7 +246,7 @@ RUN \
   && source ~/.bashrc
 
 
-FROM swift-stage AS hs-stage
+FROM swift-stage AS haskell-stage
 RUN \
   apt update \
   && apt install -y \
@@ -257,18 +257,18 @@ RUN \
   && curl -sSL https://get.haskellstack.org/ | sh
 
 
-FROM hs-stage AS d-stage
+FROM haskell-stage AS dlang-stage
 RUN \
   apt update \
   && curl https://dlang.org/install.sh | bash -s
 
 
-FROM d-stage AS pl-stage 
+FROM dlang-stage AS perl-stage 
 RUN \
   apt update 
 
 
-FROM pl-stage AS ml-stage
+FROM perl-stage AS ocaml-stage
 RUN \
   apt update \
   && apt install -y \
@@ -280,16 +280,25 @@ RUN \
   # ocaml-lsp-server
 
 
-FROM ml-stage AS php-stage
+FROM ocaml-stage AS php-stage
 RUN \
   apt update \
   && apt install -y \
   php
 
 
-FROM php-stage AS sc-stage
+FROM php-stage AS scala-stage
 RUN \
   apt update \
   && apt install -y \
   default-jdk \
   scala
+
+
+FROM scala-stage AS clojure-stage 
+ARG CLOJURE_VERSION=1.10.3.998
+RUN \
+  curl -O https://download.clojure.org/install/linux-install-${CLOJURE_VERSION}.sh \
+  && chmod +x linux-install-${CLOJURE_VERSION}.sh \
+  && sudo ./linux-install-${CLOJURE_VERSION}.sh \
+
