@@ -44,7 +44,7 @@ fn main() {
 
 
 pub fn kruskal(n: usize, mut g: Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
-    g.sort_by(|a, b| a.2.cmp(&b.2));
+    g.sort_by_key(|x| x.2);
     let mut uf = UnionFind::new(n);
     let mut mst = Vec::with_capacity(n - 1);
     for (u, v, w) in g.into_iter() {
