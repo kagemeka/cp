@@ -29,77 +29,70 @@ fn main() {
     let inf = std::i64::MAX;
     let n: usize = sc.scan();
     let m: usize = sc.scan();
-    // let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(m);
-    let mut g: Vec<Vec<i64>> = vec![vec![inf; n]; n];
+    let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(m);
     for _ in 0..m {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
         let d: i64 = sc.scan();
-        g[s][t] = d;
-        g[t][s] = d;
-        // g.push((s, t, d));
+        g.push((s, t, d));
     }
-    let mst = prim_dense(&g);
+    let mst = boruvka(n, &g);
     writeln!(out, "{}", mst.iter().map(|x| x.2).sum::<i64>()).unwrap();
 }
 
 
 
-
-pub fn prim_dense(g: &Vec<Vec<i64>>) -> Vec<(usize, usize, i64)> {
-    let n = g.len();
-    for u in 1..n {
-        for v in 0..u { assert_eq!(g[u][v], g[v][u]); }
-    }
-    let inf = std::i64::MAX;
-    let mut mst: Vec<(usize, usize, i64)> = Vec::with_capacity(n - 1);
-    let mut min_edge = vec![(n, inf); n];
-    min_edge[0] = (0, 0);
-    let mut visited = vec![false; n];
-    for _ in 0..n {
-        let mut pre = n;
-        let mut u = n;
-        let mut wu = inf;
+mod connected_components {
+    pub fn dfs(n: usize, g: &Vec<(usize, usize)>) -> Vec<usize> {
+        let mut t: Vec<Vec<usize>> = vec![vec![]; n];
+        for (u, v) in g.iter() {
+            t[*u].push(*v);
+            t[*v].push(*u);
+        }
+        let mut label = vec![n; n];
+        let mut l = 0 as usize;
+        fn dfs(u: usize, label: &mut Vec<usize>, l: usize, t: &Vec<Vec<usize>>) -> () {
+            label[u] = l;
+            for v in t[u].iter() {
+                if label[*v] == t.len() { dfs(*v, label, l, t); } 
+            }
+        }
         for i in 0..n {
-            if visited[i] || min_edge[i].1 >= wu { continue; }
-            u = i;
-            pre = min_edge[i].0;
-            wu = min_edge[i].1
+            if label[i] != n { continue; }
+            dfs(i, &mut label, l, &t);
+            l += 1;
         }
-        assert!(wu < inf);
-        visited[u] = true;
-        if pre != u { mst.push((pre, u, wu)); }
-        for v in 0..n {
-            if visited[v] || g[u][v] >= min_edge[v].1 { continue; }
-            min_edge[v] = (u, g[u][v]);
-        }
+        label
     }
-    assert_eq!(mst.len(), n - 1);
-    mst
+
+    pub fn bfs() {
+    }
+
+    pub fn union_find() {
+    }
 }
 
 
-
-pub fn prim_sparse(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
-    let mut t: Vec<Vec<(usize, i64)>> = vec![vec![]; n];
-    for (u, v, w) in g.iter() {
-        t[*u].push((*v, *w));
-        t[*v].push((*u, *w));
-    }
+pub fn boruvka(n: usize, g: &Vec<(usize, usize, i64)>) -> Vec<(usize, usize, i64)> {
+    let m = g.len();
+    let mut is_added = vec![false; g.len()];
     let mut mst: Vec<(usize, usize, i64)> = Vec::with_capacity(n - 1);
-    let mut hq = std::collections::BinaryHeap::new();
-    hq.push((0, 0, 0));
-    let inf = std::i64::MAX;
-    let mut weight = vec![inf; n];
-    let mut visited = vec![false; n];
-    while let Some((wu, pre, u)) = hq.pop() {
-        if visited[u] { continue; }
-        visited[u] = true;
-        if pre != u { mst.push((pre, u, -wu)); }
-        for (v, wv) in t[u].iter() {
-            if visited[*v] || *wv >= weight[*v] { continue; }
-            weight[*v] = *wv;
-            hq.push((-wv, u, *v));
+    loop {
+        let label = connected_components::dfs(n, &mst.iter().map(|x| (x.0, x.1)).collect());
+        let k = *label.iter().max().unwrap() + 1;
+        if k == 1 { break; }
+        let mut min_edge = vec![m; k];
+        for (i, (u, v, w)) in g.iter().enumerate() {
+            let u = label[*u];
+            let v = label[*v];
+            if u == v { continue; }
+            if min_edge[u] == m || *w < g[min_edge[u]].2 { min_edge[u] = i; }
+            if min_edge[v] == m || *w < g[min_edge[v]].2 { min_edge[v] = i; }         
+        }
+        for i in min_edge {
+            if is_added[i] { continue; }
+            mst.push(g[i]);
+            is_added[i] = true;  
         }
     }
     mst
