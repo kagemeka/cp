@@ -43,9 +43,6 @@ fn main() {
 
 
 
-pub fn dfs_forest(g: &Vec<usize 
-
-
 pub fn lowlink(g: &Vec<Vec<usize>>) -> (Vec<usize>, Vec<usize>) {
     let n = g.len();
     let mut order = vec![n; n];
