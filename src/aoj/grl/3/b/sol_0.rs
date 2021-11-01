@@ -29,18 +29,16 @@ fn main() {
     let inf = std::i64::MAX;
     let n: usize = sc.scan();
     let m: usize = sc.scan();
-    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
+    let mut g: Vec<(usize, usize)> = Vec::new();
     for _ in 0..m {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
-        g[s].push(t);
-        g[t].push(s);
+        g.push((s, t));
     }
-    for i in articulation_points(&g) {
-        writeln!(out, "{}", i).unwrap();
+    for (u, v) in bridges(n, &g) {
+        writeln!(out, "{} {}", u, v).unwrap();
     }
 }
-
 
 
 pub fn lowlink(g: &Vec<Vec<usize>>) -> (Vec<usize>, Vec<usize>) {
