@@ -47,26 +47,49 @@ pub fn lowlink(g: &Vec<Vec<usize>>) -> (Vec<usize>, Vec<usize>) {
     let n = g.len();
     let mut order = vec![n; n];
     let mut low = vec![n; n];
-    fn dfs(g: &Vec<Vec<usize>>, u: usize, ord: &mut usize, order: &mut Vec<usize>, low: &mut Vec<usize>) {
+    fn dfs(g: &Vec<Vec<usize>>, u: usize, parent: usize, ord: &mut usize, order: &mut Vec<usize>, low: &mut Vec<usize>) {
         let n = g.len();
         order[u] = *ord;
         *ord += 1;
         low[u] = order[u];
         for v in g[u].iter().map(|x| *x) {
+            if v == parent { continue; }
             if order[v] != n {
                 if order[v] < low[u] { low[u] = order[v]; }
                 continue;
             }
-            dfs(g, v, ord, order, low);
+            dfs(g, v, u, ord, order, low);
             if low[v] < low[u] { low[u] = low[v]; }
         }
     }
     let mut ord = 0;
     for i in 0..n {
         if order[i] != n { continue; }
-        dfs(g, i, &mut ord, &mut order, &mut low);
+        dfs(g, i, n, &mut ord, &mut order, &mut low);
     }
     (order, low)
+}
+
+
+pub fn bridges(n: usize, g: &Vec<(usize, usize)>) -> Vec<(usize, usize)> {
+    let mut t = vec![vec![]; n];
+    for (u, v) in g {
+        t[*u].push(*v);
+        t[*v].push(*u);
+    }
+    let (order, low) = lowlink(&t);
+    let mut bridges = Vec::new();
+    for (u, v) in g {
+        let mut u = *u;
+        let mut v = *v;
+        if order[u] > order[v] { std::mem::swap(&mut u, &mut v); }
+        if low[v] <= order[u] { continue; }
+        if u > v { std::mem::swap(&mut u, &mut v); } 
+        bridges.push((u, v)); 
+
+    }
+    bridges.sort();
+    bridges
 }
 
 
