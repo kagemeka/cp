@@ -34,11 +34,11 @@ fn main() {
         let t: usize = sc.scan();
         g[s].push(t);
     }
-    let res = with_dfs(&g).ok().unwrap();
-    for i in res.iter() {
-        writeln!(out, "{}", i).unwrap();
+    if let Ok(res) = with_dfs(&g) {
+        writeln!(out, "{}", 0).unwrap();
+    } else {
+        writeln!(out, "{}", 1).unwrap();
     }
-        
 } 
 
 
