@@ -35,13 +35,65 @@ fn main() {
         let t: usize = sc.scan();
         g[s].push(t);
     }
-    let label = kosaraju(&g);
+    let label = tarjan(&g);
     let q: usize = sc.scan();
     for _ in 0..q {
         let u: usize = sc.scan();
         let v: usize = sc.scan();
         writeln!(out, "{:?}", if label[u] == label[v] { 1 } else { 0 }).unwrap();
     }
+}
+
+
+
+/// with lowlink
+pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
+    fn dfs(
+        g: &Vec<Vec<usize>>, 
+        order: &mut Vec<usize>,
+        low: &mut Vec<usize>,
+        label: &mut Vec<usize>,
+        on_stack: &mut Vec<bool>,
+        st: &mut Vec<usize>,
+        u: usize,
+        ord: &mut usize,
+        l: &mut usize,
+    ) {
+        order[u] = *ord;
+        low[u] = *ord;
+        *ord += 1;
+        st.push(u);
+        on_stack[u] = true;
+        for v in g[u].iter().map(|x| *x) {
+            if order[v] == g.len() {
+                dfs(g, order, low, label, on_stack, st, v, ord, l);
+                if low[v] < low[u] { low[u] = low[v]; }
+            } else if on_stack[v] && order[v] < low[u] {
+                low[u] = order[v];
+            }
+        }
+        if low[u] == order[u] {
+            loop {
+                let v = st.pop().unwrap();
+                on_stack[v] = false;
+                label[v] = *l;
+                if v == u { break; }
+            }
+            *l += 1;
+        }
+    }
+    let n = g.len();
+    let mut order = vec![n; n];
+    let mut low = vec![n; n];
+    let mut label = vec![n; n];
+    let mut on_stack = vec![false; n];
+    let mut st = Vec::with_capacity(n);
+    let mut ord = 0;
+    let mut l = 0;
+    for i in 0..n {
+        if order[i] == n { dfs(g, &mut order, &mut low, &mut label, &mut on_stack, &mut st, i, &mut ord, &mut l); }
+    }
+    label
 }
 
 
