@@ -35,7 +35,7 @@ fn main() {
         let t: usize = sc.scan();
         g[s].push(t);
     }
-    let label = tarjan(&g);
+    let label = path_based(&g);
     let q: usize = sc.scan();
     for _ in 0..q {
         let u: usize = sc.scan();
@@ -46,7 +46,58 @@ fn main() {
 
 
 
-/// with lowlink
+/// scc path based algorithm 
+/// references
+/// - https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm
+pub fn path_based(g: &Vec<Vec<usize>>) -> Vec<usize> {
+    fn dfs(
+        g: &Vec<Vec<usize>>, 
+        order: &mut Vec<usize>,
+        label: &mut Vec<usize>,
+        st_0: &mut Vec<usize>,
+        st_1: &mut Vec<usize>,
+        u: usize,
+        ord: &mut usize,
+        l: &mut usize,
+    ) {
+        order[u] = *ord;
+        *ord += 1;
+        st_0.push(u);
+        st_1.push(u);
+        for v in g[u].iter().map(|x| *x) {
+            if order[v] == g.len() {
+                dfs(g, order, label, st_0, st_1, v, ord, l);
+            } else if label[v] == g.len() {
+                while order[*st_0.last().unwrap()] > order[v] { st_0.pop(); }
+            }
+        }
+        if *st_0.last().unwrap() == u {
+            loop {
+                let v = st_1.pop().unwrap();
+                label[v] = *l;
+                if v == u { break; }
+            }
+            *l += 1;
+            st_0.pop();
+        }
+    }
+    let n = g.len();
+    let mut order = vec![n; n];
+    let mut label = vec![n; n];
+    let mut st_0 = Vec::with_capacity(n);
+    let mut st_1 = Vec::with_capacity(n);
+    let mut ord = 0;
+    let mut l = 0;
+    for i in 0..n {
+        if order[i] == n { dfs(g, &mut order, &mut label, &mut st_0, &mut st_1, i, &mut ord, &mut l); }
+    }
+    label
+}
+
+
+/// scc Tarjan with lowlink
+/// references
+/// - https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(
         g: &Vec<Vec<usize>>, 
@@ -97,6 +148,10 @@ pub fn tarjan(g: &Vec<Vec<usize>>) -> Vec<usize> {
 }
 
 
+
+/// scc Kosaraju 
+/// references
+/// - https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm
 pub fn kosaraju(g: &Vec<Vec<usize>>) -> Vec<usize> {
     fn dfs(g: &Vec<Vec<usize>>, visited: &mut Vec<bool>, que: &mut Vec<usize>, u: usize) {
         visited[u] = true;
