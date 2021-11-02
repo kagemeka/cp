@@ -27,92 +27,50 @@ fn main() {
 
     let inf = std::i64::MAX;
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
-    for _ in 0..m {
+    // let m: usize = sc.scan();
+    let mut g: Vec<(usize, usize, i64)> = Vec::with_capacity(n - 1);
+    for _ in 0..n - 1 {
         let s: usize = sc.scan();
         let t: usize = sc.scan();
-        g[s].push(t);
+        let w: i64 = sc.scan();
+        g.push((s, t, w));
     }
-    let res = with_dfs(&g).ok().unwrap();
-    for i in res.iter() {
-        writeln!(out, "{}", i).unwrap();
-    }
-        
+    let (path, diameter) = tree_diameter(&g);
+    writeln!(out, "{}", diameter).unwrap();
 } 
 
 
-#[derive(Debug)]
-pub struct NonDAGError {
-    msg: &'static str,
-}
 
-impl NonDAGError {
-    fn new() -> Self {
-        Self { msg: "Given graph is not DAG." }
-    }  
-}
-
-impl std::fmt::Display for NonDAGError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.msg)
-    }
-}
-
-impl std::error::Error for NonDAGError {
-    fn description(&self) -> &str { &self.msg }
-}
-
-
-/// topological sort with dfs
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Topological_sorting
-pub fn with_dfs(g: &Vec<Vec<usize>>) -> Result<Vec<usize>, NonDAGError> {
-    fn dfs(g: &Vec<Vec<usize>>, state: &mut Vec<u8>, result: &mut Vec<usize>, u: usize) -> Result<(), NonDAGError> {
-        if state[u] == 1 { return Err(NonDAGError::new()); }
-        if state[u] == 2 { return Ok(()); }
-        state[u] = 1;
-        for &v in g[u].iter() { dfs(g, state, result, v)?; }
-        state[u] = 2;
-        result.push(u);
-        Ok(())
-    } 
-    let n = g.len();
-    let mut state = vec![0u8; n];
-    let mut result = Vec::with_capacity(n);
-    for i in 0..n {
-        if state[i] != 0 { continue; }
-        if let Err(err) = dfs(g, &mut state, &mut result, i) {
-            return Err(err);
+pub fn tree_diameter(g: &Vec<(usize, usize, i64)>) -> (Vec<usize>, i64) {
+    fn dfs(g: &Vec<Vec<(usize, i64)>>, root: usize) -> (Vec<usize>, Vec<i64>) {
+        let mut st = vec![root];
+        let n = g.len();
+        let mut parent = vec![n; n];
+        let mut dist = vec![0; n];
+        while let Some(u) = st.pop() {
+            for &(v, w) in g[u].iter() {
+                if v == parent[u] { continue; }
+                parent[v] = u;
+                dist[v] = dist[u] + w;
+                st.push(v);
+            }
         }
+        (parent, dist)
     }
-    Ok(result.into_iter().rev().collect())
+    let n = g.len() + 1;
+    let mut t: Vec<Vec<(usize, i64)>> = vec![vec![]; n];
+    for &(u, v, w) in g {
+        t[u].push((v, w));
+        t[v].push((u, w));
+    }
+    let (_, dist) = dfs(&t, 0);
+    let u = dist.iter().enumerate().max_by_key(|(_, &d)| d).unwrap().0;
+    let (parent, dist) = dfs(&t, u);
+    let (mut v, &diameter) = dist.iter().enumerate().max_by_key(|&(v, d)| (d, v)).unwrap();
+    let mut path = Vec::new();
+    while v != n {
+        path.push(v);
+        v = parent[v];
+    }
+    (path, diameter)
 }
-
-
-/// topological sort kahn algorithm
-/// O(V + E)
-/// references
-/// - https://en.wikipedia.org/wiki/Topological_sorting
-pub fn kahn(g: &Vec<Vec<usize>>) -> Result<Vec<usize>, NonDAGError> {
-    let n = g.len();
-    let mut in_deg = vec![0u32; n];
-    for u in 0..n {
-        for v in g[u].iter() { in_deg[*v] += 1; }
-    }
-    let mut que = std::collections::VecDeque::new();
-    for (i, d) in in_deg.iter().enumerate() {
-        if *d == 0 { que.push_back(i); }
-    }
-    let mut res = Vec::with_capacity(n);
-    while let Some(u) = que.pop_front() {
-        res.push(u);
-        for &v in g[u].iter() {
-            in_deg[v] -= 1;
-            if in_deg[v] == 0 { que.push_back(v); }
-        }
-    }
-    if in_deg.iter().all(|x| *x == 0) { Ok(res) } else { Err(NonDAGError::new()) }
-}
-

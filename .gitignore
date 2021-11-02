@@ -50,4 +50,8 @@ __pycache__
 *.so
 
 
+# clojure
+.clj-kondo
+
+
 !.gitkeep
