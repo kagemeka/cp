@@ -36,7 +36,7 @@ fn main() {
         }
     }
 
-    let lca = eulertour_rmq::WithSegmentTree::new(&g, 0);
+    let lca = eulertour_rmq::WithSparseTable::new(&g, 0);
     let q: usize = sc.scan();
     for _ in 0..q {
         let u: usize = sc.scan();
@@ -47,35 +47,40 @@ fn main() {
 
 
 pub mod eulertour_rmq {
-    use super::{SegmentTree, Monoid, euler_tour_node};
+    use super::{SparseTable, DisjointSparseTable, euler_tour_node, Semigroup};
 
 
-    pub struct WithSegmentTree<S: Copy> {
+    pub struct WithSparseTable<S> {
         first_idx: Vec<usize>,
-        seg: SegmentTree<S>,
+        sp: DisjointSparseTable<S>,
     }
-    impl WithSegmentTree<(usize, usize)> {
+    impl WithSparseTable<(usize, usize)> {
         pub fn new(g: &Vec<(usize, usize)>, root: usize) -> Self {
             let (tour, first_idx, _, depth) = euler_tour_node(g, root);
-            let m = Monoid::<(usize, usize)> {
+            let sg = Semigroup::<(usize, usize)> {
                 op: Box::new(|x, y| std::cmp::min(*x, *y)),
-                e: Box::new(|| (std::usize::MAX, 0)),
                 commutative: true,
+                idempotent: true,
             };
             let mut a = Vec::with_capacity(tour.len());
             for &i in tour.iter() {
                 a.push((depth[i as usize], i as usize));
             }
-            let seg = SegmentTree::from_vec(m, &a);
-            Self { first_idx: first_idx, seg: seg }
+            let sp = DisjointSparseTable::new(sg, &a);
+            Self { first_idx: first_idx, sp: sp }
         }
 
         pub fn get(&self, u: usize, v: usize) -> usize {
             let mut l = self.first_idx[u];
             let mut r = self.first_idx[v];
             if l > r { std::mem::swap(&mut l, &mut r); }
-            self.seg.get(l, r + 1).1
+            self.sp.get(l, r + 1).1
         }
+    }
+
+
+
+    pub struct WithSegtree {
     }
 
 }
@@ -129,106 +134,88 @@ pub fn bit_length(n: usize) -> usize {
     (0usize.leading_zeros() - n.leading_zeros()) as usize
 }
 
-
-
-
-/// explicit lifetime for Monoid<S>.
-/// S implements Copy trait for convenience.
-pub struct SegmentTree<S: Copy> {
-    m: Monoid<S>,
-    data: Vec<S>,
-    size: usize,
+pub struct Semigroup<S> {
+    pub op: Box<dyn Fn(&S, &S) -> S>,
+    pub commutative: bool,
+    pub idempotent: bool,
 }
 
 
-impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<S> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("SegmentTree").field(&self.data).finish()
-    }
+/// Sparse Table 
+/// references
+/// - https://cp-algorithms.com/data_structures/sparse-table.html
+pub struct SparseTable<S> {
+    sg: Semigroup<S>,
+    data: Vec<Vec<S>>, 
 }
 
-impl<S: Copy> SegmentTree<S> {
 
-    pub fn new(m: Monoid<S>, n: usize) -> Self {
-        let a = vec![(m.e)(); n];
-        Self::from_vec(m, &a)
-    }
-
-    pub fn from_vec(m: Monoid<S>, a: &Vec<S>) -> Self {
-        let size = a.len();
-        let n = size.next_power_of_two();
-        let mut data = vec![(m.e)(); n << 1];
-        for i in 0..size { data[n + i] = a[i]; }
-        let mut seg = Self { m, data, size };
-        for i in (0..n).rev() { seg.merge(i); }
-        seg        
-    }
-
-    fn merge(&mut self, i: usize) {
-        self.data[i] = (self.m.op)(&self.data[i << 1], &self.data[i << 1 | 1]);
-    }
-
-    pub fn set(&mut self, mut i: usize, x: S) {
-        assert!(i < self.size);
-        i += self.data.len() >> 1;
-        self.data[i] = x;
-        while i > 1 { i >>= 1; self.merge(i); }
-    }
-
-    pub fn get(&self, mut l: usize, mut r: usize) -> S {
-        assert!(l <= r && r <= self.size);
-        let n = self.data.len() >> 1;
-        l += n; r += n;
-        let mut vl = (self.m.e)();
-        let mut vr = (self.m.e)();
-        while l < r {
-            if l & 1 == 1 { vl = (self.m.op)(&vl, &self.data[l]); l += 1; }
-            if r & 1 == 1 { r -= 1; vr = (self.m.op)(&self.data[r], &vr); }
-            l >>= 1; r >>= 1; 
-        }
-        (self.m.op)(&vl, &vr)
-    }
-
-    pub fn max_right(&self, is_ok: Box<dyn Fn(&S) -> bool>, l: usize) -> usize {
-        assert!(l < self.size);
-        let n = self.data.len() >> 1;
-        let mut v = (self.m.e)();
-        let mut i = (l + n) as i32;
-        loop {
-            i /= i & -i;
-            if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                v = (self.m.op)(&v, &self.data[i as usize]);
-                i += 1;
-                if i & -i == i { return self.size; }
-                continue;
+impl<S: Default + Clone> SparseTable<S> {
+    /// O(N\log{N})
+    pub fn new(sg: Semigroup<S>, a: &Vec<S>) -> Self {
+        assert!(sg.idempotent && sg.commutative);
+        let n = a.len();
+        assert!(n > 0);
+        let k = std::cmp::max(1, bit_length(n - 1));
+        let mut data = vec![vec![S::default(); n]; k];
+        data[0] = a.clone();
+        for i in 0..k - 1 {
+            data[i + 1] = data[i].clone();
+            for j in 0..n - (1 << i) {
+                data[i + 1][j] = (sg.op)(&data[i][j], &data[i][j + (1 << i)])
             }
-            while i < n as i32 {
-                i <<= 1;
-                if is_ok(&(self.m.op)(&v, &self.data[i as usize])) {
-                    v = (self.m.op)(&v, &self.data[i as usize]);
+        }   
+        Self { sg: sg, data: data }     
+    }
+
+    /// O(1)
+    pub fn get(&self, l: usize, r: usize) -> S {
+        assert!(l < r && r <= self.data[0].len());
+        let k = bit_length(r - l) - 1;
+        (self.sg.op)(&self.data[k][l], &self.data[k][r - (1 << k)])
+    }
+}
+
+
+
+
+/// Disjoint Sparse Table 
+/// references
+/// - https://noshi91.hatenablog.com/entry/2018/05/08/183946
+/// - https://github.com/noshi91/NoshiMochiLibrary/blob/master/SparseTable/DisjointSparseTable.noshi.cpp
+pub struct DisjointSparseTable<S> {
+    sg: Semigroup<S>,
+    data: Vec<Vec<S>>, 
+}
+
+
+impl<S: Default + Clone> DisjointSparseTable<S> {
+    pub fn new(sg: Semigroup<S>, a: &Vec<S>) -> Self {
+        let n = a.len();
+        assert!(n > 0);
+        let k = std::cmp::max(1, bit_length(n - 1));
+        let mut data = vec![vec![S::default(); n]; k];
+        data[0] = a.clone();
+        for i in 1..k {
+            data[i] = a.clone();
+            for j in (1 << i..n + 1).step_by(2 << i) {
+                for k in 1..(1 << i) {
+                    data[i][j - k - 1] = (sg.op)(&data[i][j - k - 1], &data[i][j - k]);
+                }
+                for k in 0..(1 << i) - 1 {
+                    if j + k + 1 >= n { break; }
+                    data[i][j + k + 1] = (sg.op)(&data[i][j + k], &data[i][j + k + 1]);
                 }
             }
-            return i as usize - n;
         }
+        Self { sg: sg, data: data }
+    }
+
+    pub fn get(&self, l: usize, r: usize) -> S {
+        assert!(l < r && r <= self.data[0].len());
+        if r - l == 1 { return self.data[0][l].clone(); }
+        let k = bit_length(l ^ r) - 1;
+        (self.sg.op)(&self.data[k][l], &self.data[k][r - 1])
     }
 }
 
-
-impl<S: Copy> std::ops::Index<usize> for SegmentTree<S> {
-    type Output = S; 
-    
-    fn index(&self, i: usize) -> &Self::Output {
-        assert!(i < self.size);
-        &self.data[i + (self.data.len() >> 1)]
-    }
-}
-
-
-// Fn(&S, &S) -> S is a trait.
-/// this is a dynamic size object at compilation time.
-/// thus, it's needed to be enclosed with Box<dyn> pointer.
-pub struct Monoid<S> {
-    pub op: Box<dyn Fn(&S, &S) -> S>,
-    pub e: Box<dyn Fn() -> S>,
-    pub commutative: bool,
-}
