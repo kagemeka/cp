@@ -35,93 +35,94 @@ fn main() {
             g.push((u, v));
         }
     }
-    let lca = Doubling::new(&g, 0);
+
     let q: usize = sc.scan();
+    let mut uv = Vec::with_capacity(q);
     for _ in 0..q {
         let u: usize = sc.scan();
         let v: usize = sc.scan();
-        writeln!(out, "{}", lca.get(u, v)).unwrap();
+        uv.push((u, v));
+    }
+    for x in tarjan_offline(&g, &uv, 0) {
+        writeln!(out, "{}", x).unwrap();
     }
 }
 
 
+pub struct UnionFind {
+    data: Vec<i32>,
+}
 
-pub fn tree_bfs(g: &Vec<(usize, usize)>, root: usize) -> (Vec<usize>, Vec<usize>) {
+
+impl UnionFind {
+    pub fn new(n: usize) -> Self {
+        Self { data: vec![-1; n] }
+    }
+    
+    pub fn find(&mut self, u: usize) -> usize {
+        if self.data[u] < 0 { return u; }
+        self.data[u] = self.find(self.data[u] as usize) as i32;
+        self.data[u] as usize
+    }
+
+    pub fn unite(&mut self, u: usize, v: usize) {
+        let (mut u, mut v) = (self.find(u), self.find(v));
+        if u == v { return; }
+        if self.data[u] > self.data[v] { std::mem::swap(&mut u, &mut v); }
+        self.data[u] += self.data[v];
+        self.data[v] = u as i32;
+    }
+
+    pub fn size(&mut self, u: usize) -> usize {
+        let u = self.find(u);
+        -self.data[u] as usize
+    }
+}
+
+
+/// Lowest Common Ancestor with Tarjan's offline algorithm.
+/// O(V + Q) preprocessing, O(1) per query.
+/// references
+/// - https://cp-algorithms.com/graph/lca_tarjan.html 
+/// - https://en.wikipedia.org/wiki/Tarjan%27s_off-line_lowest_common_ancestors_algorithm
+/// - https://tjkendev.github.io/procon-library/python/graph/lca-tarjan.html
+pub fn tarjan_offline(g: &Vec<(usize, usize)>, uv: &Vec<(usize, usize)>, root: usize) -> Vec<usize> {
+    fn dfs(
+        g: &Vec<Vec<usize>>, 
+        q: &Vec<Vec<(usize, usize)>>, 
+        visited: &mut Vec<bool>, 
+        uf: &mut UnionFind, 
+        ancestor: &mut Vec<usize>, 
+        lca: &mut Vec<usize>,
+        u: usize,
+    ) {
+        visited[u] = true;
+        ancestor[u] = u;
+        for &v in g[u].iter() {
+            if visited[v] { continue; }            
+            dfs(g, q, visited, uf, ancestor, lca, v);
+            uf.unite(u, v);
+            ancestor[uf.find(u)] = u;
+        }
+        for &(v, i) in q[u].iter() {
+            if visited[v] { lca[i] = ancestor[uf.find(v)]; }
+        }
+    }
     let n = g.len() + 1;
     let mut t = vec![vec![]; n];
     for &(u, v) in g.iter() {
         t[u].push(v);
         t[v].push(u);
     }
-    let mut parent = vec![n; n];
-    let mut depth = vec![0; n];
-    let mut que = std::collections::VecDeque::new();
-    que.push_back(root);
-    while let Some(u) = que.pop_front() {
-        for &v in t[u].iter() {
-            if v == parent[u] { continue; }
-            parent[v] = u;
-            depth[v] = depth[u] + 1;
-            que.push_back(v);
-        }
+    let mut q = vec![vec![]; n];
+    for (i, &(u, v)) in uv.iter().enumerate() {
+        q[u].push((v, i));
+        q[v].push((u, i));
     }
-    (parent, depth)
+    let mut visited = vec![false; n];
+    let mut uf = UnionFind::new(n);
+    let mut ancestor = vec![n; n];
+    let mut lca = vec![n; uv.len()];
+    dfs(&t, &q, &mut visited, &mut uf, &mut ancestor, &mut lca, root);
+    lca
 }
-
-
-
-pub fn bit_length(n: usize) -> usize {
-    let mut l = 0usize;
-    while 1 << l <= n { l += 1; }
-    l
-}  
-
-
-struct Doubling {
-    ancestor: Vec<Vec<usize>>,
-    depth: Vec<usize>,    
-}
-
-
-impl Doubling {
-    pub fn new(g: &Vec<(usize, usize)>, root: usize) -> Self {
-        let n = g.len() + 1;
-        let (parent, depth) = tree_bfs(g, root);
-        let k = std::cmp::max(1, bit_length(*depth.iter().max().unwrap()));
-        let mut ancestor = vec![vec![n; n]; k];
-        ancestor[0] = parent;
-        ancestor[0][root] = root;
-        for i in 0..k - 1 {
-            for j in 0..n { 
-                ancestor[i + 1][j] = ancestor[i][ancestor[i][j]];
-            }
-        }
-        Self { ancestor: ancestor, depth: depth }
-    }
-
-    pub fn get(&self, mut u: usize, mut v: usize) -> usize {
-        if self.depth[u] > self.depth[v] { std::mem::swap(&mut u, &mut v); }
-        let d = self.depth[v] - self.depth[u];
-        for i in 0..bit_length(d) {
-            if d >> i & 1 == 1 { v = self.ancestor[i][v]; }
-        }
-        if v == u { return u; }
-        for a in self.ancestor.iter().rev() {
-            let nu = a[u];
-            let nv = a[v];
-            if nu != nv { u = nu; v = nv;}
-        }
-        self.ancestor[0][u]
-    }
-}
-
-
-// Fn(&S, &S) -> S is a trait.
-/// this is a dynamic size object at compilation time.
-/// thus, it's needed to be enclosed with Box<dyn> pointer.
-pub struct Monoid<S> {
-    pub op: Box<dyn Fn(&S, &S) -> S>,
-    pub e: Box<dyn Fn() -> S>,
-    pub commutative: bool,
-}
-

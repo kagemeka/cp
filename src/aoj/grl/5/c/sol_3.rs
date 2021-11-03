@@ -141,7 +141,7 @@ pub struct SegmentTree<S: Copy> {
 }
 
 
-impl<'a, S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<S> {
+impl<S: std::fmt::Debug + Copy> std::fmt::Debug for SegmentTree<S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("SegmentTree").field(&self.data).finish()
     }
