@@ -1,1 +1,0 @@
-# [Suffix Array](https://judge.yosupo.jp/problem/suffixarray)
