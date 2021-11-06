@@ -28,12 +28,92 @@ fn main() {
 
     let s: String = sc.scan();
     let a = s.chars().map(|i| i as usize).collect::<Vec<usize>>();
-    let sa = sa_is(&a);
+    let sa = sa_doubling(&a);
     for i in 0..a.len() {
         write!(out, "{}", sa[i]).unwrap();
         write!(out, "{}", if i < a.len() - 1 { ' ' } else { '\n' }).unwrap();
     }
 }
+
+pub fn unique<T: Ord + Clone>(a: &Vec<T>) -> Vec<T> {
+    let mut v = a.to_vec();
+    v.sort();
+    v.dedup();
+    v
+}
+
+
+
+
+
+pub fn compress_array<T: Ord + Clone>(a: &Vec<T>) -> (Vec<usize>, Vec<T>) {
+    let v = unique(a);
+    let a = a.iter().map(|x| v.binary_search(x).unwrap()).collect::<Vec<_>>();
+    (a, v)
+} 
+
+
+
+
+pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
+    let n = a.len();
+    let (mut rank, _) = compress_array(&a);
+    let mut k = 1usize;
+    let mut key = vec![0; n];
+    let mut sa = vec![n; n];
+    loop {
+        for i in 0..n { 
+            key[i] = rank[i] << 30;
+            if i + k < n { key[i] |= 1 + rank[i + k]; }
+            sa[i] = i;
+        }
+        sa.sort_by_key(|&x| key[x]);
+        rank[sa[0]] = 0;
+        for i in 0..n - 1 { 
+            rank[sa[i + 1]] = rank[sa[i]];
+            if key[sa[i + 1]] > key[sa[i]] { rank[sa[i + 1]] += 1; }
+        }        
+        k <<= 1;
+        if k >= n { break; }
+    }
+    sa
+}
+  
+//   std::vector<int> sa_doubling_countsort(std::vector<int> a) {
+//     int n = a.size();
+//     std::vector<int> cnt(n + 2);
+//     std::function<std::vector<int>(std::vector<int>)> counting_sort_key;
+//     counting_sort_key = [&](const std::vector<int> &a) -> std::vector<int> {
+//       std::fill(cnt.begin(), cnt.end(), 0);
+//       for (const int &x : a) cnt[x + 1]++;
+//       for (int i = 0; i < n; i++) cnt[i + 1] += cnt[i];
+//       std::vector<int> key(n);
+//       for (int i = 0; i < n; i++) key[cnt[a[i]]++] = i;
+//       return key;
+//     };
+//     std::vector<int> rank, first(n), second(n), sa(n);
+//     ArrayCompression<int> ac;
+//     rank = ac.compress(a);
+//     int k = 1;
+//     std::vector<long long> key(n);
+//     while (true) {
+//       for (int i = 0; i < n; i++) second[i] = i + k < n ? 1 + rank[i + k] : 0;
+//       std::vector<int> rank_second = counting_sort_key(second);
+//       for (int i = 0; i < n; i++) first[i] = rank[rank_second[i]];
+//       std::vector<int> rank_first = counting_sort_key(first);
+//       for (int i = 0; i < n; i++) sa[i] = rank_second[rank_first[i]];
+//       for (int i = 0; i < n; i++) {
+//         key[i] = (long long)first[rank_first[i]] << 30 | second[sa[i]];
+//       }
+//       rank[sa[0]] = 0;
+//       for (int i = 0; i < n - 1; i++) {
+//         rank[sa[i + 1]] = rank[sa[i]] + (key[i + 1] > key[i]);
+//       }
+//       k <<= 1;
+//       if (k >= n) break;
+//     }
+//     return sa;
+//   }
 
 
 pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
@@ -114,4 +194,3 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
     let sa = induce(&lms);
     sa[1..].to_vec()
 } 
-
