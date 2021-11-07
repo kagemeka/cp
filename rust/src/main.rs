@@ -36,7 +36,8 @@ fn main() {
         g[u].push((v, cap));
     }
     // let flow = dinic(&g, 0, n - 1);
-    let flow = ford_fulkerson(&g, 0, n - 1);
+    // let flow = ford_fulkerson(&g, 0, n - 1);
+    let flow = edmonds_karp(&g, 0, n - 1);
     writeln!(out, "{}", flow).unwrap();
 }
 
@@ -53,85 +54,54 @@ pub fn edmonds_karp(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 
         for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
     }
 
-    let mut parent = vec![n; n];
-    // parent[src] = src;
-    let mut que = std::collections::VecDeque::new();
-    let find_path = || {
-        parent.fill(n);
+    fn find_path(rf: &Vec<Vec<u64>>, g: &mut Vec<Vec<usize>>, src: usize, sink: usize) -> Vec<usize> {
+        let n = g.len();
+        let mut parent = vec![n; n];
         parent[src] = src;
+        let mut que = std::collections::VecDeque::new();
         que.push_back(src);
         while let Some(u) = que.pop_front() {
-             
+            g[u].retain(|&v| rf[u][v] != 0);
+            for &v in g[u].iter() {
+                if parent[v] != n { continue; }
+                parent[v] = u;
+                que.push_back(v);
+            }
         }
-    };
-
-
-    fn augment_flow(
-        sink: usize, 
-        rf: &mut Vec<Vec<u64>>, 
-        g: &mut Vec<Vec<usize>>, 
-        visited: &mut Vec<bool>, 
-        u: usize, 
-        flow_in: u64,
-    ) -> u64 { 
+        let mut v = sink;
+        let mut path = vec![v];
+        while parent[v] != n && parent[v] != v {
+            v = parent[v];
+            path.push(v);
+        }
+        path
     }
 
-    // let mut visited = vec![false; n];
+    fn augment_flow(rf: &mut Vec<Vec<u64>>, g: &mut Vec<Vec<usize>>, path: &Vec<usize>) -> u64 {
+        let mut flow = std::u64::MAX;
+        for i in 0..path.len() - 1 {
+            flow = std::cmp::min(flow, rf[path[i + 1]][path[i]]);
+        }
+        for i in 0..path.len() - 1 {
+            let u = path[i + 1];
+            let v = path[i];
+            rf[u][v] -= flow;
+            if rf[v][u] == 0 { g[v].push(u); }
+            rf[v][u] += flow;  
+        }
+        flow        
+    }
+
     let mut flow = 0;
     loop {
-        // visited.fill(false);
-        let mut visited = vec![false; n];
-        let f = augment_flow(sink, &mut rf, &mut g, &mut visited, src, std::u64::MAX);
-        if f == 0 { break; }
+        let path = find_path(&rf, &mut g, src, sink);
+        if path.len() == 1 { break; }
+        let f = augment_flow(&mut rf, &mut g, &path);
         flow += f;
     }
     flow
 }
 
-//   std::function<void()> find_path = [&]() -> void {
-//     std::fill(prev.begin(), prev.end(), -1);
-//     std::fill(visited.begin(), visited.end(), false);
-//     visited[src] = true;
-//     fifo_que.push(src);
-//     while (!fifo_que.empty()) {
-//       int u = fifo_que.front(); fifo_que.pop();
-//       for (int v = 0; v < n; v++) {
-//         if (visited[v] || g.edges[u][v].capacity == 0) continue;
-//         visited[v] = true;
-//         prev[v] = u;
-//         fifo_que.push(v);
-//       }          
-//     }
-//   };
-
-//   std::function<T()> augment_flow = [&]() -> T {
-//     int u, v = sink;
-//     T flow = inf;
-//     while (prev[v] != -1) {
-//       u = prev[v];
-//       flow = std::min(flow, g.edges[u][v].capacity);
-//       v = u;          
-//     }
-//     if (flow == inf) return 0;
-//     v = sink;
-//     while (prev[v] != -1) {
-//       u = prev[v];
-//       g.edges[u][v].capacity -= flow;
-//       g.edges[v][u].capacity += flow;
-//       v = u;
-//     }
-//     return flow;
-//   };
-
-//   T flow = 0;
-//   while (1) {
-//     find_path();
-//     T f = augment_flow();
-//     if (f == 0) return flow;
-//     flow += f;
-//   }
-// }
-// }
 
 
 
