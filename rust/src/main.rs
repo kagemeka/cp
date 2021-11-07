@@ -26,169 +26,223 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
 
-    let s: String = sc.scan();
-    let a = s.chars().map(|i| i as usize).collect::<Vec<usize>>();
-    let sa = sa_doubling_with_countsort(&a);
-    for i in 0..a.len() {
-        write!(out, "{}", sa[i]).unwrap();
-        write!(out, "{}", if i < a.len() - 1 { ' ' } else { '\n' }).unwrap();
+    let n: usize = sc.scan();
+    let m: usize = sc.scan();
+    let mut g = vec![vec![]; n];
+    for _ in 0..m { 
+        let u: usize = sc.scan();
+        let v: usize = sc.scan();
+        let cap: u64 = sc.scan();
+        g[u].push((v, cap));
     }
-}
-
-pub fn unique<T: Ord + Clone>(a: &Vec<T>) -> Vec<T> {
-    let mut v = a.to_vec();
-    v.sort();
-    v.dedup();
-    v
-}
-
-
-pub fn compress_array<T: Ord + Clone>(a: &Vec<T>) -> (Vec<usize>, Vec<T>) {
-    let v = unique(a);
-    let a = a.iter().map(|x| v.binary_search(x).unwrap()).collect::<Vec<_>>();
-    (a, v)
-} 
-
-
-pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
-    let n = a.len();
-    let (mut rank, _) = compress_array(&a);
-    let mut k = 1usize;
-    let mut key = vec![0; n];
-    let mut sa = vec![0; n];
-    loop {
-        for i in 0..n { 
-            key[i] = rank[i] << 30;
-            if i + k < n { key[i] |= 1 + rank[i + k]; }
-            sa[i] = i;
-        }
-        sa.sort_by_key(|&x| key[x]);
-        rank[sa[0]] = 0;
-        for i in 0..n - 1 { 
-            rank[sa[i + 1]] = rank[sa[i]];
-            if key[sa[i + 1]] > key[sa[i]] { rank[sa[i + 1]] += 1; }
-        }        
-        k <<= 1;
-        if k >= n { break; }
-    }
-    sa
-}
-  
-
-pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
-    let n = a.len();
-    let counting_sort_key = |a: &Vec<usize>| -> Vec<usize> {
-        let mut cnt = vec![0; n + 2];
-        for &x in a.iter() { cnt[x + 1] += 1; }
-        let mut key = vec![0; n];
-        for i in 0..n { cnt[i + 1] += cnt[i]; }
-        for i in 0..n { 
-            key[cnt[a[i]]] = i;
-            cnt[a[i]] += 1;
-        }
-        key
-    };
-    let (mut rank, _) = compress_array(&a);
-    let mut k = 1usize;
-    let mut key = vec![0; n];
-    let mut first = vec![0; n];
-    let mut second = vec![0; n];
-    let mut sa = vec![0; n];
-    loop {
-        for i in 0..n { second[i] = if i + k < n { 1 + rank[i + k] } else { 0 }; }
-        let rank_second = counting_sort_key(&second);
-        for i in 0..n { first[i] = rank[rank_second[i]]; }
-        let rank_first = counting_sort_key(&first);
-        for i in 0..n { sa[i] = rank_second[rank_first[i]]; }
-        for i in 0..n { key[i] = first[rank_first[i]] << 30 | second[sa[i]]; }
-        rank[sa[0]] = 0;
-        for i in 0..n - 1 {
-            rank[sa[i + 1]] = rank[sa[i]];
-            if key[i + 1] > key[i] { rank[sa[i + 1]] += 1; }
-        }
-
-        k <<= 1;
-        if k >= n { break; }
-    }
-    sa
+    // let flow = dinic(&g, 0, n - 1);
+    let flow = ford_fulkerson(&g, 0, n - 1);
+    writeln!(out, "{}", flow).unwrap();
 }
 
 
-pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
-    assert!(a.len() > 0);
-    let mn = *a.iter().min().unwrap();
-    let mut a = a.iter().map(|x| x - mn + 1).collect::<Vec<usize>>();
-    a.push(0);
-    let n = a.len();
-    let m = a.iter().max().unwrap() + 1;
-    let mut is_s = vec![true; n];
-    let mut is_lms = vec![false; n];
-    let mut lms = Vec::with_capacity(n);
-    for i in (1..n).rev() {
-        is_s[i - 1] = if a[i - 1] == a[i] { is_s[i] } else { a[i - 1] < a[i] };
-        is_lms[i] = !is_s[i - 1] && is_s[i];
-        if is_lms[i] { lms.push(i); }
+/// O(V^2 + VE^2)
+pub fn edmonds_karp(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
+    let n = g.len();
+    let mut rf = vec![vec![0; n]; n];
+    for u in 0..n {
+        for &(v, f) in g[u].iter() { rf[u][v] += f; }
+    } 
+    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
+    for u in 0..n { 
+        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
     }
-    lms.reverse();
-    let mut bucket = vec![0usize; m];
-    for &x in a.iter() { bucket[x] += 1; }
 
-    let induce = |lms: &Vec<usize>| -> Vec<usize> {
-        let mut sa = vec![n; n];
-        let mut sa_idx = bucket.clone();
-        
-        for i in 0..m - 1 { sa_idx[i + 1] += sa_idx[i]; }
-        for &i in lms.iter().rev() { 
-            sa_idx[a[i]] -= 1;
-            sa[sa_idx[a[i]]] = i;
+    let mut parent = vec![n; n];
+    // parent[src] = src;
+    let mut que = std::collections::VecDeque::new();
+    let find_path = || {
+        parent.fill(n);
+        parent[src] = src;
+        que.push_back(src);
+        while let Some(u) = que.pop_front() {
+             
         }
-
-        sa_idx = bucket.clone();
-        let mut s = 0usize;
-        for i in 0..m { sa_idx[i] += s; std::mem::swap(&mut s, &mut sa_idx[i]); }
-        for i in 0..n {
-            if sa[i] == n || sa[i] == 0 { continue; } 
-            let i = sa[i] - 1;
-            if !is_s[i] { sa[sa_idx[a[i]]] = i; sa_idx[a[i]] += 1; }
-        }
-        
-        sa_idx = bucket.clone();
-        for i in 0..m - 1 { sa_idx[i + 1] += sa_idx[i]; }
-        for i in (0..n).rev() {
-            if sa[i] == n || sa[i] == 0 { continue; }
-            let i = sa[i] - 1;
-            if is_s[i] { sa_idx[a[i]] -= 1; sa[sa_idx[a[i]]] = i; }
-        }
-        sa
     };
 
-    let sa = induce(&lms);
-    let mut lms_idx = Vec::with_capacity(n);
-    let mut rank = vec![n; n];
-    for &i in sa.iter() { if is_lms[i] { lms_idx.push(i); }; }
-    let l = lms_idx.len();
-    let mut r = 0usize;
-    rank[n - 1] = r;
-    for i in 0..l - 1 {
-        let j = lms_idx[i];
-        let k = lms_idx[i + 1];
-        for d in 0..n {
-            let j_is_lms = is_lms[j + d];
-            let k_is_lms = is_lms[k + d];
-            if a[j + d] != a[k + d] || j_is_lms ^ k_is_lms { r += 1; break; }
-            if d > 0 && j_is_lms | k_is_lms { break; }
-        } 
-        rank[k] = r;
+
+    fn augment_flow(
+        sink: usize, 
+        rf: &mut Vec<Vec<u64>>, 
+        g: &mut Vec<Vec<usize>>, 
+        visited: &mut Vec<bool>, 
+        u: usize, 
+        flow_in: u64,
+    ) -> u64 { 
     }
-    rank = rank.into_iter().filter(|&x| x != n).collect();
-    let mut lms_order: Vec<usize> = Vec::new();
-    if r == l - 1 { 
-        lms_order.resize(l, n);
-        for i in 0..l { lms_order[rank[i]] = i; }
-    } else {
-        lms_order = sa_is(&rank);
+
+    // let mut visited = vec![false; n];
+    let mut flow = 0;
+    loop {
+        // visited.fill(false);
+        let mut visited = vec![false; n];
+        let f = augment_flow(sink, &mut rf, &mut g, &mut visited, src, std::u64::MAX);
+        if f == 0 { break; }
+        flow += f;
     }
-    lms = lms_order.iter().map(|&i| lms[i]).collect();
-    let sa = induce(&lms);
-    sa[1..].to_vec()
-} 
+    flow
+}
+
+//   std::function<void()> find_path = [&]() -> void {
+//     std::fill(prev.begin(), prev.end(), -1);
+//     std::fill(visited.begin(), visited.end(), false);
+//     visited[src] = true;
+//     fifo_que.push(src);
+//     while (!fifo_que.empty()) {
+//       int u = fifo_que.front(); fifo_que.pop();
+//       for (int v = 0; v < n; v++) {
+//         if (visited[v] || g.edges[u][v].capacity == 0) continue;
+//         visited[v] = true;
+//         prev[v] = u;
+//         fifo_que.push(v);
+//       }          
+//     }
+//   };
+
+//   std::function<T()> augment_flow = [&]() -> T {
+//     int u, v = sink;
+//     T flow = inf;
+//     while (prev[v] != -1) {
+//       u = prev[v];
+//       flow = std::min(flow, g.edges[u][v].capacity);
+//       v = u;          
+//     }
+//     if (flow == inf) return 0;
+//     v = sink;
+//     while (prev[v] != -1) {
+//       u = prev[v];
+//       g.edges[u][v].capacity -= flow;
+//       g.edges[v][u].capacity += flow;
+//       v = u;
+//     }
+//     return flow;
+//   };
+
+//   T flow = 0;
+//   while (1) {
+//     find_path();
+//     T f = augment_flow();
+//     if (f == 0) return flow;
+//     flow += f;
+//   }
+// }
+// }
+
+
+
+/// O(V^2 + Ef)
+pub fn ford_fulkerson(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
+    let n = g.len();
+    let mut rf = vec![vec![0; n]; n];
+    for u in 0..n {
+        for &(v, f) in g[u].iter() { rf[u][v] += f; }
+    } 
+    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
+    for u in 0..n { 
+        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
+    }
+
+    fn augment_flow(
+        sink: usize, 
+        rf: &mut Vec<Vec<u64>>, 
+        g: &mut Vec<Vec<usize>>, 
+        visited: &mut Vec<bool>, 
+        u: usize, 
+        flow_in: u64,
+    ) -> u64 { 
+        visited[u] = true;
+        if u == sink { return flow_in; }
+        let edges = g[u].clone();
+        g[u].clear();
+        let mut flow = 0;
+        for &v in edges.iter() {
+            if visited[v] || flow > 0 { g[u].push(v); continue; }
+            flow = augment_flow(sink, rf, g, visited, v, std::cmp::min(flow_in, rf[u][v]));
+            rf[u][v] -= flow;
+            if rf[u][v] > 0 { g[u].push(v); }
+            if flow == 0 { continue; }
+            if rf[v][u] == 0 { g[v].push(u); }
+            rf[v][u] += flow;   
+        }
+        flow 
+    }
+
+    // let mut visited = vec![false; n];
+    let mut flow = 0;
+    loop {
+        // visited.fill(false);
+        let mut visited = vec![false; n];
+        let f = augment_flow(sink, &mut rf, &mut g, &mut visited, src, std::u64::MAX);
+        if f == 0 { break; }
+        flow += f;
+    }
+    flow
+}
+
+
+
+/// O(V^2E)
+pub fn dinic(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
+    let n = g.len();
+    let mut rf = vec![vec![0; n]; n];
+    for u in 0..n {
+        for &(v, f) in g[u].iter() { rf[u][v] += f; }
+    } 
+    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
+    for u in 0..n { 
+        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
+    }
+    let update_level = |g: &Vec<Vec<usize>>| {
+        let mut level = vec![n; n];
+        level[src] = 0;
+        let mut que = std::collections::VecDeque::new();
+        que.push_back(src);
+        while let Some(u) = que.pop_front() {
+            for &v in g[u].iter() {
+                if level[v] != n { continue; }
+                level[v] = level[u] + 1;
+                que.push_back(v);
+            }
+        }
+        level
+    };
+
+    fn flow_to_sink(
+        sink: usize, 
+        rf: &mut Vec<Vec<u64>>, 
+        g: &mut Vec<Vec<usize>>, 
+        level: &Vec<usize>, 
+        u: usize, 
+        mut flow_in: u64,
+    ) -> u64 { 
+        if u == sink { return flow_in; }
+        let mut flow_out = 0;
+        let edges = g[u].clone();
+        g[u].clear();
+        for &v in edges.iter() {
+            if level[v] <= level[u] { g[u].push(v); continue; }
+            let f = flow_to_sink(sink, rf, g, level, v, std::cmp::min(flow_in, rf[u][v]));
+            rf[u][v] -= f;
+            if rf[u][v] > 0 { g[u].push(v); }
+            if rf[v][u] == 0 && f > 0 { g[v].push(u); }
+            rf[v][u] += f;
+            flow_in -= f;
+            flow_out += f;
+        }
+        flow_out  
+    }
+
+
+    let mut flow = 0;
+    loop { 
+        let level = update_level(&g);
+        if level[sink] == n { break; }
+        flow += flow_to_sink(sink, &mut rf, &mut g, &level, src, std::u64::MAX);
+    }
+    flow
+}
