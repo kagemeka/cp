@@ -26,193 +26,67 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
 
-    let n: usize = sc.scan();
+    let size_a: usize = sc.scan();
+    let size_b: usize = sc.scan();
     let m: usize = sc.scan();
+    let n = size_a + size_b;
     let mut g = vec![vec![]; n];
     for _ in 0..m { 
         let u: usize = sc.scan();
         let v: usize = sc.scan();
-        let cap: u64 = sc.scan();
-        g[u].push((v, cap));
+        g[u].push(v + size_a);
+        g[v + size_a].push(u);
     }
-    // let flow = dinic(&g, 0, n - 1);
-    // let flow = ford_fulkerson(&g, 0, n - 1);
-    let flow = edmonds_karp(&g, 0, n - 1);
-    writeln!(out, "{}", flow).unwrap();
+    let max_match = ford_fulkerson(size_a, size_b, &g);
+    writeln!(out, "{}", max_match).unwrap();
 }
 
 
-/// O(V^2 + VE^2)
-pub fn edmonds_karp(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
-    let n = g.len();
-    let mut rf = vec![vec![0; n]; n];
-    for u in 0..n {
-        for &(v, f) in g[u].iter() { rf[u][v] += f; }
-    } 
-    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
-    for u in 0..n { 
-        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
-    }
-
-    fn find_path(rf: &Vec<Vec<u64>>, g: &mut Vec<Vec<usize>>, src: usize, sink: usize) -> Vec<usize> {
-        let n = g.len();
-        let mut parent = vec![n; n];
-        parent[src] = src;
-        let mut que = std::collections::VecDeque::new();
-        que.push_back(src);
-        while let Some(u) = que.pop_front() {
-            g[u].retain(|&v| rf[u][v] != 0);
-            for &v in g[u].iter() {
-                if parent[v] != n { continue; }
-                parent[v] = u;
-                que.push_back(v);
-            }
-        }
-        let mut v = sink;
-        let mut path = vec![v];
-        while parent[v] != n && parent[v] != v {
-            v = parent[v];
-            path.push(v);
-        }
-        path
-    }
-
-    fn augment_flow(rf: &mut Vec<Vec<u64>>, g: &mut Vec<Vec<usize>>, path: &Vec<usize>) -> u64 {
-        let mut flow = std::u64::MAX;
-        for i in 0..path.len() - 1 {
-            flow = std::cmp::min(flow, rf[path[i + 1]][path[i]]);
-        }
-        for i in 0..path.len() - 1 {
-            let u = path[i + 1];
-            let v = path[i];
-            rf[u][v] -= flow;
-            if rf[v][u] == 0 { g[v].push(u); }
-            rf[v][u] += flow;  
-        }
-        flow        
-    }
-
-    let mut flow = 0;
-    loop {
-        let path = find_path(&rf, &mut g, src, sink);
-        if path.len() == 1 { break; }
-        let f = augment_flow(&mut rf, &mut g, &path);
-        flow += f;
-    }
-    flow
-}
-
-
-
-
-/// O(V^2 + Ef)
-pub fn ford_fulkerson(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
-    let n = g.len();
-    let mut rf = vec![vec![0; n]; n];
-    for u in 0..n {
-        for &(v, f) in g[u].iter() { rf[u][v] += f; }
-    } 
-    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
-    for u in 0..n { 
-        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
-    }
-
-    fn augment_flow(
-        sink: usize, 
-        rf: &mut Vec<Vec<u64>>, 
-        g: &mut Vec<Vec<usize>>, 
-        visited: &mut Vec<bool>, 
-        u: usize, 
-        flow_in: u64,
-    ) -> u64 { 
+/// Max Cardinal match on bipartite graph, ford fulkerson.
+/// O(VE)
+/// references
+/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
+/// - https://ei1333.github.io/luzhiled/snippets/graph/bipartite-matching.html
+/// - https://ei1333.github.io/algorithm/bipartite-matching.html
+/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/5630283/ngtkana/Rust
+/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/4329190/sansen/Rust
+pub fn ford_fulkerson(size_a: usize, size_b: usize, g: &[Vec<usize>]) -> usize {
+    fn dfs(g: &[Vec<usize>], pair: &mut [Option<usize>], visited: &mut [bool], u: usize) -> bool {
         visited[u] = true;
-        if u == sink { return flow_in; }
-        let edges = g[u].clone();
-        g[u].clear();
-        let mut flow = 0;
-        for &v in edges.iter() {
-            if visited[v] || flow > 0 { g[u].push(v); continue; }
-            flow = augment_flow(sink, rf, g, visited, v, std::cmp::min(flow_in, rf[u][v]));
-            rf[u][v] -= flow;
-            if rf[u][v] > 0 { g[u].push(v); }
-            if flow == 0 { continue; }
-            if rf[v][u] == 0 { g[v].push(u); }
-            rf[v][u] += flow;   
+        for &v in g[u].iter() {
+            if !pair[v].map_or(true, |v| !visited[v] && dfs(g, pair, visited, v)) { continue; }
+            pair[v] = Some(u);
+            pair[u] = Some(v);
+            return true;
         }
-        flow 
+        false
     }
-
-    // let mut visited = vec![false; n];
-    let mut flow = 0;
-    loop {
-        // visited.fill(false);
-        let mut visited = vec![false; n];
-        let f = augment_flow(sink, &mut rf, &mut g, &mut visited, src, std::u64::MAX);
-        if f == 0 { break; }
-        flow += f;
+    let n = g.len();
+    assert_eq!(n, size_a + size_b);
+    let mut pair = vec![None; n];
+    for i in 0..size_a {
+        if pair[i].is_some() { continue; }
+        dfs(g, &mut pair, &mut vec![false; n], i);
     }
-    flow
+    pair.iter().take(size_a).filter(|v| v.is_some()).count()
 }
 
 
+/// Max Cardinal match on bipartite graph, hopcroft karp.
+/// O(E\sqrt{V})
+/// references
+/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
+/// - https://misteer.hatenablog.com/entry/hopcroft-karp 
+/// - https://tjkendev.github.io/procon-library/python/max_flow/hopcroft-karp.html
+/// - https://ei1333.github.io/algorithm/bipartite-matching.html
+pub fn hopcroft_karp() {
 
+}
+
+
+/// Max Cardinal match on arbitral graph, blossom algorithm.
 /// O(V^2E)
-pub fn dinic(g: &Vec<Vec<(usize, u64)>>, src: usize, sink: usize) -> u64 {
-    let n = g.len();
-    let mut rf = vec![vec![0; n]; n];
-    for u in 0..n {
-        for &(v, f) in g[u].iter() { rf[u][v] += f; }
-    } 
-    let mut g: Vec<Vec<usize>> = vec![vec![]; n];
-    for u in 0..n { 
-        for v in 0..n { if rf[u][v] > 0 { g[u].push(v); }; }
-    }
-    let update_level = |g: &Vec<Vec<usize>>| {
-        let mut level = vec![n; n];
-        level[src] = 0;
-        let mut que = std::collections::VecDeque::new();
-        que.push_back(src);
-        while let Some(u) = que.pop_front() {
-            for &v in g[u].iter() {
-                if level[v] != n { continue; }
-                level[v] = level[u] + 1;
-                que.push_back(v);
-            }
-        }
-        level
-    };
-
-    fn flow_to_sink(
-        sink: usize, 
-        rf: &mut Vec<Vec<u64>>, 
-        g: &mut Vec<Vec<usize>>, 
-        level: &Vec<usize>, 
-        u: usize, 
-        mut flow_in: u64,
-    ) -> u64 { 
-        if u == sink { return flow_in; }
-        let mut flow_out = 0;
-        let edges = g[u].clone();
-        g[u].clear();
-        for &v in edges.iter() {
-            if level[v] <= level[u] { g[u].push(v); continue; }
-            let f = flow_to_sink(sink, rf, g, level, v, std::cmp::min(flow_in, rf[u][v]));
-            rf[u][v] -= f;
-            if rf[u][v] > 0 { g[u].push(v); }
-            if rf[v][u] == 0 && f > 0 { g[v].push(u); }
-            rf[v][u] += f;
-            flow_in -= f;
-            flow_out += f;
-        }
-        flow_out  
-    }
-
-
-    let mut flow = 0;
-    loop { 
-        let level = update_level(&g);
-        if level[sink] == n { break; }
-        flow += flow_to_sink(sink, &mut rf, &mut g, &level, src, std::u64::MAX);
-    }
-    flow
+/// references
+/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
+pub fn blossom() {
 }
