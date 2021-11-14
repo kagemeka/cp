@@ -25,127 +25,112 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
-
-    let size_a: usize = sc.scan();
-    let size_b: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut g = vec![];
-    for _ in 0..m {
-        let u: usize = sc.scan();
-        let v: usize = sc.scan();
-        g.push((u, v));
+    let n: usize = sc.scan();
+    let f = prime_factorize(n);
+    write!(out, "{}: ", n).unwrap();
+    let mut res = Vec::new();
+    for (p, c) in f.iter() {
+        for _ in 0..*c {
+            // write!(out, "{} ", p).unwrap();
+            res.push(p);
+        }
     }
-    // let max_match = hopcroft_karp(size_a, size_b, &g);
-    let max_match = ford_fulkerson(size_a, size_b, &g);
-    writeln!(out, "{:?}", max_match.iter().filter(|v| v.is_some()).count()).unwrap();
+    for (i, x) in res.iter().enumerate() {
+        write!(out, "{}{}", x, if i == res.len() - 1 { '\n' } else { ' ' }).unwrap();
+    }
+    i64::pow(
 }
 
 
-/// Max Cardinal match on bipartite graph, ford fulkerson.
-/// O(VE)
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://ei1333.github.io/luzhiled/snippets/graph/bipartite-matching.html
-/// - https://ei1333.github.io/algorithm/bipartite-matching.html
-/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/5630283/ngtkana/Rust
-/// - https://onlinejudge.u-aizu.ac.jp/solutions/problem/GRL_7_A/review/4329190/sansen/Rust
-pub fn ford_fulkerson(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec<Option<usize>> {
-    fn dfs(g: &[Vec<usize>], pair: &mut [Option<usize>], visited: &mut [bool], u: usize) -> bool {
-        visited[u] = true;
-        for &v in g[u].iter() {
-            if !pair[v].map_or(true, |v| !visited[v] && dfs(g, pair, visited, v)) { continue; }
-            pair[v] = Some(u);
-            pair[u] = Some(v);
-            return true;
+
+
+pub fn least_prime_factor(n: usize) -> Vec<usize> {
+    assert!(n >= 2);
+    let mut s: Vec<usize> = (0..n).collect();
+    s[1] = 0;
+    let mut i = 0;
+    while i * i < n - 1 {
+        i += 1;
+        if s[i as usize] != i { continue; }
+        for j in (i * i..n).step_by(i as usize) {
+            if s[j as usize] == j { s[j as usize] = i; }
         }
-        false
     }
-    let n = size_a + size_b;
-    let mut t = vec![vec![]; n];
-    for &(u, v) in g.iter() {
-        t[u].push(v + size_a);
-        t[v + size_a].push(u);
+    s
+}
+
+pub fn greatest_prime_factor(n: usize) -> Vec<usize> {
+    assert!(n >= 2);
+    let mut s: Vec<usize> = (0..n).collect();
+    s[1] = 0;
+    let mut i = 0;
+    while i < n - 1 {
+        i += 1;
+        if s[i as usize] != i { continue; }
+        for j in (i * 2..n).step_by(i as usize) {
+            s[j as usize] = i;
+        }
     }
-    let mut pair = vec![None; n];
-    for i in 0..size_a {
-        if pair[i].is_some() { continue; }
-        dfs(&t, &mut pair, &mut vec![false; n], i);
-    }
-    pair.into_iter().take(size_a).collect()
+    s
 }
 
 
-/// Max Cardinal match on bipartite graph, hopcroft karp.
-/// O(E\sqrt{V})
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://misteer.hatenablog.com/entry/hopcroft-karp 
-/// - https://tjkendev.github.io/procon-library/python/max_flow/hopcroft-karp.html
-/// - https://ei1333.github.io/algorithm/bipartite-matching.html
-/// - https://www.youtube.com/watch?v=lM5eIpF0xjA
-/// - https://judge.yosupo.jp/submission/6963
-pub fn hopcroft_karp(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec<Option<usize>> {
-    let bfs = |g: &[Vec<usize>], matched: &[bool], pair_a: &[Option<usize>]| -> Vec<usize> {
-        let mut que = std::collections::VecDeque::new();
-        let mut level = vec![std::usize::MAX; size_b];
-        for u in 0..size_b {
-            if matched[u] { continue; } 
-            level[u] = 0;
-            que.push_back(u);
-        }
-        while let Some(u) = que.pop_front() {
-            for &v in g[u].iter() {
-                if let Some(u2) = pair_a[v] {
-                    if level[u2] <= level[u] + 1 { continue; }
-                    level[u2] = level[u] + 1;
-                    que.push_back(u2);
-                }
-            }
-        }
-        level
-    };
-
-    fn dfs(
-        g: &[Vec<usize>], 
-        level: &[usize], 
-        it: &mut [usize], 
-        pair_a: &mut [Option<usize>], 
-        matched: &mut [bool], 
-        u: usize,
-    ) -> bool {
-        for (i, &v) in g[u].iter().enumerate().skip(it[u]) {
-            it[u] = i + 1;
-            if !pair_a[v].map_or(true, |u2| {
-                level[u2] == level[u] + 1 && dfs(g, level, it, pair_a, matched, u2)
-            }) { continue; }
-            pair_a[v] = Some(u);
-            matched[u] = true;
-            return true;
-        }
-        false
-    }
-    
-    let mut t = vec![vec![]; size_b];
-    for &(v, u) in g.iter() { t[u].push(v); } // v \in A, u \in B.
-    let mut matched = vec![false; size_b];
-    let mut pair_a = vec![None; size_a];
-    
-    loop {
-        let level = bfs(&t, &matched, &pair_a);
-        let mut it = vec![0; size_b];
-        let mut updated = false;
-        for u in 0..size_b {
-            if !matched[u] { updated |= dfs(&t, &level, &mut it, &mut pair_a, &mut matched, u); }
-        }
-        if !updated { break; } 
-    }
-    pair_a
+pub fn sieve_of_eratosthenes(n: usize) -> Vec<bool> {
+    let lpf = least_prime_factor(n);
+    (0..n).map(|i| i >= 2 && i == lpf[i as usize]).collect()
 }
 
 
-/// Max Cardinal match on arbitral graph, blossom algorithm.
-/// O(V^2E)
-/// references
-/// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-pub fn blossom() {
+pub fn find_prime_numbers(n: usize) -> Vec<usize> {
+    let is_prime = sieve_of_eratosthenes(n);
+    (0..n).filter(|i| is_prime[*i as usize]).collect()
 }
+
+
+pub fn prime_factorize(mut n: usize) -> std::collections::BTreeMap<usize, usize> {
+    let mut cnt = std::collections::BTreeMap::new();
+    let mut i = 1;
+    while i * i < n {
+        i += 1;
+        if n % i != 0 { continue; }
+        while n % i == 0 {
+            n /= i;
+            *cnt.entry(i).or_insert(0usize) += 1;
+        }
+    }
+    if n > 1 { cnt.insert(n, 1); }
+    cnt
+}
+
+
+pub struct PrimeFactorizeLPF {
+    lpf: Vec<usize>,
+}
+
+
+impl PrimeFactorizeLPF {
+    pub fn new(n: usize) -> Self {
+        PrimeFactorizeLPF { lpf: least_prime_factor(n) }
+    }
+
+    pub fn factorize(&self, mut n: usize) -> std::collections::BTreeMap<usize, usize> {
+        let mut cnt = std::collections::BTreeMap::new();
+        while n > 1 {
+            let p = self.lpf[n] as usize;
+            n /= p;
+            *cnt.entry(p).or_insert(0usize) += 1;
+        }
+        cnt
+    }
+}
+
+
+pub fn count_prime_factors(n: usize) -> Vec<usize> {
+    let mut cnt = vec![0; n as usize];
+    for p in find_prime_numbers(n).into_iter().map(|x| x as usize) {
+        for i in (p..n).step_by(p) { cnt[i] += 1; }
+    }
+    cnt
+}
+
+
