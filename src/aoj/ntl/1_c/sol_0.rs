@@ -26,26 +26,17 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
     let n: usize = sc.scan();
-    writeln!(out, "{}", euler_totient(n)).unwrap();
-}
-
-
-
-/// O(\sqrt{N})
-pub fn euler_totient(mut n: usize) -> usize {
-    let mut cnt = n;
-    let mut i = 1;
-    while i * i < n {
-        i += 1;
-        if n % i != 0 { continue; }
-        cnt = cnt / i * (i - 1);
-        while n % i == 0 { n /= i; }
+    let mut x = 1;
+    for _ in 0..n { 
+        let a = sc.scan();
+        x = lcm(x, a);
     }
-    if n > 1 { cnt = cnt / n * (n - 1); }
-    cnt
+    writeln!(out, "{}", x).unwrap();
 }
 
 
+pub fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 { a } else { gcd(b, a % b) }
+}
 
-/// O(N\log\log{N} + O(\log{N}))
-pub struct EulerTotientLPF {}
+pub fn lcm(a: usize, b: usize) -> usize { a / gcd(a, b) * b }
