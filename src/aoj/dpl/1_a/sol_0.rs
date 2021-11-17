@@ -33,7 +33,23 @@ fn main() {
         d[i] = sc.scan();
     }
     let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
+    let mut cnt = vec![inf; n + 1];
+    cnt[0] = 0;
+    let mut dp = std::collections::HashSet::new();
+    dp.insert(0usize);
+    for c in 0..n {
+        let mut ndp = std::collections::HashSet::new();
+        for &x in dp.iter() {
+            for &i in d.iter() {
+                if x + i > n || cnt[x + i] < c + 1 { continue; }
+                cnt[x + i] = c + 1;
+                ndp.insert(x + i);
+            }
+        }
+        dp = ndp;
+        if !dp.contains(&n) { continue; }
+        writeln!(out, "{}", c + 1).unwrap();
+        break;
+    }
     
 }
