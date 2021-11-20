@@ -24,16 +24,17 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
+
+    let mut m: usize = sc.scan();
+    let mut n: usize = sc.scan();
+    const MOD: usize = 1_000_000_007;
     
-    
-    let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut d = vec![0usize; m];
-    for i in 0..m {
-        d[i] = sc.scan();
+    let mut x = 1usize;
+    while n > 0 { 
+        if n & 1 == 1 { x = x * m % MOD; }
+        m = m * m % MOD;
+        n >>= 1;
     }
-    let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
-    
+    writeln!(out, "{}", x).unwrap();
+
 }

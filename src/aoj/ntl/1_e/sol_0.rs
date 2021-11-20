@@ -25,15 +25,17 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
     
-    
-    let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut d = vec![0usize; m];
-    for i in 0..m {
-        d[i] = sc.scan();
-    }
-    let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
-    
+    let a: i64 = sc.scan();
+    let b: i64 = sc.scan();
+    let (g, x, y) = extgcd(a, b);
+    writeln!(out, "{} {}", x, y).unwrap();
+}
+
+
+
+
+pub fn extgcd(a: i64, b: i64) -> (i64, i64, i64) {
+    if b == 0 { return (a, 1, 0); }
+    let (g, s, t) = extgcd(b, a % b);
+    (g, t, s - a / b * t)
 }

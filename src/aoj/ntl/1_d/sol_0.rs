@@ -24,16 +24,28 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
-    
-    
+
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut d = vec![0usize; m];
-    for i in 0..m {
-        d[i] = sc.scan();
-    }
-    let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
-    
+    writeln!(out, "{}", euler_totient(n)).unwrap();
 }
+
+
+
+/// O(\sqrt{N})
+pub fn euler_totient(mut n: usize) -> usize {
+    let mut cnt = n;
+    let mut i = 1;
+    while i * i < n {
+        i += 1;
+        if n % i != 0 { continue; }
+        cnt = cnt / i * (i - 1);
+        while n % i == 0 { n /= i; }
+    }
+    if n > 1 { cnt = cnt / n * (n - 1); }
+    cnt
+}
+
+
+
+/// O(N\log\log{N} + O(\log{N}))
+pub struct EulerTotientLPF {}

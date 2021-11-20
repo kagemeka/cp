@@ -24,16 +24,19 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
-    
-    
+
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut d = vec![0usize; m];
-    for i in 0..m {
-        d[i] = sc.scan();
+    let mut x = 1;
+    for _ in 0..n { 
+        let a = sc.scan();
+        x = lcm(x, a);
     }
-    let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
-    
+    writeln!(out, "{}", x).unwrap();
 }
+
+
+pub fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 { a } else { gcd(b, a % b) }
+}
+
+pub fn lcm(a: usize, b: usize) -> usize { a / gcd(a, b) * b }

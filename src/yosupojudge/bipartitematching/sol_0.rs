@@ -35,9 +35,18 @@ fn main() {
         let v: usize = sc.scan();
         g.push((u, v));
     }
-    // let max_match = hopcroft_karp(size_a, size_b, &g);
-    let max_match = ford_fulkerson(size_a, size_b, &g);
-    writeln!(out, "{:?}", max_match.iter().filter(|v| v.is_some()).count()).unwrap();
+    let max_match = hopcroft_karp(size_a, size_b, &g);
+    // let max_match = ford_fulkerson(size_a, size_b, &g);
+    let mut res = Vec::new();
+    for u in 0..size_a {
+        if let Some(v) = max_match[u] {
+            res.push((u, v));
+        }
+    }
+    writeln!(out, "{}", res.len()).unwrap();
+    for (u, v) in res.iter() {
+        writeln!(out, "{} {}", u, v).unwrap();
+    }
 }
 
 
@@ -79,7 +88,6 @@ pub fn ford_fulkerson(size_a: usize, size_b: usize, g: &[(usize, usize)]) -> Vec
 /// O(E\sqrt{V})
 /// references
 /// - https://en.wikipedia.org/wiki/Maximum_cardinality_matching
-/// - https://en.wikipedia.org/wiki/Hopcroft–Karp_algorithm
 /// - https://misteer.hatenablog.com/entry/hopcroft-karp 
 /// - https://tjkendev.github.io/procon-library/python/max_flow/hopcroft-karp.html
 /// - https://ei1333.github.io/algorithm/bipartite-matching.html
