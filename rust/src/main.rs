@@ -17,6 +17,7 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
+
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -24,16 +25,46 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
-    
-    
+
     let n: usize = sc.scan();
-    let m: usize = sc.scan();
-    let mut d = vec![0usize; m];
-    for i in 0..m {
-        d[i] = sc.scan();
+    let mut c: Vec<usize> = vec![0; n];
+    for i in 0..n { 
+        c[i] = sc.scan();
     }
-    let inf = std::usize::MAX;
-    let mut dp = vec![inf; n + 1];
-    
-    
+    let lis = longest_increasing_sequence(&c);
+    println!("{:?}", lis);
+    writeln!(out, "{}", n - lis.len()).unwrap();
+}
+
+
+pub trait Inf { const INF: Self; }
+
+
+impl Inf for usize {
+    const INF: usize = usize::MAX;
+}
+
+
+pub fn longest_increasing_sequence<T: Ord + Inf + Clone + Copy>(a: &[T]) -> Vec<T> {
+    let n = a.len();
+    println!("{}", n);
+    let mut lis = vec![T::INF; n];
+    for x in a.iter() {
+        let i = lis.binary_search(x);
+        let i = if i.is_ok() { i.unwrap() } else { i.unwrap_err() };
+        // println!("{}", i.unwrap_err());
+        // println!("{}", );
+        lis[i] = *x;
+    }
+    let i = lis.binary_search(&T::INF).unwrap();
+    println!("{}", i);
+    lis[..i].to_vec()
+    // lis
+}
+
+pub fn bisect<T>(is_ok: Box<dyn Fn(&T)->bool>, a: &[T]) -> usize {
+    let mut lo = 0;
+    let mut hi = a.len();
+    while hi - lo > 1 {
+    }
 }
