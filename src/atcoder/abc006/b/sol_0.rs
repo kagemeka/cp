@@ -25,22 +25,14 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", count(b) - count(a - 1)).unwrap();
-}
-
-
-fn count(n: usize) -> usize {
-    let mut dp: Vec<usize> = vec![1, 0];
-    let ns = n.to_string();
-    for d in ns.chars() {
-        let d = d.to_digit(10).unwrap() as usize;
-        dp[1] = dp[1] * 8 + dp[0] * (if d <= 4 { d } else { d - 1 });
-        if d == 4 || d == 9 { dp[0] = 0; }
+    
+    let n: usize = sc.scan();
+    const MOD: usize = 1_000_7;
+    let mut t = vec![0; 1 << 20];
+    t[2] = 1;
+    for i in 3..1 << 20 {
+        t[i] = (t[i - 3] + t[i - 2] + t[i - 1]) % MOD;
     }
-    n + 1 - dp[0] - dp[1]
+    writeln!(out, "{}", t[n - 1]).unwrap();
+
 }
-
-

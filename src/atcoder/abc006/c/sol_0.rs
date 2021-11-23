@@ -26,21 +26,31 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", count(b) - count(a - 1)).unwrap();
-}
-
-
-fn count(n: usize) -> usize {
-    let mut dp: Vec<usize> = vec![1, 0];
-    let ns = n.to_string();
-    for d in ns.chars() {
-        let d = d.to_digit(10).unwrap() as usize;
-        dp[1] = dp[1] * 8 + dp[0] * (if d <= 4 { d } else { d - 1 });
-        if d == 4 || d == 9 { dp[0] = 0; }
+    let mut n: usize = sc.scan();
+    let mut m: usize = sc.scan();
+    let mut x: usize = 0;
+    let mut y: usize = 0;
+    let mut z: usize = 0;
+    let ng = "-1 -1 -1";
+    if m & 1 == 1 {
+        if m == 1 {
+            writeln!(out, "{}", ng).unwrap();
+            return;
+        }
+        m -= 3;
+        y += 1;
+        n -= 1;
     }
-    n + 1 - dp[0] - dp[1]
+    if m / 2 < n {
+        writeln!(out, "{}", ng).unwrap();
+        return;
+    }
+    z = m / 2 - n;
+    if n < z {
+        writeln!(out, "{}", ng).unwrap();
+        return;
+    }
+    x = n - z;
+    writeln!(out, "{} {} {}", x, y, z).unwrap();
+
 }
-
-

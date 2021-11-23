@@ -17,7 +17,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -25,22 +24,9 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());  
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", count(b) - count(a - 1)).unwrap();
+    
+    
+    let n: usize = sc.scan();
+    writeln!(out, "{}", if n % 3 == 0 { "YES" } else { "NO" }).unwrap();
+    
 }
-
-
-fn count(n: usize) -> usize {
-    let mut dp: Vec<usize> = vec![1, 0];
-    let ns = n.to_string();
-    for d in ns.chars() {
-        let d = d.to_digit(10).unwrap() as usize;
-        dp[1] = dp[1] * 8 + dp[0] * (if d <= 4 { d } else { d - 1 });
-        if d == 4 || d == 9 { dp[0] = 0; }
-    }
-    n + 1 - dp[0] - dp[1]
-}
-
-
