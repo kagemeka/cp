@@ -33,7 +33,21 @@ fn main() {
         a[k - 1 - i][0] = sc.scan();
     }
     
-
+    fn op(lhs: &Vec<Vec<usize>>, rhs: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+        let n = lhs[0].len();
+        let h = lhs.len();
+        assert_eq!(rhs.len(), n);
+        let w = rhs[0].len();
+        let mut res = vec![vec![0usize; w]; h];
+        for i in 0..h { 
+            for j in 0..w {
+                for k in 0..n {
+                    res[i][j] ^= lhs[i][k] & rhs[k][j];
+                }
+            }
+        }
+        res
+    }
 
     let e = || {
         let mut a = vec![vec![0usize; k]; k];
@@ -67,21 +81,6 @@ fn main() {
     a = op(&c, &a);
     writeln!(out, "{}", a[0][0]).unwrap();
     
-}
-fn op(lhs: &Vec<Vec<usize>>, rhs: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
-    let n = lhs[0].len();
-    let h = lhs.len();
-    assert_eq!(rhs.len(), n);
-    let w = rhs[0].len();
-    let mut res = vec![vec![0usize; w]; h];
-    for i in 0..h { 
-        for j in 0..w {
-            for k in 0..n {
-                res[i][j] ^= lhs[i][k] & rhs[k][j];
-            }
-        }
-    }
-    res
 }
 
 pub mod structs {
