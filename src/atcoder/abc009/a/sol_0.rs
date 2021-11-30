@@ -26,5 +26,8 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
+
+    let n: usize = sc.scan();
+    writeln!(out, "{}", (n + 1) / 2).unwrap();
     
 }
