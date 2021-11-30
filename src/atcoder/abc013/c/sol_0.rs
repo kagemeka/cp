@@ -28,10 +28,23 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{} {}", b, a).unwrap();
 
+    let n: isize = sc.scan();
+    let h: isize = sc.scan();
+    let a: isize = sc.scan();
+    let b: isize = sc.scan();
+    let c: isize = sc.scan();
+    let d: isize = sc.scan();
+    let e: isize = sc.scan();
     
+    let mut res = c * n;
+    for x in 0..n + 1 {
+        let y = ((n * e - (b + e) * x - h) as f64 / (d + e) as f64).floor() as isize + 1;
+        let y = std::cmp::max(y, 0);
+        if x + y > n { continue; }
+        res = std::cmp::min(res, a * x + c * y);
+    }
+    writeln!(out, "{}", res).unwrap();
 }
+
 
