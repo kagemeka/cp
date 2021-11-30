@@ -25,7 +25,11 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: String = sc.scan();
-    let b: String = sc.scan();
-    writeln!(out, "{}", if a.len() > b.len() { a } else { b }).unwrap();
+
+    let n: usize = sc.scan();
+    let mut a: Vec<usize> = Vec::with_capacity(n);
+    for _ in 0..n { a.push(sc.scan()); }
+    a = a.into_iter().filter(|&x| x != 0).collect::<Vec<_>>();
+    let res: usize = (a.iter().sum::<usize>() + a.len() - 1) / a.len();
+    writeln!(out, "{}", res).unwrap(); 
 }

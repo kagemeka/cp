@@ -17,6 +17,7 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
+
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -25,7 +26,20 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: String = sc.scan();
-    let b: String = sc.scan();
-    writeln!(out, "{}", if a.len() > b.len() { a } else { b }).unwrap();
+    let w: usize = sc.scan();
+    let n: usize = sc.scan();
+    let k: usize = sc.scan();
+
+    let mut dp: Vec<Vec<usize>> = vec![vec![0; w + 1]; n + 1];
+    for _ in 0..n { 
+        let a: usize = sc.scan();
+        let b: usize = sc.scan();
+        for i in (1..n + 1).rev() {
+            for j in a..w + 1 {
+                dp[i][j] = std::cmp::max(dp[i][j], dp[i - 1][j - a] + b);
+            }
+        }
+    }
+    writeln!(out, "{}", dp[k][w]).unwrap();
+
 }

@@ -25,7 +25,23 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let a: String = sc.scan();
-    let b: String = sc.scan();
-    writeln!(out, "{}", if a.len() > b.len() { a } else { b }).unwrap();
+
+    let n: usize = sc.scan();
+    let k: usize = sc.scan();
+    
+    let mut a: Vec<usize> = vec![0];
+    
+    for _ in 0..n { 
+        let mut b: Vec<usize> = Vec::new();
+        for _ in 0..k { 
+            let t: usize = sc.scan();
+            for &x in a.iter() {
+                b.push(t ^ x);
+            }
+        }
+        b.sort();
+        b.dedup();
+        a = b;
+    }
+    writeln!(out, "{}", if a.contains(&0) { "Found" } else { "Nothing" }).unwrap();
 }
