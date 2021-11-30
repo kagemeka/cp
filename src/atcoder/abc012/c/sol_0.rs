@@ -29,7 +29,14 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let n: usize = sc.scan();
+    let n = 2025 - n;
+    for i in 1usize..10 { 
+        if n % i != 0 { continue; }
+        let j = n / i;
+        if j >= 10 { continue; }
+        writeln!(out, "{} x {}", i, j).unwrap();
+    }
+    
 }
+

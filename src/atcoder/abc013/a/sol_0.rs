@@ -29,7 +29,9 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let x: char = sc.scan();
+    writeln!(out, "{}", x as u8 - 'A' as u8 + 1).unwrap();
+    
 }
+
+

@@ -28,8 +28,11 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let mut s: String = sc.scan();
+    let mut s = s.chars().collect::<Vec<_>>();
+    s[0] = s[0].to_uppercase().nth(0).unwrap();
+    for i in 1..s.len() {
+        s[i] = s[i].to_lowercase().nth(0).unwrap();
+    }
+    writeln!(out, "{}", s.iter().collect::<String>()).unwrap();
 }

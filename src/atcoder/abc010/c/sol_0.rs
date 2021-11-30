@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 pub struct Scanner<R: std::io::Read> {
     reader: R,
 }
@@ -28,8 +26,21 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let sx: i64 = sc.scan();
+    let sy: i64 = sc.scan();
+    let gx: i64 = sc.scan();
+    let gy: i64 = sc.scan();
+    let t: i64 = sc.scan();
+    let v: i64 = sc.scan();
+    let n: usize = sc.scan();
+    let mut ok = true;
+    for _ in 0..n {
+        let x: i64 = sc.scan();
+        let y: i64 = sc.scan();
+        let mut d = (((x - sx).pow(2) + (y - sy).pow(2)) as f64).sqrt();
+        d += (((gx - x).pow(2) + (gy - y).pow(2)) as f64).sqrt();
+        if d <= (t * v) as f64 { ok = false; }
+    }
+    writeln!(out, "{}", if ok { "NO" } else { "YES" }).unwrap();
 }
+

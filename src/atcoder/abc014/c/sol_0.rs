@@ -29,7 +29,18 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let n: usize = sc.scan();
+    let m: usize = 1 << 20;
+    
+    let mut cnt: Vec<isize> = vec![0; m + 1];
+    for _ in 0..n { 
+        let a: usize = sc.scan();
+        let b: usize = sc.scan();
+        cnt[a] += 1;
+        cnt[b + 1] -= 1;
+    }
+    for i in 0..m {
+        cnt[i + 1] += cnt[i];
+    }
+    writeln!(out, "{}", cnt.iter().max().unwrap()).unwrap();
 }

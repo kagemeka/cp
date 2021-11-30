@@ -28,8 +28,11 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let mut a: usize = sc.scan();
+    let mut b: usize = sc.scan();
+    
+    if a > b { std::mem::swap(&mut a, &mut b); }
+    writeln!(out, "{}", std::cmp::min(b - a, 10 - b + a)).unwrap();
 }
+
+

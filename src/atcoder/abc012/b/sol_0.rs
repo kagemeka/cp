@@ -29,7 +29,11 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let mut n: usize = sc.scan();
+    let h = n / 3600;
+    n %= 3600;
+    let m = n / 60;
+    let s = n % 60;
+    writeln!(out, "{:02}:{:02}:{:02}", h, m, s).unwrap();
 }
+
