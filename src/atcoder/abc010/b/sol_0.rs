@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 pub struct Scanner<R: std::io::Read> {
     reader: R,
 }
@@ -29,5 +27,14 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
     let n: usize = sc.scan();
-    writeln!(out, "{}", n % 12 + 1).unwrap();
+    let mut cnt: usize = 0;
+    for _ in 0..n { 
+        let mut a: usize = sc.scan();
+        while a % 2 == 0 || a % 3 == 2 {
+            cnt += 1;
+            a -= 1;
+        }
+    }
+    writeln!(out, "{}", cnt).unwrap();
 }
+

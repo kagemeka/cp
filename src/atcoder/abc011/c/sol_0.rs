@@ -28,6 +28,32 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let n: usize = sc.scan();
-    writeln!(out, "{}", n % 12 + 1).unwrap();
+    let mut n: isize = sc.scan();
+    let mut ng = std::collections::HashSet::new();
+    for _ in 0..3 {
+        ng.insert(sc.scan::<isize>()); 
+    }
+    if ng.contains(&n) {
+        writeln!(out, "NO").unwrap();
+        return;
+    }
+    for _ in 0..100 {
+        let mut ok = false;
+        for d in (1..4).rev() {
+            if ng.contains(&(n - d)) {
+                continue; 
+            }
+            n -= d;
+            ok = true;
+            break;
+        }
+        if n <= 0 {
+            writeln!(out, "YES").unwrap();
+            return;
+        }
+        if ok { continue; }
+        writeln!(out, "NO").unwrap();
+        return;
+    }
+    writeln!(out, "NO").unwrap();
 }
