@@ -25,7 +25,15 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let m: usize = sc.scan();
-    let d: usize = sc.scan();
-    writeln!(out, "{}", if m % d == 0 { "YES" } else { "NO" }).unwrap();
+
+    let a: isize = sc.scan();
+    let b: isize = sc.scan();
+    let c: isize = sc.scan();
+    let ok1 = a + b == c;
+    let ok2 = a - b == c;
+    writeln!(
+        out, 
+        "{}",
+        if ok1 && ok2 { "?" } else if ok1 { "+" } else if ok2 { "-" } else { "!" },
+    ).unwrap();
 }

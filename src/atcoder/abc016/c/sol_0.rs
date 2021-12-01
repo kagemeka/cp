@@ -24,8 +24,24 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
-
+    
+    let n: usize = sc.scan();
     let m: usize = sc.scan();
-    let d: usize = sc.scan();
-    writeln!(out, "{}", if m % d == 0 { "YES" } else { "NO" }).unwrap();
+
+    let mut relation = vec![0usize; n];
+    for _ in 0..m { 
+        let a: usize = sc.scan::<usize>() - 1;
+        let b: usize = sc.scan::<usize>() - 1;
+        relation[a] |= 1 << b;
+        relation[b] |= 1 << a;
+    }
+    for i in 0..n { 
+        let mut ff = 0usize;
+        for j in 0..n { 
+            if relation[i] >> j & 1 == 0 { continue; }
+            ff |= relation[j];
+        }
+        ff &= !(relation[i] | 1 << i);
+        writeln!(out, "{}", ff.count_ones()).unwrap();
+    }
 }
