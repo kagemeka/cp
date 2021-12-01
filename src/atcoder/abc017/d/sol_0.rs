@@ -26,11 +26,34 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let mut tot: usize = 0;
-    for _ in 0..3 { 
-        let s: usize = sc.scan();
-        let e: usize = sc.scan();
-        tot += s / 10 * e;
+
+    let n: usize = sc.scan();
+    let m: usize = sc.scan();
+    let mut f: Vec<usize> = Vec::with_capacity(n);
+    for _ in 0..n { f.push(sc.scan::<usize>() - 1); }
+
+    let mut prev = vec![0usize; n];
+    let mut last = vec![0usize; m];
+    for i in 0..n {
+        prev[i] = last[f[i]];
+        last[f[i]] = i + 1;
     }
-    writeln!(out, "{}", tot).unwrap();
+
+    const MOD: usize = 1_000_000_007;
+    let mut dp = vec![0usize; n + 1];
+    let mut s = 1usize;
+    dp[0] = s;
+    let mut l = 0usize;
+    for i in 0..n {
+        while l < prev[i] {
+            if s < dp[l] { s += MOD; }
+            s -= dp[l]; 
+            l += 1;
+        }
+        dp[i + 1] = s;
+        s += dp[i + 1];
+        if s >= MOD { s -= MOD; }
+    }
+    writeln!(out, "{:?}", dp[n]).unwrap();
+        
 }

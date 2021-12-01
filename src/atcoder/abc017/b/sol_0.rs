@@ -26,11 +26,20 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-    let mut tot: usize = 0;
-    for _ in 0..3 { 
-        let s: usize = sc.scan();
-        let e: usize = sc.scan();
-        tot += s / 10 * e;
+
+    let s: String = sc.scan();
+    
+    fn is_choku(s: &str) -> bool {
+        let choku_tail = ["ch", "o", "k", "u"];
+        let n = s.len();
+        if s.len() == 0 { return true; }
+        if choku_tail.contains(&&s[n - 1..n]) && is_choku(&s[..n - 1]) {
+            return true;
+        }
+        if n >= 2 && &s[n - 2..n] == "ch" && is_choku(&s[..n - 2]) {
+            return true;
+        }
+        false
     }
-    writeln!(out, "{}", tot).unwrap();
+    writeln!(out, "{}", if is_choku(&s) { "YES" } else { "NO" }).unwrap();
 }
