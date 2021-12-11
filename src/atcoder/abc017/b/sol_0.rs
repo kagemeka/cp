@@ -1,4 +1,3 @@
-use std::ops::Add;
 
 pub struct Scanner<R: std::io::Read> {
     reader: R,
@@ -19,7 +18,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -29,7 +27,19 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let s: String = sc.scan();
+    
+    fn is_choku(s: &str) -> bool {
+        let choku_tail = ["ch", "o", "k", "u"];
+        let n = s.len();
+        if s.len() == 0 { return true; }
+        if choku_tail.contains(&&s[n - 1..n]) && is_choku(&s[..n - 1]) {
+            return true;
+        }
+        if n >= 2 && &s[n - 2..n] == "ch" && is_choku(&s[..n - 2]) {
+            return true;
+        }
+        false
+    }
+    writeln!(out, "{}", if is_choku(&s) { "YES" } else { "NO" }).unwrap();
 }

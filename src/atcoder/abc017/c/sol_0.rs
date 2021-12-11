@@ -1,4 +1,3 @@
-use std::ops::Add;
 
 pub struct Scanner<R: std::io::Read> {
     reader: R,
@@ -19,7 +18,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -28,8 +26,20 @@ fn main() {
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
-
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let n: usize = sc.scan();
+    let m: usize = sc.scan();
+    let mut a: Vec<isize> = vec![0; m + 1];
+    let mut tot: isize = 0;
+    for _ in 0..n { 
+        let l = sc.scan::<usize>() - 1;
+        let r = sc.scan::<usize>() - 1;
+        let s = sc.scan::<isize>();
+        tot += s;
+        a[l] += s;
+        a[r + 1] -= s;
+    }
+    for i in 0..m { a[i + 1] += a[i]; }
+    let mn = a[..m].iter().min().unwrap();
+    writeln!(out, "{}", tot - mn).unwrap();
+    
 }

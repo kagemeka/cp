@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 pub struct Scanner<R: std::io::Read> {
     reader: R,
 }
@@ -19,7 +17,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -29,7 +26,10 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let n: usize = sc.scan();
+    let mut a: Vec<usize> = Vec::with_capacity(n);
+    for _ in 0..n { a.push(sc.scan()); }
+    a = a.into_iter().filter(|&x| x != 0).collect::<Vec<_>>();
+    let res: usize = (a.iter().sum::<usize>() + a.len() - 1) / a.len();
+    writeln!(out, "{}", res).unwrap(); 
 }

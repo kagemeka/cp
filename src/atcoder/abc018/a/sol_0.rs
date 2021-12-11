@@ -1,4 +1,3 @@
-use std::ops::Add;
 
 pub struct Scanner<R: std::io::Read> {
     reader: R,
@@ -19,7 +18,6 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 
-
 // #[allow(warnings)]
 fn main() {
     use std::io::Write;
@@ -29,7 +27,26 @@ fn main() {
     let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
-    let a: usize = sc.scan();
-    let b: usize = sc.scan();
-    writeln!(out, "{}", (a + b - 1) / b * b - a).unwrap();
+    let n: usize = 3;
+    let mut a = vec![0usize; n];
+    for i in 0..n { 
+        a[i] = sc.scan();
+    }
+    let idx = argsort(&a);
+    let mut rank = vec![0usize; n];
+    for i in 0..n { 
+        rank[idx[n - 1 - i]] = i + 1;
+    }
+    for i in 0..n { 
+        writeln!(out, "{}", rank[i]).unwrap();
+    }
+    
+    
+}
+
+
+pub fn argsort<T: std::cmp::Ord>(a: &Vec<T>) -> Vec<usize> {
+    let mut idx: Vec<usize>  = (0..a.len()).collect();
+    idx.sort_by_key(|&i| &a[i]);
+    idx
 }
