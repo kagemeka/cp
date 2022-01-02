@@ -7,8 +7,7 @@ def dijkstra_sparse(
 ) -> typing.List[int]:
     import heapq
     n = len(g)
-    inf = 1 << 60
-    dist = [inf] * n
+    dist = [None] * n
     dist[src] = 0 
     hq = [(0, src)]
     while hq:
@@ -16,11 +15,11 @@ def dijkstra_sparse(
         if du > dist[u]: continue
         for v, w in g[u]:
             dv = du + w
-            if dv >= dist[v]: continue
+            if dist[v] is not None and dv >= dist[v]: continue
             dist[v] = dv 
             heapq.heappush(hq, (dv, v))
     return dist
-    
+
 
 def main() -> typing.NoReturn:
     n, m, s, t = map(int, input().split())
