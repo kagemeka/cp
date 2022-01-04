@@ -11,7 +11,7 @@ def floor_sum(n: int) -> int:
     i = 1
     while i <= n:
         x = n // i
-        j = n // x + 1
+        j = n // x + 1 # max(j) + 1 such that x <= n // j (<-> j <= n // x)
         s += x * (j - i)
         i = j
     return s

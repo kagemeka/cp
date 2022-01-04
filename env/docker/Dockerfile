@@ -60,7 +60,7 @@ RUN \
 
 
 FROM rust-stage AS go-stage
-ARG GOVER=1.17.1
+ARG GOVER=1.18beta1
 RUN \
   apt -q=2 update \
   && apt install -y \
@@ -124,8 +124,8 @@ RUN \
 
 FROM dart-stage AS julia-stage
 ARG MAJOR=1
-ARG MINOR=6
-ARG PATCH=3
+ARG MINOR=7
+ARG PATCH=0
 ARG MM_VER=${MAJOR}.${MINOR}
 ARG VER=${MM_VER}.${PATCH}
 RUN \
@@ -215,7 +215,7 @@ RUN \
 
 FROM typescript-stage AS swift-stage
 ENV SOURCEKIT_TOOLCHAIN_PATH=/usr/local/swift
-ARG SWIFT_VER=5.4.2
+ARG SWIFT_VER=5.5.2
 COPY --from=lsp-builder /root/sourcekit-lsp-development.vsix .
 RUN \
   apt update -q=2 \
