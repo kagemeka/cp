@@ -54,4 +54,6 @@ __pycache__
 .clj-kondo
 
 
+# .vscode
+
 !.gitkeep
