@@ -1,16 +1,12 @@
-import typing 
-
 
 def main() -> None:
     n, m = map(int, input().split())
     
-    in_deg = [0] * n
     before = [0] * n
     for _ in range(m):
         x, y = map(int, input().split())
         x -= 1
         y -= 1
-        in_deg[y] += 1
         before[y] |= 1 << x
     
     dp = [0] * (1 << n)
