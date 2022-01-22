@@ -195,28 +195,28 @@ RUN \
   ts-node
 
 
-FROM ubuntu:20.04 AS lsp-builder
-RUN \
-  apt -q=2 update \
-  && apt install -yq=2 \
-  curl \
-  git \
-  sudo \
-  && curl \
-  -sL https://deb.nodesource.com/setup_current.x \
-  | sudo -E bash - \
-  && apt install -y nodejs \
-  && git clone https://github.com/apple/sourcekit-lsp.git \
-  && cd sourcekit-lsp/Editors/vscode/ \
-  && npm install \
-  && npm run dev-package \
-  && mv sourcekit-lsp-development.vsix /root/
+# FROM ubuntu:20.04 AS lsp-builder
+# RUN \
+#   apt -q=2 update \
+#   && apt install -yq=2 \
+#   curl \
+#   git \
+#   sudo \
+#   && curl \
+#   -sL https://deb.nodesource.com/setup_current.x \
+#   | sudo -E bash - \
+#   && apt install -y nodejs \
+#   && git clone https://github.com/apple/sourcekit-lsp.git \
+#   && cd sourcekit-lsp/Editors/vscode/ \
+#   && npm install \
+#   && npm run dev-package \
+#   && mv sourcekit-lsp-development.vsix /root/
 
 
 FROM typescript-stage AS swift-stage
 ENV SOURCEKIT_TOOLCHAIN_PATH=/usr/local/swift
 ARG SWIFT_VER=5.5.2
-COPY --from=lsp-builder /root/sourcekit-lsp-development.vsix .
+# COPY --from=lsp-builder /root/sourcekit-lsp-development.vsix .
 RUN \
   apt update -q=2 \
   && apt install -yq=2 \
