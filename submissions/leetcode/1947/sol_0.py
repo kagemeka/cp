@@ -1,7 +1,7 @@
 from typing import (
   List,
 )
-import numpy as np 
+import numpy as np
 from itertools import (
   permutations,
 )
@@ -10,7 +10,7 @@ from itertools import (
 
 class Solution:
   def maxCompatibilitySum(
-    self, 
+    self,
     students: List[List[int]],
     mentors: List[List[int]],
   ) -> int:

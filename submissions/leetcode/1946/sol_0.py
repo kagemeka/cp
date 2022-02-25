@@ -4,8 +4,8 @@ from typing import (
 
 class Solution:
   def maximumNumber(
-    self, 
-    num: str, 
+    self,
+    num: str,
     change: List[int],
   ) -> str:
     n = len(num)
@@ -13,7 +13,7 @@ class Solution:
     a = list(
       map(int, list(num))
     )
-    cnt = 0 
+    cnt = 0
     for i in range(n):
       x = a[i]
       if cnt == 0:
@@ -21,12 +21,12 @@ class Solution:
           continue
         cnt = 1
         a[i] = change[x]
-        continue 
+        continue
       if change[x] < x:
         break
       a[i] = change[x]
 
-    
+
     return ''.join(
       map(str, a),
     )

@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -20,7 +20,7 @@ def solve(
     else:
       print(-1)
       return
-  
+
   p = [x + 1 for x in p]
   print(*p)
 

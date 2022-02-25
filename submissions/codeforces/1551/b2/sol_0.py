@@ -1,4 +1,4 @@
-import typing 
+import typing
 from collections import (
   Counter,
 )
@@ -19,11 +19,11 @@ def solve(
     cc[c]
     for c in range(k, n + 1)
   )
-  r *= k 
+  r *= k
   a = sorted(
     enumerate(a),
     key=lambda x: (
-      -cnt[x[1]], 
+      -cnt[x[1]],
       x[1],
     ),
   )
@@ -38,7 +38,7 @@ def solve(
     c += 1; c %= k
     r -= 1
   print(*color)
-  
+
 
 def main():
   t = int(input())

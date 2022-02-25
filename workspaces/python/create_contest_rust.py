@@ -1,10 +1,10 @@
-import typing 
+import typing
 import sys
-import os 
+import os
 
 
 def dump_toml(
-    data: typing.Mapping[str, typing.Any], 
+    data: typing.Mapping[str, typing.Any],
     path: str,
 ) -> typing.NoReturn:
     import toml
@@ -22,7 +22,7 @@ def create_workspace(path: str, members: typing.List[str]) -> typing.NoReturn:
     data = {'workspace': {'members': members}}
     os.makedirs(path, exist_ok=True)
     dump_toml(data, f'{path}/Cargo.toml')
-    
+
 
 def create_crate(path: str) -> typing.NoReturn:
     os.system(f'cargo new {path}')
@@ -51,10 +51,10 @@ def main() -> typing.NoReturn:
     )
     args = parser.parse_args()
     workspace, members = args.workspace, args.crates
-    
+
     # if workspace is not None:
     create_workspace(workspace, members)
-    
+
     for member in members:
         path = member if workspace is None else f'{workspace}/{member}'
         create_crate(path)

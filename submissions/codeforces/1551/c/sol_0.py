@@ -1,4 +1,4 @@
-import typing 
+import typing
 import sys
 from collections import (
   Counter,
@@ -11,7 +11,7 @@ def solve(
 ) -> typing.NoReturn:
   l = [len(s) for s in a]
   a = [Counter(s) for s in a]
-  
+
 
   def calc_max(
     letter: str,
@@ -25,8 +25,8 @@ def solve(
     for i in range(n):
       s += b[i]
       if s <= 0: return i
-    return n 
-  
+    return n
+
   mx = max(
     calc_max(letter)
     for letter in 'abcde'

@@ -6,7 +6,7 @@
 # keywords
 - DP
 - sort
-- binary search 
+- binary search
 - greedy
 - cummulatie maximum
 
@@ -15,7 +15,7 @@
 ## solution 1
 - let $a$ = attack, $d$ = defence
 - sort $a, d$ by $a$ in descending order at first and $d$ in ascending order at second.
-- in this situation, 
+- in this situation,
   - $a$ is monotonous increase.
   - if $a_i = a_j$, $d_i, d_j$ is monotounus increase for $i, j$.
 - $\forall{i}, $ let $j$ is the minimum index such that $a_j > a_i$.
@@ -24,13 +24,13 @@
 ## solution 2
 - let $a$ = attack, $d$ = defence
 - sort $a, d$ by $a$ in ascending order at first and $d$ in ascending order at second.
-- in this situation, 
+- in this situation,
   - $a$ is monotonous decrease.
   - if $a_i = a_j$, $d_i, d_j$ is monotounus increase for $i, j$.
 - answer $= \sum_i{d_i \lt \max_{j \lt i}d_j}$ ($d_0 := 0$)
 
 
-# code 
+# code
 ## sol_0
 - solution 1
 

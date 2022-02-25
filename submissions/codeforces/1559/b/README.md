@@ -3,7 +3,7 @@
 
 
 
-# keyword 
+# keyword
 - DP
 - retrieve DP transition
 

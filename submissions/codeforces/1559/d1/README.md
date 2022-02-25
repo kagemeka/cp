@@ -3,7 +3,7 @@
 
 
 
-# keyword 
+# keyword
 - UnionFind
 - Greedy
 - brute force

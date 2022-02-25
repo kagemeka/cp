@@ -1,8 +1,8 @@
-import typing 
+import typing
 from bisect import (
   bisect_left,
   bisect_right,
-) 
+)
 
 
 def solve(
@@ -20,11 +20,11 @@ def solve(
   for p, s in ps:
     if s < mx:
       c.append((p, s))
-      continue 
+      continue
     a.append(p)
     b.append(s)
     mx = s
-  
+
   if a[0] > d:
     print(0)
     return
@@ -37,26 +37,26 @@ def solve(
     mx = 0
     for p, s in sorted(c):
       if s < mx:
-        continue 
+        continue
       a.append(p)
       b.append(s)
       mx = s
     i = bisect_right(
-      a, 
+      a,
       d - x_p,
     )
     if i: x_s += b[i - 1]
     print(x_s)
     return
 
-  mx = 0  
+  mx = 0
   for i, x in enumerate(a):
     y = b[i]
     if x > d: break
     j = bisect_right(
       a,
       d - x,
-    ) 
+    )
     if not j:
       mx = max(mx, y)
       continue
@@ -64,11 +64,11 @@ def solve(
     if j == i: j -= 1
     if j < 0:
       mx = max(mx, y)
-      continue 
+      continue
     mx = max(mx, y + b[j])
   print(mx)
 
-  
+
 
 def main() -> typing.NoReturn:
   t = int(input())
@@ -81,7 +81,7 @@ def main() -> typing.NoReturn:
       input().split()
     )
     *s, = map(
-      int, 
+      int,
       input().split(),
     )
     solve(n, d, p, s)

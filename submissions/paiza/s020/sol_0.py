@@ -1,14 +1,14 @@
-import typing 
-import sys 
-import numpy as np 
-import pprint 
+import typing
+import sys
+import numpy as np
+import pprint
 
 def solve(a: typing.List[int], wc: np.ndarray) -> typing.NoReturn:
     n, m = len(a), len(wc)
-    w, c = wc.T 
+    w, c = wc.T
     w = w.tolist()
     c = c.tolist()
-    
+
     inf = 1 << 30
     l = 101
     dp = [[0] * l for _ in range(m)]
@@ -21,10 +21,10 @@ def solve(a: typing.List[int], wc: np.ndarray) -> typing.NoReturn:
                 ndp[i][x] = min(ndp[i][x], mn[j])
             for j in range(1, w[i] - x + 1):
                 ndp[i][j + x] = min(ndp[i][j + x], dp[i][j])
-                
-        dp = ndp 
+
+        dp = ndp
     mn = [min(dp[j][0], min(dp[j][1:]) + c[j]) for j in range(m)]
-    print(min(mn)) 
+    print(min(mn))
 
 
 def main() -> typing.NoReturn:
@@ -39,4 +39,3 @@ def main() -> typing.NoReturn:
 
 
 main()
-    

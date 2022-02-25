@@ -1,4 +1,4 @@
-import typing 
+import typing
 import numpy as np
 import sys
 
@@ -9,7 +9,7 @@ def solve(
 ) -> typing.NoReturn:
   a &= 1
   a = np.pad(
-    a, 
+    a,
     (1, 0),
     mode='constant',
   )
@@ -21,7 +21,7 @@ def solve(
   c //= 6
   c += e * o * (o - 1) // 2
   print(*c, sep='\n')
-  
+
 
 
 def main() -> typing.NoReturn:
@@ -35,7 +35,7 @@ def main() -> typing.NoReturn:
       input().split(),
       dtype=np.int64,
     )
-    
+
     q = [
       map(int, input().split())
       for _ in range(q)
@@ -45,6 +45,6 @@ def main() -> typing.NoReturn:
       dtype=np.int64,
     )
     solve(a, q)
-    
+
 
 main()

@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve() -> typing.NoReturn:
@@ -17,7 +17,7 @@ def solve() -> typing.NoReturn:
             d = y - x
             if not 0 < d < 10:
                 print(-1)
-                return 
+                return
             b.append(d)
             a //= 10
             s //= 100

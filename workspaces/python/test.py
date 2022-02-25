@@ -27,12 +27,12 @@ def accumulate(
     e: T,
 ) -> typing.Callable[
     [typing.Callable[[T, T], T]],
-    typing.Callable[[typing.Iterable[T]], T], 
+    typing.Callable[[typing.Iterable[T]], T],
 ]:
     def decorate(
         op: typing.Callable[[T, T], T],
     ) -> typing.Callable[[typing.Iterable[T]], T]:
-        import functools 
+        import functools
         def wrapped(a: typing.Iterable[T]) -> T:
             return functools.reduce(op, a, e)
         return wrapped

@@ -1,4 +1,4 @@
-import typing 
+import typing
 import numpy as np
 
 from typing import List
@@ -6,7 +6,7 @@ from typing import List
 
 class Solution:
   def splitPainting(
-    self, 
+    self,
     segments: List[List[int]],
   ) -> List[List[int]]:
     n = 1 << 17

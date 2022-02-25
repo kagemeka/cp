@@ -6,31 +6,31 @@
 
 
 
-# keywords 
-- similar to (TSP)traveling salesperson problem 
+# keywords
+- similar to (TSP)traveling salesperson problem
 - permutation dp -> `group + last one` dp
 - greedy
 - brute force
 
 
 
-# summary 
+# summary
 ## like TSP
-- $dp_{s, i} := (c, t)$ 
-  - where $s$ denotes a group and $i$ denotes the last task. 
+- $dp_{s, i} := (c, t)$
+  - where $s$ denotes a group and $i$ denotes the last task.
   - $c$ is the count of session and the current session time by then.
 - at first
   - $dp_{s, i} = (inf, 0)$
-  - $\forall{i}\ dp_{\{i\}, i} = (0, a_i)$ where $a_i$ is the time for $task_i$ 
+  - $\forall{i}\ dp_{\{i\}, i} = (0, a_i)$ where $a_i$ is the time for $task_i$
 - transition
   - $dp_{s, i} = \min_{j \in s - \{i\}}{dp_{s - \{i\}, j} + (0, a_i)}$
-  - $$(c, t) + (0, a_i) = 
+  - $$(c, t) + (0, a_i) =
     \begin{dcases}
-    (c + 1, a_i), & \text{if } t + a_i > t_0(\text{session time})\\ 
-    (c, t + a_i), & \text{otherwise} 
+    (c + 1, a_i), & \text{if } t + a_i > t_0(\text{session time})\\
+    (c, t + a_i), & \text{otherwise}
     \end{dcases}$$
 - $\text{ans} = \min_{i}\lceil{dp_{all, i}}\rceil$
-  - $$\lceil{(c, t)}\rceil = 
+  - $$\lceil{(c, t)}\rceil =
     \begin{dcases}
     c & \text{if } t = 0\\
     c + 1 & \text{otherwise}
@@ -44,18 +44,18 @@
 
 ## sol_0
 - buttom up
-- for loop 
+- for loop
 - $O(2^NN^2)$
 
 
 ## sol_1
 - buttom up
-- for loop 
+- for loop
 - $O(2^NN)$
 
 
 ## sol_1
-- top down 
+- top down
 - dfs
 - $O(2^NN)$
 

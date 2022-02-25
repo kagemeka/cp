@@ -1,5 +1,5 @@
 # keywords
-- difft 
-- brute force 
-- sort 
+- difft
+- brute force
+- sort
 - cumsum

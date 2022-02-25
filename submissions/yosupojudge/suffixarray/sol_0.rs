@@ -23,7 +23,7 @@ fn main() {
     let stdin = std::io::stdin();
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
-    let out = &mut std::io::BufWriter::new(stdout.lock());  
+    let out = &mut std::io::BufWriter::new(stdout.lock());
 
 
     let s: String = sc.scan();
@@ -47,7 +47,7 @@ pub fn compress_array<T: Ord + Clone>(a: &Vec<T>) -> (Vec<usize>, Vec<T>) {
     let v = unique(a);
     let a = a.iter().map(|x| v.binary_search(x).unwrap()).collect::<Vec<_>>();
     (a, v)
-} 
+}
 
 
 pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
@@ -57,23 +57,23 @@ pub fn sa_doubling(a: &Vec<usize>) -> Vec<usize> {
     let mut key = vec![0; n];
     let mut sa = vec![0; n];
     loop {
-        for i in 0..n { 
+        for i in 0..n {
             key[i] = rank[i] << 30;
             if i + k < n { key[i] |= 1 + rank[i + k]; }
             sa[i] = i;
         }
         sa.sort_by_key(|&x| key[x]);
         rank[sa[0]] = 0;
-        for i in 0..n - 1 { 
+        for i in 0..n - 1 {
             rank[sa[i + 1]] = rank[sa[i]];
             if key[sa[i + 1]] > key[sa[i]] { rank[sa[i + 1]] += 1; }
-        }        
+        }
         k <<= 1;
         if k >= n { break; }
     }
     sa
 }
-  
+
 
 pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
     let n = a.len();
@@ -82,7 +82,7 @@ pub fn sa_doubling_with_countsort(a: &Vec<usize>) -> Vec<usize> {
         for &x in a.iter() { cnt[x + 1] += 1; }
         let mut key = vec![0; n];
         for i in 0..n { cnt[i + 1] += cnt[i]; }
-        for i in 0..n { 
+        for i in 0..n {
             key[cnt[a[i]]] = i;
             cnt[a[i]] += 1;
         }
@@ -136,9 +136,9 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
     let induce = |lms: &Vec<usize>| -> Vec<usize> {
         let mut sa = vec![n; n];
         let mut sa_idx = bucket.clone();
-        
+
         for i in 0..m - 1 { sa_idx[i + 1] += sa_idx[i]; }
-        for &i in lms.iter().rev() { 
+        for &i in lms.iter().rev() {
             sa_idx[a[i]] -= 1;
             sa[sa_idx[a[i]]] = i;
         }
@@ -147,11 +147,11 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
         let mut s = 0usize;
         for i in 0..m { sa_idx[i] += s; std::mem::swap(&mut s, &mut sa_idx[i]); }
         for i in 0..n {
-            if sa[i] == n || sa[i] == 0 { continue; } 
+            if sa[i] == n || sa[i] == 0 { continue; }
             let i = sa[i] - 1;
             if !is_s[i] { sa[sa_idx[a[i]]] = i; sa_idx[a[i]] += 1; }
         }
-        
+
         sa_idx = bucket.clone();
         for i in 0..m - 1 { sa_idx[i + 1] += sa_idx[i]; }
         for i in (0..n).rev() {
@@ -177,12 +177,12 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
             let k_is_lms = is_lms[k + d];
             if a[j + d] != a[k + d] || j_is_lms ^ k_is_lms { r += 1; break; }
             if d > 0 && j_is_lms | k_is_lms { break; }
-        } 
+        }
         rank[k] = r;
     }
     rank = rank.into_iter().filter(|&x| x != n).collect();
     let mut lms_order: Vec<usize> = Vec::new();
-    if r == l - 1 { 
+    if r == l - 1 {
         lms_order.resize(l, n);
         for i in 0..l { lms_order[rank[i]] = i; }
     } else {
@@ -191,4 +191,4 @@ pub fn sa_is(a: &Vec<usize>) -> Vec<usize> {
     lms = lms_order.iter().map(|&i| lms[i]).collect();
     let sa = induce(&lms);
     sa[1..].to_vec()
-} 
+}

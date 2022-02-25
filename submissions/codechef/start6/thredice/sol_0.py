@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -6,7 +6,7 @@ def solve(
   x: int,
   y: int,
 ) -> typing.NoReturn:
-  
+
   p = max(
     0,
     (6 - x - y) / 6,

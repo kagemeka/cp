@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -9,13 +9,13 @@ def solve(
   for i in range(n):
     for j in range(i, n):
       ok = True
-      k = 0 
+      k = 0
       for l in range(i, j + 1):
         if (
           k == m
           or s[l] != t[k]
-        ): 
-          ok = False 
+        ):
+          ok = False
           break
         k += 1
       for l in range(
@@ -23,15 +23,15 @@ def solve(
       ):
         if k == m: break
         if s[l] != t[k]:
-          ok = False 
-          break 
+          ok = False
+          break
         k += 1
       if not ok or k != m:
-        continue 
+        continue
       print('YES')
-      return 
+      return
   print('NO')
-        
+
 
 def main():
   t = int(input())

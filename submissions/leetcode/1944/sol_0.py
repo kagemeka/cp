@@ -7,13 +7,13 @@ from bisect import (
 
 class Solution:
   def canSeePersonsCount(
-    self, 
+    self,
     heights: List[int],
   ) -> List[int]:
     n = len(heights)
     inf = 1 << 30
     a = [-inf] * n
-    res = [0] * n 
+    res = [0] * n
     for i in range(
       n - 1, -1, - 1,
     ):
@@ -22,7 +22,7 @@ class Solution:
       k = bisect_right(a, -inf)
       res[i] = j - k + (j != n)
       while k < j:
-        a[k] = -inf 
+        a[k] = -inf
         k += 1
       a[j - 1] = h
     return res

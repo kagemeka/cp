@@ -14,7 +14,7 @@ S = typing.TypeVar('S')
 @dataclasses.dataclass
 class Group(typing.Generic[S], Monoid[S]):
     inverse: typing.Callable[[S], S]
-    
+
 
 S = typing.TypeVar('S')
 class FenwickTree(typing.Generic[S]):
@@ -50,7 +50,7 @@ class FenwickTree(typing.Generic[S]):
             v = m.op(v, d[i])
             i -= i & -i
         return v
-    
+
     def max_right(self, is_ok: typing.Callable[[S], bool]) -> int:
         m, d = self.__monoid, self.__data
         n = len(d)
@@ -78,7 +78,7 @@ class PointAddRangeSum():
 
     def __setitem__(self, i: int, x: S) -> typing.NoReturn:
         self.__fw[i] = x
-    
+
     def __getitem__(self, i: int) -> S:
         return self.__fw[i]
 
@@ -97,15 +97,15 @@ class Multiset():
 
     def size(self) -> int:
         return self.__fw[self.__n - 1]
-    
+
     def add(self, x: int) -> typing.NoReturn:
         self.__fw[x] = 1
-    
+
     def pop(self, x: int) -> typing.NoReturn:
         fw = self.__fw
         assert fw.get_range(x, x + 1) > 0
         fw[x] = -1
-    
+
     def get(self, i: int) -> typing.NoReturn:
         fw = self.__fw
         assert 0 <= i < fw[self.__n - 1]
@@ -114,13 +114,13 @@ class Multiset():
 
     def max(self) -> int:
         return self.get(self.size() - 1)
-    
+
     def min(self) -> int:
         return self.get(0)
 
     def lower_bound(self, x: int) -> int:
         return self.__fw[x]
-    
+
     def upper_bound(self, x: int) -> int:
         return self.__fw[x + 1]
 

@@ -1,10 +1,10 @@
 # [C. Mikasa](https://codeforces.com/contest/1554/problem/C)
 
 
-# keywords 
-- mex 
+# keywords
+- mex
 - greedy
-- bits 
+- bits
 - digit DP (from highest bit)
 - n ^ x = k <-> n ^ k = x
 

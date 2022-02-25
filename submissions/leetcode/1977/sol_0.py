@@ -1,13 +1,12 @@
-import typing 
+import typing
 
-mod = 10 ** 9 + 7 
+mod = 10 ** 9 + 7
 # dp
 
 
 class Solution:
   def numberOfCombinations(
-    self, 
+    self,
     num: str,
   ) -> int:
     ...
-        

@@ -3,8 +3,8 @@ import typing
 
 class Solution:
   def getLucky(
-    self, 
-    s: str, 
+    self,
+    s: str,
     k: int,
   ) -> int:
     s = self.convert(s)
@@ -24,7 +24,7 @@ class Solution:
     return ''.join(
       map(str, s),
     )
-  
+
 
   def transform(
     self,
@@ -32,4 +32,3 @@ class Solution:
   ) -> str:
     s = sum(map(int, list(s)))
     return str(s)
-        

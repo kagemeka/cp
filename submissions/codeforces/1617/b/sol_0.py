@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 def main() -> typing.NoReturn:
     t = int(input())
@@ -17,5 +17,5 @@ def main() -> typing.NoReturn:
             else:
                 a, b = h + 1, h - 1
         print(a, b, c)
-    
+
 main()

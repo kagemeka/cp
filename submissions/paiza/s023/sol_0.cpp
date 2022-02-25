@@ -7,10 +7,10 @@
 int main() {
   std::ios::sync_with_stdio(false);
   std::cin.tie(nullptr);
-  
+
   int n, m, q;
   std::cin >> n >> m >> q;
-  
+
   std::vector<std::vector<int>> g(n, std::vector<int>(n));
   for (int i = 0; i < m; i++) {
     int a, b, f;
@@ -21,7 +21,7 @@ int main() {
 
   std::vector<std::vector<int>> connected(n, std::vector<int>(n));
 
-  std::vector<int> res; res.reserve(q); 
+  std::vector<int> res; res.reserve(q);
   std::multiset<int> ms;
   while (q--) {
     char op;
@@ -43,5 +43,5 @@ int main() {
   for (const int &x : res) {
     std::cout << x << '\n';
   }
-  
+
 }

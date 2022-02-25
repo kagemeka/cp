@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -14,9 +14,9 @@ def solve(
     if n ^ k >= t: break
     if ~t >> i & 1: continue
     k |= (
-      (1 << i) 
+      (1 << i)
       * (n >> i & 1 ^ 1)
-    )    
+    )
   print(k)
 
 

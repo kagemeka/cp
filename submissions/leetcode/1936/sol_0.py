@@ -4,8 +4,8 @@ import numpy as np
 
 class Solution:
   def addRungs(
-    self, 
-    rungs: typing.List[int], 
+    self,
+    rungs: typing.List[int],
     dist: int,
   ) -> int:
     return Solve()(rungs, dist)
@@ -22,4 +22,4 @@ class Solve():
     d = a[1:] - a[:-1]
     return np.sum(
       (d - 1) // dist,
-    )                 
+    )

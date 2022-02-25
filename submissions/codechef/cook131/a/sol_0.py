@@ -1,5 +1,5 @@
-import typing 
-import sys 
+import typing
+import sys
 sys.setrecursionlimit(1 << 20)
 
 
@@ -27,19 +27,19 @@ def solve(
   g = gcd(x, y)
   if g != 1:
     print(0)
-    return 
+    return
 
   g = gcd(x + 1, y)
   if g != 1:
     print(1)
-    return 
-  
+    return
+
   if gcd(x, y + 1) != 1:
     print(1)
-    return 
+    return
   print(2)
 
-  
+
 
 def main() -> typing.NoReturn:
   t = int(input())

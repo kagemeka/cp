@@ -1,5 +1,5 @@
-import typing 
-import sys 
+import typing
+import sys
 
 
 
@@ -13,10 +13,10 @@ def solve(
     h, w = len(g), len(g[0])
 
     dyx = ((-1, 0), (0, -1), (1, 0), (0, 1))
-    
+
     def on_board(y: int, x: int) -> bool:
         return 0 <= y < h and 0 <= x < w
-    
+
     inf = 1 << 30
 
     dist = [[inf] * w for _ in range(h)]
@@ -24,7 +24,7 @@ def solve(
     que = [(sy, sx)]
     for y, x in que:
         for dy, dx in dyx:
-            ny, nx = y + dy, x + dx 
+            ny, nx = y + dy, x + dx
             if not on_board(ny, nx): continue
             d = dist[y][x] + 1
             if g[ny][nx] == 1 or d >= dist[ny][nx]: continue

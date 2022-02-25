@@ -1,5 +1,5 @@
-import typing 
-import collections 
+import typing
+import collections
 import string
 
 def main() -> typing.NoReturn:
@@ -17,4 +17,3 @@ def main() -> typing.NoReturn:
         print(res)
 
 main()
-            

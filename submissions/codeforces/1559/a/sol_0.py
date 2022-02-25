@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -17,20 +17,20 @@ def solve(
   #   for i in range(m + 1):
   #     mx = max(mx, a[l + i] & a[r - i])
   #   return mx
-    
+
 
   # mn = max(a)
   # for l in range(n):
   #   for r in range(l, n):
   #     mn = min(mn, calc_max(l, r))
-  
+
   # print(mn)
   v = (1 << 40) - 1
   for x in a:
     v &= x
   print(v)
-      
-      
+
+
 
 
 def main() -> typing.NoReturn:

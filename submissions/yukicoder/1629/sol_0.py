@@ -1,4 +1,4 @@
-import typing 
+import typing
 from math import factorial
 import numpy as np
 import sys
@@ -6,7 +6,7 @@ import sys
 
 class ModFactorial:
   def __call__(
-    self, 
+    self,
     n: int = 1 << 20,
   ) -> np.array:
     a = np.arange(n); a[0] = 1
@@ -14,7 +14,7 @@ class ModFactorial:
 
 
   def cumprod(
-    self, 
+    self,
     a: np.array,
   ) -> np.array:
     m = self.__mod
@@ -34,11 +34,11 @@ class ModFactorial:
     self,
     modulo: int,
   ) -> typing.NoReturn:
-    self.__mod = modulo 
-  
+    self.__mod = modulo
+
 
   def inv(
-    self, 
+    self,
     n: int = 1 << 20,
   ) -> np.array:
     a = np.arange(1, n + 1)
@@ -95,7 +95,7 @@ def main() -> typing.NoReturn:
   for x in c:
     m *= ifact[x]
     m %= mod
-  
+
   s = (np.arange(9) + 1) * c
   s = s.sum()
   s *= inv[n]
@@ -105,10 +105,8 @@ def main() -> typing.NoReturn:
     d *= 10
     d += 1
     d %= mod
-  s = s * d % mod * m % mod 
+  s = s * d % mod * m % mod
   print(s)
 
 
 main()
-
-  

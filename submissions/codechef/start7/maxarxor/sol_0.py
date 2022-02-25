@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -8,7 +8,7 @@ def solve(
   v = (pow(2, n) - 1) * 2
   k = min(k, pow(2, n - 1))
   print(v * k)
-  
+
 
 
 def main() -> typing.NoReturn:
@@ -17,7 +17,7 @@ def main() -> typing.NoReturn:
     n, k = map(
       int, input().split(),
     )
-    solve(n, k) 
+    solve(n, k)
 
 
 

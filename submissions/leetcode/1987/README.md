@@ -7,21 +7,20 @@
 # keywords
 - dp
 - inline DP
-- count up 
+- count up
 - greedy
 
 
 
 # summary
 - $O(N)$
-- $dp_{i, d} :=$ counts when end with $d$ 
+- $dp_{i, d} :=$ counts when end with $d$
   - where it's checkd until $i$
-- $$dp_{i, d} = 
+- $$dp_{i, d} =
   \begin{dcases}
   dp_{i - 1, d} + dp_{i - 1, d\oplus 1} & \text{if } b_i = d\\
-  dp_{i - 1, d} & \text{otherwise} 
+  dp_{i - 1, d} & \text{otherwise}
   \end{dcases}\\
   dp_{i, d} = dp_{i, d} + 1 \text{ if } d = 1
   $$
 - it's ok to transit with inline DP technique.
-

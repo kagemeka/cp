@@ -1,3 +1,3 @@
 def checkPalindrome(inputString):
-    s = inputString 
+    s = inputString
     return s == s[::-1]

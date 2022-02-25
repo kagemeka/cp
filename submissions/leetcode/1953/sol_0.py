@@ -7,7 +7,7 @@ from heapq import (
 
 class Solution:
   def numberOfWeeks(
-    self, 
+    self,
     milestones: List[int],
   ) -> int:
     a = []
@@ -16,7 +16,7 @@ class Solution:
     ):
       heappush(a, (-x, i))
 
-    c = 0 
+    c = 0
     prev = -1
     while a:
       x, i = heappop(a)
@@ -31,12 +31,8 @@ class Solution:
       y, j = heappop(a)
       y += 1
       c += 2
-      if y: 
+      if y:
         heappush(a, (y, j))
       if x:
         heappush(a, (x, i))
-    return c 
-
-      
-      
-      
+    return c

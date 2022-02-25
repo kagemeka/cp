@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 class UnionFind():
@@ -7,17 +7,17 @@ class UnionFind():
     n: int,
   ) -> typing.NoReturn:
     self.__a = [-1] * n
-  
+
 
   def find(
     self,
     u: int,
   ) -> int:
-    a = self.__a 
+    a = self.__a
     if a[u] < 0: return u
     a[u] = self.find(a[u])
     return a[u]
-  
+
 
   def unite(
     self,
@@ -26,12 +26,12 @@ class UnionFind():
   ) -> typing.NoReturn:
     u = self.find(u)
     v = self.find(v)
-    if u == v: return 
+    if u == v: return
     a = self.__a
     if a[u] > a[v]: u, v = v, u
     a[u] += a[v]
     a[v] = u
-  
+
 
   def groups(
     self,
@@ -54,8 +54,8 @@ class SieveOfEratosthenes():
     for i in range(n):
       s[i] = s[i] == i
     return s
-    
-  
+
+
   def gpf(
     self,
     n: int = 1 << 20,
@@ -70,7 +70,7 @@ class SieveOfEratosthenes():
       for j in range(i, n, i):
         s[j] = i
     return s
-  
+
 
   def lpf(
     self,
@@ -79,7 +79,7 @@ class SieveOfEratosthenes():
     assert n > 1
     s = list(range(n))
     s[0] = s[1] = -1
-    i = 0 
+    i = 0
     while i * i < n - 1:
       i += 1
       if s[i] != i: continue
@@ -98,17 +98,17 @@ class PrimeFactorize():
     f = collections.defaultdict(int)
     while n > 1:
       p = self.__lpf[n]
-      n //= p 
+      n //= p
       f[p] += 1
     return f
-  
+
 
   def __init__(
     self,
     n: int = 1 << 20,
   ) -> typing.NoReturn:
     self.__lpf = SieveOfEratosthenes().lpf(n)
-  
+
 
   def factorial(
     self,
@@ -124,7 +124,7 @@ class PrimeFactorize():
 
 class Solution:
   def gcdSort(
-    self, 
+    self,
     a: typing.List[int],
   ) -> bool:
     n = len(a)

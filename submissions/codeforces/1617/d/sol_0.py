@@ -1,4 +1,4 @@
-import typing 
+import typing
 import sys
 
 def solve(last: bool) -> typing.NoReturn:
@@ -43,7 +43,7 @@ def solve(last: bool) -> typing.NoReturn:
             else:
                 res[i] = 1
                 uncertain[i] = True
-    
+
     res = [i + 1 for i in range(n) if res[i] == 0 and not uncertain[i]]
     k = len(res)
     if k <= n // 3:
@@ -60,8 +60,8 @@ def solve(last: bool) -> typing.NoReturn:
                     k += 1
                 if k > n // 3: break
     # elif k >= n // 3 * 2:
-        
-        
+
+
     res = ' '.join(map(str, res))
     s = f'! {k} {res}'
     if last:
@@ -69,7 +69,7 @@ def solve(last: bool) -> typing.NoReturn:
     else:
         print(s, flush=True)
 
-             
+
 
 def main() -> typing.NoReturn:
     t = int(input())
