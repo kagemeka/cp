@@ -66,7 +66,7 @@ using namespace Combinatorics;
 /* Geometry and Topology */
 namespace GeometryTopology {
 
-template<typename ...T> 
+template<typename ...T>
 struct Vector {
 public:
 Vector(T ... args){}
@@ -278,7 +278,7 @@ PrimeNumber(): prime_nums(0) {
     for (T j = i*2; j < N; j += i) is_prime[j] = 0;
   }
   for (T i = 0; i < N; i++) {
-    if (is_prime[i]) prime_nums.emplace_back(i);  
+    if (is_prime[i]) prime_nums.emplace_back(i);
   }
 }
 T& operator[](int i) {return prime_nums[i];}
@@ -313,7 +313,7 @@ template<typename T>
 vector<T> find_divisors(T n) {
   vector<T> d(0);
   for (T i = 1; i*i <= n; i++) {
-    if (n%i) {continue;} 
+    if (n%i) {continue;}
     d.push_back(i);
     if (i*i != n) {
       d.push_back(n/i);
@@ -480,10 +480,10 @@ void d_2() {
   x /= d; y /= d;
   int r = n - (x+y);
   if (r<0 || r&1) {cout << 0 << '\n'; return;}
- 
+
   using P = pair<int, int>;
   map<P, double> nCr;
-  
+
   function<double(int, int)> c;
   c = [&](int n, int r) {
     if (r < 0 || r > n) return .0;
@@ -601,7 +601,7 @@ void d() {
     return b;
   };
 
-  for (auto &x : binary_method(res, d)) {cout << x+1 << '\n';}  
+  for (auto &x : binary_method(res, d)) {cout << x+1 << '\n';}
 }
 }
 
@@ -650,7 +650,7 @@ void d() {
     int a, b; cin >> a >> b; a--; b--;
     cout << g.find_dist(a, b)+1 << '\n';
   }
-} 
+}
 }
 
 namespace ABC015 {
@@ -670,7 +670,7 @@ void b() {
 
 void c() {
   int n, k; cin >> n >> k;
-  
+
   vector<vector<int>> t(n, vector<int>(n));
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < k; j++) {
@@ -733,7 +733,7 @@ void c() {
 
 void d() {
   // Vector<int> a(1);
-  
+
 }
 }
 
@@ -755,7 +755,7 @@ void b() {
   cand.insert("o");
   cand.insert("k");
   cand.insert("u");
-  
+
   is_choku = [&](string s) {
     if (s.empty()) {return true;}
     int l = s.size();
@@ -926,7 +926,7 @@ void d() {
   int n; cin >> n;
   int u = 1, dist = 0;
   auto inquire = [](int x, int y) {
-    printf("? %d %d\n", x, y); 
+    printf("? %d %d\n", x, y);
     int d; cin >> d; return d;
   };
   auto find = [&](int x) {
@@ -981,7 +981,7 @@ void c() {
     }
     return g.dijkstra(src)[tgt] <= t;
   };
-  
+
   auto binary_search = [&]() {
     int lo = 1, hi = t;
     while (lo+1 < hi) {
@@ -992,8 +992,8 @@ void c() {
   };
 
   cout << binary_search() << '\n';
-  
-  
+
+
 }
 
 
@@ -1032,7 +1032,7 @@ void d() {
   int n, k; cin >> n >> k;
   make_fact(n+k);
   cout << choose_mod(n-1+k, k) << '\n';
-  
+
 }
 }
 
@@ -1046,7 +1046,7 @@ void a() {
     int dw; cin >> dw;
     w += dw;
     cnt += (s <= w && w <= t);
-    
+
   }
   cout << cnt << '\n';
 }
@@ -1068,10 +1068,10 @@ void b() {
 void c() {
   int n, m; cin >> n >> m;
   auto g = Graph<int>(n);
-  
+
   int inf = numeric_limits<int>::max();
   vector<int> dist0(n, inf/10);
-  
+
   while (m--) {
     int u, v, l; cin >> u >> v >> l; u--; v--;
     if (u==0) {dist0[v] = l; continue;}
@@ -1131,7 +1131,7 @@ void c() {
   tot += real[k]; tot -= real[k-1];
   cout << tot << '\n';
 
-  
+
 }
 
 void d() {
@@ -1282,7 +1282,7 @@ void b() {
     tot += s[i]-s[i-1];
   }
   cout << setprecision(16) << tot << '\n';
-  
+
 }
 
 void c() {
@@ -1463,8 +1463,8 @@ void d() {
   vector<int> b(n);
   for (int i = 0; i < n; i++) {cin >> b[i]; b[i]--;}
   vector<int> c(n, -1);
-  
-  
+
+
   for (int i = 0; i < n+1; i++) {
     if (to_string(i)==k) {cout << a+1 << '\n'; return;}
     if (c[a]==-1) {c[a] = i; a = b[a]; continue;}
@@ -1505,7 +1505,7 @@ void c() {
     if ((j-i)&1) {x = a[j-1]-a[i-2], y = a[j]-a[i-1];}
     else {x = a[j]-a[i-2], y=a[j-1]-a[i-1];}
   };
-  
+
   int inf = numeric_limits<int>::max();
   int res = -inf;
   for (int i = 0; i < n; i++) {
@@ -1575,7 +1575,7 @@ void c() {
   for (int i = 0; i < n; i++) cin >> s[i];
   if (count(s.begin(), s.end(), 0)) {cout << n << '\n'; return;}
   if (k==0) {cout << 0 << '\n'; return;}
-  
+
   long long res=0, tmp=1;
   for (long long l=0,r=0; r < n; r++) {
     tmp *= s[r];
@@ -1620,7 +1620,7 @@ void c() {
 }
 
 void d() {
-  
+
 }
 }
 
@@ -1645,7 +1645,7 @@ void d() {
   int n, k; cin >> n >> k;
   vector<double> w(n), p(n);
   for (int i = 0; i < n; i++) cin >> w[i] >> p[i];
-  
+
   auto is_ok = [&](double x) {
     vector<double> a(n);
     for (int i = 0; i < n; i++) a[i] = w[i]*(p[i]-x);
@@ -1681,7 +1681,7 @@ void b() {
       case 'D': y--; break;
       case 'L': x--; break;
       case 'R': x++; break;
-      default: z++; 
+      default: z++;
     }
   }
   x = abs(x)+abs(y);
@@ -1716,11 +1716,11 @@ void d() {
   long long res = 0;
   for (int i = 0; i < n; i++) {
     long long r = t-d1[i]-d2[i];
-    if (r<0) continue; 
+    if (r<0) continue;
     res = max(res, r*a[i]);
   }
   cout << res << '\n';
-  
+
 }
 }
 
@@ -1939,7 +1939,7 @@ void d() {
     }
     cout << '\n';
   }
-  
+
 }
 }
 
@@ -2002,7 +2002,7 @@ void b() {
   cout << a*b*c << '\n';
 }
 void c() {
-  int n; cin >> n; 
+  int n; cin >> n;
   using P = pair<int, int>;
   vector<P> a(n);
   for (int i = 0; i < n; i++) {cin >> a[i].first; a[i].second = i+1;}
@@ -2034,7 +2034,7 @@ void a() {
   for (int i = 0; i < n; i++) cin >> a[i];
   sort(a.begin(), a.end());
   cout << ((a[0]==5 && a[1]==5 && a[2]==7) ? "YES" : "NO") << '\n';
-} 
+}
 void b() {
   int n, l; cin >> n >> l;
   vector<string> s(n);
@@ -2163,7 +2163,7 @@ void c() {
   cout << tot << '\n';
 }
 void d() {
-  long long h, w, n; cin >> h >> w >> n; 
+  long long h, w, n; cin >> h >> w >> n;
   unordered_map<long long, int> mp;
   while (n--) {
     int a, b; cin >> a >> b; a--; b--;
@@ -2260,7 +2260,7 @@ void d() {
 namespace ABC048 {
 void a() {
   string t = "";
-  int n = 3; 
+  int n = 3;
   while (n--) {
     string s; cin >> s;
     t += toupper(s.front());
@@ -2355,7 +2355,7 @@ void b() {
   }
 }
 void c() {
-  int n; cin >> n; 
+  int n; cin >> n;
   vector<int> cnt(n);
   for (int i = 0; i < n; i++) {
     int a; cin >> a; cnt[a]++;
@@ -2382,7 +2382,7 @@ void d() {
 
 namespace ABC051 {
 void a() {
-  string s; cin >> s; 
+  string s; cin >> s;
   for (int i = 0; i < (int)s.size(); i++) {
     if (s[i]==',') s[i] = ' ';
   }
@@ -2449,7 +2449,7 @@ void b() {
   cout << mx << '\n';
 }
 void c() {
-  int n; cin >> n; 
+  int n; cin >> n;
   auto p = PrimeNumber<int>();
   auto f = p.factorize_factorial(n);
   long long cnt = 1;
@@ -2491,7 +2491,7 @@ void d() {
 namespace ABC054 {
 void a() {
   auto f = [](int x){return (x+11)%13;};
-  int a, b; cin >> a >> b; 
+  int a, b; cin >> a >> b;
   cout << (f(a)>f(b) ? "Alice" : f(a)<f(b) ? "Bob" : "Draw") << '\n';
 }
 void b() {
@@ -2499,7 +2499,7 @@ void b() {
   vector<string> a(n), b(m);
   for (int i = 0; i < n; i++) cin >> a[i];
   for (int i = 0; i < m; i++) cin >> b[i];
-  
+
   auto ok = [&](int y, int x) {
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < m; j++) {
@@ -2543,7 +2543,7 @@ void c() {
 }
 void d() {
   int n, ma, mb; cin >> n >> ma >> mb;
-  
+
 }
 }
 
@@ -2583,7 +2583,7 @@ void e() {
       long long c = 0; for (const int& v : loop) c += v;
       s += (n-i)/l*c;
       for (int j = 0; j < (n-i)%l; j++) s += loop[j];
-      cout << s << '\n'; return; 
+      cout << s << '\n'; return;
     }
     res[x] = i, loop[i] = x;
     s += x; x = x*x%m;
@@ -2637,7 +2637,7 @@ void e() {
     }
   }
   cout << dp.back()[0] << '\n';
-  
+
 }
 static void f() {
   int n, m, l; cin >> n >> m >> l;
@@ -2745,7 +2745,7 @@ void e() {
   cout << mn << '\n';
 }
 void f() {
-  int n; cin >> n; 
+  int n; cin >> n;
   vector<int> x(n), y(n);
   for (int i = 0; i < n; i++) cin >> x[i] >> y[i];
 
@@ -2753,7 +2753,7 @@ void f() {
     int dx = x[j]-x[i], dy = y[j]-y[i];
     return dx*dx + dy*dy;
   };
-  
+
   auto ok = [&](double r) {
     r *= 2;
     auto uf = UnionFind(n+2);
@@ -2768,14 +2768,14 @@ void f() {
     }
     return !uf.same(n, n+1);
   };
-  
+
   double lo = 0, hi = 100.1;
   for (int i = 0; i < 100; i++) {
     double r = (lo+hi)/2;
     if (ok(r)) {lo = r;} else {hi = r;}
   }
   cout << setprecision(10) << lo << '\n';
-  
+
 }
 }
 
@@ -2789,7 +2789,7 @@ void b() {
   cout << setprecision(10) << (sx*gy+sy*gx)/(sy+gy) << '\n';
 }
 void c() {
- int n, k; cin >> n >> k; 
+ int n, k; cin >> n >> k;
  vector<vector<int>> t(n, vector<int>(n));
  for (int i = 0; i < n; i++) {
    for (int j = 0; j < n; j++) {
@@ -2817,7 +2817,7 @@ void d() {
   }
   for (int i = 0; i < m-1; i++) {
     if (a[i]>w) {cout << "No" << '\n'; return;}
-    a[i+1] += a[i];  
+    a[i+1] += a[i];
   }
   cout << "Yes" << '\n';
 }
@@ -2844,7 +2844,7 @@ void e() {
   cout << c[h-1][w-1] << '\n';
 }
 void f() {
-  int n, q; cin >> n >> q; 
+  int n, q; cin >> n >> q;
   vector<map<int, int>> c(n);
   for (int i = 0; i < n; i++) {
     int x; cin >> x; --x;
@@ -2866,7 +2866,7 @@ void f() {
       cout << c[x][y] << '\n';
     }
   }
-  
+
 }
 
 }

@@ -13,21 +13,21 @@ var AtCoder = proconSite{
 
 		"ABC034": {
 			"A": func() {
-				var x, y int 
+				var x, y int
 				fmt.Scan(&x, &y)
-				var ans string 
+				var ans string
 				if y>x {ans = "Better"} else {ans = "Worse"}
-				fmt.Println(ans)	
+				fmt.Println(ans)
 			},
 
 			"B": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				if n&1==1 {fmt.Println(n+1)} else {fmt.Println(n-1)}
 			},
 
 			"C": func() {
 				cn := Combinatorics{}; cn.Init(2e6,Mod)
-				var w, h int 
+				var w, h int
 				fmt.Scan(&w, &h)
 				fmt.Println(cn.ChooseMod(w+h-2, h-1))
 
@@ -36,14 +36,14 @@ var AtCoder = proconSite{
 
 		"ABC035": {
 			"A": func() {
-				var w, h int 
+				var w, h int
 				fmt.Scan(&w, &h)
 				if w*3==h*4 {fmt.Println("4:3")} else {fmt.Println("16:9")}
 			},
 
 			"B": func() {
-				s, t := Scan(), ScanInt() 
-				z, y, x := 0, 0, 0 
+				s, t := Scan(), ScanInt()
+				z, y, x := 0, 0, 0
 				for _, c := range s {
 					if c == '?' {z++}
 					if c == 'U' {y++}
@@ -63,7 +63,7 @@ var AtCoder = proconSite{
 					l, r := ScanInt(), ScanInt(); l--; r--
 					s[l]++; s[r+1]--
 				}
-				
+
 				res := make([]string, n)
 				for i := 0; i < n; i++ {
 					s[i+1] += s[i]
@@ -72,7 +72,7 @@ var AtCoder = proconSite{
 				fmt.Println(strings.Join(res, ""))
 			},
 
-		
+
 		},
 
 		"ABC036": {
@@ -100,7 +100,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([]int, n); for i := 0; i < n; i++ {a[i] = ScanInt()}
 				tmp := make([][2]int, n)
 				for i := 0; i < n; i++ {tmp[i] = [2]int{i, a[i]}}
@@ -115,20 +115,20 @@ var AtCoder = proconSite{
 				}
 				writer.WriteString(strings.Join(b, "\n")); writer.Flush()
 			},
-	
+
 
 		"ABC037": {
 			"A": func() {
-				var a, b, c int 
+				var a, b, c int
 				fmt.Scan(&a, &b, &c)
 				fmt.Println(c/MinInt(a,b))
 			},
 
 			"B": func() {
-				n, q := ScanInt(), ScanInt() 
+				n, q := ScanInt(), ScanInt()
 				a := make([]int, n)
 				for i := 0; i < q; i++ {
-					l, r, t := ScanInt(), ScanInt(), ScanInt() 
+					l, r, t := ScanInt(), ScanInt(), ScanInt()
 					l--; r--
 					for j := l; j < r+1; j++ {a[j] = t}
 				}
@@ -148,41 +148,41 @@ var AtCoder = proconSite{
 
 		"ABC038": {
 			"A": func() {
-				s := Scan() 
+				s := Scan()
 				if s[len(s)-1] == 'T' {fmt.Println("YES")} else {fmt.Println("NO")}
 			},
 
 			"B": func() {
-				var h1, w1, h2, w2 int 
+				var h1, w1, h2, w2 int
 				fmt.Scan(&h1, &w1, &h2, &w2)
 				ans := "NO"
 				if h1==h2 || h1==w2 || w1==h2 || w1==w2 {ans = "YES"}
 				fmt.Println(ans)
 			},
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([]int, n+1)
 				for i := 0; i < n; i++ {a[i] = ScanInt()}
-				
+
 
 				tot := n
 				cnt := 0
-				prev := Inf 
+				prev := Inf
 				for i := 0; i < n+1; i++ {
 					if a[i] <= prev {tot += cnt*(cnt-1)/2; cnt=1} else {cnt++}
-					prev = a[i]	
+					prev = a[i]
 				}
 				fmt.Println(tot)
 			},
 
 		"ABC039": {
 			"A": func() {
-				var a, b, c int 
+				var a, b, c int
 				fmt.Scan(&a, &b, &c)
 				fmt.Println(2*(a*b+b*c+c*a))
 			},
 			"B": func() {
-				x := ScanInt() 
+				x := ScanInt()
 
 				binarySearch := func() int {
 					lo, hi := 1, 200
@@ -204,8 +204,8 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				h, w := ScanInt(), ScanInt() 
-				var s string 
+				h, w := ScanInt(), ScanInt()
+				var s string
 				for i := 0; i < h; i++ {s += Scan()}
 
 				f := func(x int) (u, d, l, r int) {
@@ -214,7 +214,7 @@ var AtCoder = proconSite{
 					if i < h-1 {d = w}
 					if j > 0 {l = -1}
 					if j < w-1 {r = 1}
-					return 
+					return
 				}
 
 				white := make([]bool, h*w)
@@ -254,13 +254,13 @@ var AtCoder = proconSite{
 
 		"ABC040": {
 			"A": func() {
-				n, x := ScanInt(), ScanInt() 
+				n, x := ScanInt(), ScanInt()
 				fmt.Println(MinInt(x-1, n-x))
 			},
 
 			"B": func() {
 				n := ScanInt()
-				
+
 				res := Inf
 				for i := 1; i*i <= n; i++ {
 					j, r := Divmod(n, i)
@@ -268,11 +268,11 @@ var AtCoder = proconSite{
 				}
 				fmt.Println(res)
 
-					
+
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([]int, n+1)
 				for i := 1; i < n+1; i++ {a[i] = ScanInt()}
 				a[0] = a[1]
@@ -293,7 +293,7 @@ var AtCoder = proconSite{
 					q = append(q, [3]int{2*y, a, b})
 				}
 
-				r := ScanInt() 
+				r := ScanInt()
 				for i := 0; i < r; i++ {
 					u, y := ScanInt(), ScanInt(); u--
 					q = append(q, [3]int{2*y+1, u, i})
@@ -308,24 +308,24 @@ var AtCoder = proconSite{
 					if y&1==1 {res[j] = uf.size[uf.Find(i)]} else {uf.Unite(i, j)}
 				}
 				for _, i := range res {fmt.Println(i)}
-			
+
 			},
 		},
 
 		"ABC041": {
 			"A": func() {
-				s, i := Scan(), ScanInt() 
+				s, i := Scan(), ScanInt()
 				fmt.Println(string(s[i-1]))
 			},
 
 			"B": func() {
-				var a, b, c int 
+				var a, b, c int
 				fmt.Scan(&a, &b, &c)
 				fmt.Println(a*b%Mod*c%Mod)
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([][2]int, n)
 				for i := 0; i < n; i++ {a[i][0], a[i][1] = i+1, ScanInt()}
 				sort.Slice(a, func(i, j int) bool {return a[i][1] > a[j][1]})
@@ -333,14 +333,14 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				g := make([]int, n)
 				for i := 0; i < m; i++ {
 					x, y := ScanInt(), ScanInt(); x--; y--
 					g[x] |= 1<<y
 				}
-				
-				res := make([]int, 1<<n); res[0] = 1 
+
+				res := make([]int, 1<<n); res[0] = 1
 				for i := 0; i < 1<<n; i++ {
 					for j := 0; j < n; j++ {
 						if i>>j&1==0 || g[j]&i!=0 {continue}
@@ -362,7 +362,7 @@ var AtCoder = proconSite{
 			},
 
 			"B": func() {
-				n, _ := ScanInt(), ScanInt() 
+				n, _ := ScanInt(), ScanInt()
 				s := make([]string, n)
 				for i := 0; i < n; i++ {s[i] = Scan()}
 				sort.Strings(s)
@@ -376,7 +376,7 @@ var AtCoder = proconSite{
 				d := make(map[rune]bool)
 				for i := 0; i < m; i++ {d[[]rune(Scan())[0]] = true}
 				l := len(n)
-				
+
 				a := make([]rune, l)
 				flg := false
 				for i := 1; i < l; i++ {
@@ -399,19 +399,19 @@ var AtCoder = proconSite{
 						if flg {continue}
 						for j := '1'; j <= '9'; j++ {if !d[j] {a[0] = j; flg=true; break}}
 					}
-				} 
-				
+				}
+
 				if a[0]==0 {fmt.Println(string(a[1:]))} else {fmt.Println(string(a))}
 			},
 
 			"D": func() {
-				var h, w, a, b int 
+				var h, w, a, b int
 				fmt.Scan(&h, &w, &a, &b)
 				cn := Combinatorics{}; cn.Init(2e5, Mod)
 				ng := 0
 				for i := 0; i < a; i++ {
 					ng += cn.ChooseMod(b-1+h-1-i, b-1) * cn.ChooseMod(i+w-1-b, i)
-					ng %= Mod 
+					ng %= Mod
 				}
 				fmt.Println(((cn.ChooseMod(h+w-2, h-1)-ng)%Mod+Mod)%Mod)
 
@@ -420,14 +420,14 @@ var AtCoder = proconSite{
 
 		"ABC043": {
 			"A": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				fmt.Println((1+n)*n/2)
 			},
 
 			"B": func() {
 				s := Scan()
 
-				t := "" 
+				t := ""
 				for _, c := range s {
 					if c!='B' {t += string(c); continue}
 					if len(t)==0 {continue}
@@ -437,7 +437,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([]int, n)
 				for i := 0; i < n; i++ {a[i] = ScanInt()}
 				m := int(math.Round(float64(SumInt(a...))/float64(n)))
@@ -478,7 +478,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n, a := ScanInt(), ScanInt() 
+				n, a := ScanInt(), ScanInt()
 				x := make([]int, n)
 				for i := 0; i < n; i++ {x[i] = ScanInt()}
 				dp := make([][]int, n+1)
@@ -500,7 +500,7 @@ var AtCoder = proconSite{
 
 		"ABC045": {
 			"A": func() {
-				var a, b, h int 
+				var a, b, h int
 				fmt.Scan(&a, &b, &h)
 				fmt.Println((a+b)*h/2)
 			},
@@ -542,7 +542,7 @@ var AtCoder = proconSite{
 					y, x := ScanInt()-1, ScanInt()-1
 					for dy := -1; dy < 2; dy++ {
 						for dx := -1; dx < 2; dx++ {
-							i, j := y+dy, x+dx 
+							i, j := y+dy, x+dx
 							if !(0<i && i<h-1 && 0<j && j<w-1) {continue}
 							cnt[[2]int{i,j}]++
 						}
@@ -558,20 +558,20 @@ var AtCoder = proconSite{
 			"A": func() {
 				s := make(map[int]bool)
 				for i := 0; i < 3; i++ {
-					s[ScanInt()] = true  
+					s[ScanInt()] = true
 				}
 				fmt.Println(len(s))
 			},
 
 			"B": func() {
-				n, k := ScanInt(), ScanInt() 
+				n, k := ScanInt(), ScanInt()
 				fmt.Println(k*Pow(k-1, n-1))
 			},
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				x, y := 1, 1
 				for i := 0; i < n; i++ {
-					a, b := ScanInt(), ScanInt() 
+					a, b := ScanInt(), ScanInt()
 					m := MaxInt((x+a-1)/a, (y+b-1)/b)
 					x, y = a*m, b*m
 				}
@@ -579,7 +579,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				s := Scan() 
+				s := Scan()
 				c := 0
 				for i := 0; i < len(s); i++ {c += Booltoi(s[i]=='p')}
 				fmt.Println(len(s)/2 - c)
@@ -595,12 +595,12 @@ var AtCoder = proconSite{
 			},
 
 			"B": func() {
-				var w, h, n int 
+				var w, h, n int
 				fmt.Scan(&w, &h, &n)
 
 				l, r, u, d := 0, w, h, 0
 				for i := 0; i < n; i++ {
-					x, y, a := ScanInt(), ScanInt(), ScanInt() 
+					x, y, a := ScanInt(), ScanInt(), ScanInt()
 					switch a {
 					case 1: l = MaxInt(l, x)
 					case 2: r = MinInt(r, x)
@@ -613,20 +613,20 @@ var AtCoder = proconSite{
 
 			"C": func() {
 				s := Scan()
-				c := 0 
+				c := 0
 				for i := 0; i < len(s)-1; i++ {c += Booltoi(s[i]!=s[i+1])}
 				fmt.Println(c)
 			},
 
 			"D": func() {
-				n, _ := ScanInt(), ScanInt() 
+				n, _ := ScanInt(), ScanInt()
 				a := make([]int, n)
 				for i := 0; i < n; i++ {a[i] = ScanInt()}
 				mx := 0
 				mn := a[0]
 				cnt := 0
 				for i := 1; i < n; i++ {
-					d := a[i] - mn 
+					d := a[i] - mn
 					if d > mx {mx, cnt = d, 1} else if d == mx {cnt++}
 					mn = MinInt(mn, a[i])
 				}
@@ -642,29 +642,29 @@ var AtCoder = proconSite{
 			},
 
 			"B": func() {
-				a, b, x := ScanInt(), ScanInt(), ScanInt() 
+				a, b, x := ScanInt(), ScanInt(), ScanInt()
 				f := func(n int) int {if n==-1 {return -1}; return n/x}
 				fmt.Println(f(b)-f(a-1))
 			},
 
 			"C": func() {
-				n, x := ScanInt(), ScanInt() 
+				n, x := ScanInt(), ScanInt()
 				a := make([]int, n+1)
 				for i := 0; i < n; i++ {a[i+1] = ScanInt()}
-				c := 0 
+				c := 0
 				for i := 1; i < n+1; i++ {
 					d := a[i-1]+a[i]-x
 					if d <= 0 {continue}
 					a[i] -= d; c += d
 				}
 				fmt.Println(c)
-				
+
 			},
 
 			"D": func() {
-				s := Scan() 
+				s := Scan()
 				l := len(s)
-				ans := "First" 
+				ans := "First"
 				if  ((l&1) ^ Booltoi(s[0]==s[l-1])) == 0 {ans = "Second"}
 				fmt.Println(ans)
 			},
@@ -679,7 +679,7 @@ var AtCoder = proconSite{
 			},
 
 			"B": func() {
-				h, _ := ScanInt(), ScanInt() 
+				h, _ := ScanInt(), ScanInt()
 				for i := 0; i < h; i++ {
 					s := Scan()
 					for i := 0; i < 2; i++ {fmt.Println(s)}
@@ -688,7 +688,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				s := Scan() 
+				s := Scan()
 				c := map[string]bool{
 					"dream": true,
 					"dreamer": true,
@@ -712,7 +712,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				var n, k, l int 
+				var n, k, l int
 				fmt.Scan(&n, &k, &l)
 				uf1 := new(UnionFind); uf1.Init(n)
 				uf2 := new(UnionFind); uf2.Init(n)
@@ -736,25 +736,25 @@ var AtCoder = proconSite{
 
 		"ABC050": {
 			"A": func() {
-				a, op, b := ScanInt(), Scan(), ScanInt() 
+				a, op, b := ScanInt(), Scan(), ScanInt()
 				if op=="+" {fmt.Println(a+b)} else {fmt.Println(a-b)}
 			},
 
 			"B": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				t := make([]int, n); s := 0
 				for i := 0; i < n; i++ {
 					t[i] = ScanInt(); s += t[i]
 				}
-				m := ScanInt() 
+				m := ScanInt()
 				for i := 0; i < m; i++ {
-					p, x := ScanInt()-1, ScanInt() 
+					p, x := ScanInt()-1, ScanInt()
 					fmt.Println(s+(x-t[p]))
 				}
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				a := make([]int, n)
 				c := make(map[int]int)
 				for i := 0; i < n; i++ {
@@ -779,10 +779,10 @@ var AtCoder = proconSite{
 				s := Scan()
 				fmt.Println(strings.ReplaceAll(s, ",", " "))
 			},
-			
+
 			"B": func() {
 				k, s := ScanInt(), ScanInt()
-				c := 0 
+				c := 0
 				for x := 0; x <= k; x++ {
 					if s-x < 0 {break}
 					if s-x > 2*k {continue}
@@ -792,7 +792,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				var sx, sy, tx, ty int 
+				var sx, sy, tx, ty int
 				fmt.Scan(&sx, &sy, &tx, &ty)
 				x, y := tx-sx, ty-sy
 				t := ""
@@ -809,7 +809,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				a, b, c := make([]int, m), make([]int, m), make([]int, m)
 				g := new(Graph); g.Init(n)
 				for i := 0; i < m; i++ {
@@ -826,12 +826,12 @@ var AtCoder = proconSite{
 				}
 				fmt.Println(cnt)
 			},
-			
+
 		},
 
 		"ABC052": {
 			"A": func() {
-				var a, b, c, d int 
+				var a, b, c, d int
 				fmt.Scan(&a, &b, &c, &d)
 				fmt.Println(MaxInt(a*b, c*d))
 			},
@@ -850,13 +850,13 @@ var AtCoder = proconSite{
 				tot := 1
 				for _, c := range pn.FactorizeFactorial(n) {
 					tot *= (c+1)
-					tot %= Mod 
+					tot %= Mod
 				}
 				fmt.Println(tot)
 			},
 
 			"D": func() {
-				var n, a, b int 
+				var n, a, b int
 				fmt.Scan(&n, &a, &b)
 				x := make([]int, n)
 				for i := 0; i < n; i++ {x[i] = ScanInt()}
@@ -878,7 +878,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				x := ScanInt() 
+				x := ScanInt()
 				q, r := Divmod(x, 11)
 				fmt.Println(2*q + (r+5)/6)
 			},
@@ -894,14 +894,14 @@ var AtCoder = proconSite{
 		"ABC054": {
 			"A": func() {
 				f := func(x int) int {return (x+11)%13}
-				a, b := ScanInt(), ScanInt() 
+				a, b := ScanInt(), ScanInt()
 				ans := "Draw"
 				if f(a)>f(b) {ans = "Alice"} else if f(a)<f(b) {ans = "Bob"}
 				fmt.Println(ans)
 			},
 
 			"B": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				a, b := make([]string, n), make([]string, m)
 				for i := 0; i < n; i++ {a[i] = Scan()}
 				for i := 0; i < m; i++ {b[i] = Scan()}
@@ -924,7 +924,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				g := new(Graph); g.Init(n)
 				for i := 0; i < m; i++ {
 					a, b := ScanInt()-1, ScanInt()-1
@@ -975,18 +975,18 @@ var AtCoder = proconSite{
 
 		"ABC055": {
 			"A": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				fmt.Println(800*n - n/15*200)
 			},
 
 			"B": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				fac, _ := GenerateFacIFac(n, Mod)
 				fmt.Println(fac[n])
 			},
 
 			"C": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				if n*2 <= m {
 					fmt.Println(n+(m-n*2)/4)
 				} else {
@@ -995,7 +995,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				n, s := ScanInt(), Scan() 
+				n, s := ScanInt(), Scan()
 				a := make([]int, n)
 				for i := 0; i < n; i++ {
 					if s[i]=='o' {a[i] = 1} else {a[i] = 0}
@@ -1030,7 +1030,7 @@ var AtCoder = proconSite{
 			},
 
 			"B": func() {
-				var w, a, b int 
+				var w, a, b int
 				fmt.Scan(&w, &a, &b)
 				if a>b {a, b = b, a}
 				fmt.Println(MaxInt(0, b-w-a))
@@ -1042,7 +1042,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				n, k := ScanInt(), ScanInt() 
+				n, k := ScanInt(), ScanInt()
 				a := make([]int, n)
 				for i := 0; i < n; i++ {a[i] = MinInt(ScanInt(), k)}
 				sort.Ints(a)
@@ -1074,12 +1074,12 @@ var AtCoder = proconSite{
 
 		"ABC057": {
 			"A": func() {
-				a, b := ScanInt(), ScanInt() 
+				a, b := ScanInt(), ScanInt()
 				fmt.Println((a+b)%24)
 			},
 
 			"B": func() {
-				n, m := ScanInt(), ScanInt() 
+				n, m := ScanInt(), ScanInt()
 				a, b := make([][2]int, n), make([][2]int, m)
 				for i := 0; i < n; i++ {
 					a[i][0], a[i][1] = ScanInt(), ScanInt()
@@ -1098,13 +1098,13 @@ var AtCoder = proconSite{
 				}
 			},
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				d := FindDivisors(n)
 				fmt.Println(len(strconv.Itoa(d[len(d)/2])))
 			},
 
 			"D": func() {
-				
+
 			},
 
 		},
@@ -1141,7 +1141,7 @@ var AtCoder = proconSite{
 						fmt.Println(s+q*SumInt(loop...)+SumInt(loop[:r]...)); return
 					}
 					res[x], loop[i] = i, x;
-					s += x; x = x*x%m 
+					s += x; x = x*x%m
 				}
 			},
 		},
@@ -1172,7 +1172,7 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				var x, y, a, b int 
+				var x, y, a, b int
 				fmt.Scan(&x, &y, &a, &b)
 				cnt := 0
 				for {
@@ -1185,10 +1185,10 @@ var AtCoder = proconSite{
 			},
 
 			"E": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				x, y, z := make([]int, n), make([]int, n), make([]int, n)
 				for i := 0; i < n; i++ {
-					x[i], y[i], z[i] = ScanInt(), ScanInt(), ScanInt() 
+					x[i], y[i], z[i] = ScanInt(), ScanInt(), ScanInt()
 				}
 				dist := make([][]int, n); for i := 0; i < n; i++ {dist[i] = make([]int, n)}
 				for i := 0; i < n; i++ {
@@ -1196,7 +1196,7 @@ var AtCoder = proconSite{
 						dist[i][j] = AbsInt(x[j]-x[i])+AbsInt(y[j]-y[i])+MaxInt(0, z[j]-z[i])
 					}
 				}
-				dp := make([][]int, 1<<n); 
+				dp := make([][]int, 1<<n);
 				for i := 0; i < 1<<n; i++ {
 					dp[i] = make([]int, n)
 					for j := 0; j < n; j++ {
@@ -1251,7 +1251,7 @@ var AtCoder = proconSite{
 				n := ScanInt()
 				tot := 0
 				for n > 0 {
-					a, b := ScanInt(), ScanInt() 
+					a, b := ScanInt(), ScanInt()
 					tot += (a+b)*(b-a+1)/2
 					n--;
 				}
@@ -1259,7 +1259,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				x, y := make([]int, n), make([]int, n)
 				for i := 0; i < n; i++ {x[i], y[i] = ScanInt(), ScanInt()}
 				for i := 0; i < n; i++ {
@@ -1283,9 +1283,9 @@ var AtCoder = proconSite{
 					n, _ = strconv.Atoi(ReversedString(s))
 					if n%8==0 {bl = true}
 					if bl {fmt.Println("Yes")} else {fmt.Println("No")}
-					return 
+					return
 				}
-				var cnt, c [10]int 
+				var cnt, c [10]int
 				for _, d := range s {cnt[d-'0']++}
 				for i := 112; i < 1000; i+=8 {
 					for j := 0; j < 10; j++ {c[j] = 0}
@@ -1295,7 +1295,7 @@ var AtCoder = proconSite{
 					nxt:
 				}
 				fmt.Println("No")
-				
+
 			},
 
 			"E": func() {
@@ -1311,7 +1311,7 @@ var AtCoder = proconSite{
 				for i := n-1; i > 0; i-- {r[i-1] += r[i]}
 				d := make([]int, n)
 				for i := 1; i < n-1; i+=2 {d[i] = h[i+1]-h[i-1]}
-				k, mn := 0, Inf 
+				k, mn := 0, Inf
 				for i := 0; i < n; i++ {
 					for k < m-1 && AbsInt(w[k+1]-h[i]) <= AbsInt(w[k]-h[i]) {k++}
 					mn = MinInt(mn, l[MaxInt(i-1,0)]+r[MinInt(i+1,n-1)]+d[i]+AbsInt(w[k]-h[i]))
@@ -1320,7 +1320,7 @@ var AtCoder = proconSite{
 			},
 
 			"F": func() {
-				n := ScanInt() 
+				n := ScanInt()
 				x, y := make([]int, n), make([]int, n)
 				for i := 0; i < n; i++ {
 					x[i], y[i] = ScanInt(), ScanInt()
@@ -1345,7 +1345,7 @@ var AtCoder = proconSite{
 				}
 				lo, hi := .0, 100.1
 				for i := 0; i < 100; i++ {
-					r := (lo+hi)/2 
+					r := (lo+hi)/2
 					if ok(r) {lo = r} else {hi = r}
 				}
 				fmt.Println(lo)
@@ -1365,7 +1365,7 @@ var AtCoder = proconSite{
 			},
 
 			"C": func() {
-				n, k := ScanInt(), ScanInt() 
+				n, k := ScanInt(), ScanInt()
 				t := make([][]int, n)
 				for i := 0; i < n; i++ {t[i] = make([]int, n)}
 				for i := 0; i < n; i++ {
@@ -1386,12 +1386,12 @@ var AtCoder = proconSite{
 			},
 
 			"D": func() {
-				n, w := ScanInt(), ScanInt() 
+				n, w := ScanInt(), ScanInt()
 				m := int(2e5)+10
 				a := make([]int, m)
 				for i := 0; i < n; i++ {
-					s, t, p := ScanInt(), ScanInt(), ScanInt() 
-					a[s] += p; a[t] -= p 
+					s, t, p := ScanInt(), ScanInt(), ScanInt()
+					a[s] += p; a[t] -= p
 				}
 				for i := 0; i < m-1; i++ {
 					if a[i] > w {fmt.Println("No"); return}
@@ -1401,7 +1401,7 @@ var AtCoder = proconSite{
 			},
 
 			"E": func() {
-				h, w := ScanInt(), ScanInt() 
+				h, w := ScanInt(), ScanInt()
 				s := make([]string, h)
 				for i := 0; i < h; i++ {s[i] = Scan()}
 				x := make([][]int, h)
@@ -1455,4 +1455,3 @@ var AtCoder = proconSite{
 		},
 	},
 }
-

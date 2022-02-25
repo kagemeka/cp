@@ -114,7 +114,7 @@ class ABC042 {
     console.log(s.join(''));
   }
   static C(input) {
-    
+
   }
   static D(input) {
   }
