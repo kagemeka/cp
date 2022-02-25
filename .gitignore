@@ -56,4 +56,6 @@ __pycache__
 
 # .vscode
 
+*.deb
+
 !.gitkeep
