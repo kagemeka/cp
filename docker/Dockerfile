@@ -1,12 +1,11 @@
 FROM ubuntu:latest
-
+SHELL ["/bin/bash", "-c"]
+WORKDIR /root/
 ARG DEBIAN_FRONTEND=noninteractive
 COPY ./scripts ./scripts
 RUN ./scripts/setup.sh
 
-# SHELL ["/bin/bash", "-c"]
 # ARG DEBIAN_FRONTEND=noninteractive
-# WORKDIR /root/
 # RUN \
 #   apt -q=2 update \
 #   && apt -yq=2 install \

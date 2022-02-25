@@ -11,3 +11,4 @@ echo "source $HOME/.sdkman/bin/sdkman-init.sh" >>~/.bashrc
 source ~/.bashrc
 source $HOME/.sdkman/bin/sdkman-init.sh
 sdk install kotlin
+source ~/.bashrc
