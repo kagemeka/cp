@@ -1,1 +1,0 @@
-# [AtCoder Beginner Contest 206](https://atcoder.jp/contests/abc206)

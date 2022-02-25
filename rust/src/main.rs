@@ -1,4 +1,3 @@
-
 pub struct Scanner<R: std::io::Read> {
     reader: R,
 }
@@ -6,17 +5,30 @@ pub struct Scanner<R: std::io::Read> {
 impl<R: std::io::Read> Scanner<R> {
     /// let stdin = std::io::stdin();
     /// let mut sc = Scanner::new(stdin.lock());
-    pub fn new(reader: R) -> Self { Self { reader: reader } }
+    pub fn new(reader: R) -> Self {
+        Self { reader: reader }
+    }
 
     pub fn scan<T: std::str::FromStr>(&mut self) -> T {
         use std::io::Read;
-        self.reader.by_ref().bytes().map(|c| c.unwrap() as char)
-        .skip_while(|c| c.is_whitespace())
-        .take_while(|c| !c.is_whitespace())
-        .collect::<String>().parse::<T>().ok().unwrap()
+        self.reader
+            .by_ref()
+            .bytes()
+            .map(|c| c.unwrap() as char)
+            .skip_while(|c| c.is_whitespace())
+            .take_while(|c| !c.is_whitespace())
+            .collect::<String>()
+            .parse::<T>()
+            .ok()
+            .unwrap()
     }
 }
 
+use dsalgo;
+
+mod sample_mod {
+    pub(crate) fn sample_function() {}
+}
 
 // #[allow(warnings)]
 fn main() {
@@ -25,18 +37,5 @@ fn main() {
     let mut sc = Scanner::new(std::io::BufReader::new(stdin.lock()));
     let stdout = std::io::stdout();
     let out = &mut std::io::BufWriter::new(stdout.lock());
-
-}
-
-
-pub trait Monoid {
-    type S: Clone;
-    fn identity() -> Self::S;
-    fn op(x: &Self::S, y: &Self::S) -> Self::S; 
-}
-
-
-pub trait TensorProperty {
-    const NDIM: usize;
-    const SHAPE: [usize; 8];
+    sample_mod::sample_function();
 }

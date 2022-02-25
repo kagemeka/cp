@@ -1,3 +1,0 @@
-# Range Update Query (RUQ)
-
-
