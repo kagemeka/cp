@@ -1,4 +1,9 @@
-# FROM ubuntu:latest AS base-stage
+FROM ubuntu:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+COPY ./scripts ./scripts
+RUN ./scripts/setup.sh
+
 # SHELL ["/bin/bash", "-c"]
 # ARG DEBIAN_FRONTEND=noninteractive
 # WORKDIR /root/
@@ -8,16 +13,15 @@
 #   apt-utils \
 #   neovim \
 #   software-properties-common \
-#   xclip \  
+#   xclip \
 #   xsel \
 #   && rm -rf /var/lib/apt/lists/* \
 #   && apt clean -y \
 #   && echo "PS1='\w\$ '" >> ~/.bashrc \
 #   && echo "bind '\"\t\":menu-complete'" >> ~/.bashrc
 
-
 # FROM base-stage AS python-stage
-# WORKDIR /root/ 
+# WORKDIR /root/
 # ARG PYVER=3.9
 # RUN \
 #   apt -q=2 update \
@@ -44,7 +48,6 @@
 #   && pip install -Uqr requirements.txt \
 #   && rm requirements.txt
 
-
 # FROM python-stage AS rust-stage
 # ENV RUST_BACKTRACE=full
 # RUN \
@@ -56,8 +59,7 @@
 #   && curl \
 #   --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
 #   | sh -s -- -y \
-#   && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc 
-
+#   && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 
 # FROM rust-stage AS go-stage
 # ARG GOVER=1.18beta1
@@ -65,14 +67,13 @@
 #   apt -q=2 update \
 #   && apt install -y \
 #   apt-utils \
-#   wget \ 
+#   wget \
 #   && wget -qO - \
 #   https://dl.google.com/go/go${GOVER}.linux-amd64.tar.gz \
-  # | tar -xzC /usr/local/ 
+# | tar -xzC /usr/local/
 # && echo 'export GOPATH=/usr/local/go' >> ~/.bashrc \
 # && source ~/.bashrc \
 # && echo 'export PATH=$PATH:$GOPATH/bin' >> ~/.bashrc
-
 
 # FROM go-stage AS cpp-stage
 # RUN \
@@ -81,8 +82,7 @@
 #   apt-utils \
 #   build-essential \
 #   xclip \
-#   xsel 
-
+#   xsel
 
 # FROM cpp-stage AS csharp-stage
 # RUN \
@@ -97,7 +97,6 @@
 #   && apt install -yq=2 \
 #   dotnet-sdk-3.1 \
 #   && dotnet tool install -g dotnet-script
-
 
 # FROM csharp-stage AS dart-stage
 # RUN \
@@ -121,7 +120,6 @@
 #   'export PATH="$PATH:/usr/lib/dart/bin"' \
 #   >> ~/.bashrc
 
-
 # FROM dart-stage AS julia-stage
 # ARG MAJOR=1
 # ARG MINOR=7
@@ -142,14 +140,12 @@
 #   /usr/local/julia/bin/julia \
 #   /usr/bin/julia
 
-
 # FROM julia-stage AS java-stage
 # RUN \
 #   apt -q=2 update \
 #   && apt install -yq=2 \
 #   apt-utils \
 #   default-jre
-
 
 # FROM java-stage AS kotlin-stage
 # RUN \
@@ -163,8 +159,7 @@
 #   >> ~/.bashrc \
 #   && source ~/.bashrc \
 #   && source $HOME/.sdkman/bin/sdkman-init.sh \
-#   && sdk install kotlin 
-
+#   && sdk install kotlin
 
 # FROM kotlin-stage AS javascript-stage
 # RUN \
@@ -177,7 +172,6 @@
 #   -sL https://deb.nodesource.com/setup_current.x \
 #   | sudo -E bash - \
 #   && apt install -y nodejs
-
 
 # FROM javascript-stage AS typescript-stage
 # RUN \
@@ -193,7 +187,6 @@
 #   && npm install -g \
 #   typescript \
 #   ts-node
-
 
 # FROM ubuntu:20.04 AS lsp-builder
 # RUN \
@@ -211,7 +204,6 @@
 #   && npm install \
 #   && npm run dev-package \
 #   && mv sourcekit-lsp-development.vsix /root/
-
 
 # FROM typescript-stage AS swift-stage
 # ENV SOURCEKIT_TOOLCHAIN_PATH=/usr/local/swift
@@ -245,7 +237,6 @@
 #   'export "PATH=/usr/local/swift/usr/bin:$PATH"' >> ~/.bashrc \
 #   && source ~/.bashrc
 
-
 # FROM swift-stage AS haskell-stage
 # RUN \
 #   apt update \
@@ -256,36 +247,31 @@
 #   https://get-ghcup.haskell.org | sh \
 #   && curl -sSL https://get.haskellstack.org/ | sh
 
-
 # FROM haskell-stage AS dlang-stage
 # RUN \
 #   apt update \
 #   && curl https://dlang.org/install.sh | bash -s
 
-
-# FROM dlang-stage AS perl-stage 
+# FROM dlang-stage AS perl-stage
 # RUN \
-#   apt update 
-
+#   apt update
 
 # FROM perl-stage AS ocaml-stage
 # RUN \
 #   apt update \
 #   && apt install -y \
 #   ocaml \
-#   opam 
-# && opam init -y 
+#   opam
+# && opam init -y
 # && opam install -y \
-# dune 
+# dune
 # ocaml-lsp-server
-
 
 # FROM ocaml-stage AS php-stage
 # RUN \
 #   apt update \
 #   && apt install -y \
 #   php
-
 
 # FROM php-stage AS scala-stage
 # RUN \
@@ -294,11 +280,9 @@
 #   default-jdk \
 #   scala
 
-
-# FROM scala-stage AS clojure-stage 
+# FROM scala-stage AS clojure-stage
 # ARG CLOJURE_VERSION=1.10.3.998
 # RUN \
 #   curl -O https://download.clojure.org/install/linux-install-${CLOJURE_VERSION}.sh \
 #   && chmod +x linux-install-${CLOJURE_VERSION}.sh \
 #   && sudo ./linux-install-${CLOJURE_VERSION}.sh \
-
