@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  main:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: ubuntu:latest
+    env_file:
+      - common.env
+    restart: on-failure
+    privileged: true
+    tty: true
+    volumes:
+      - type: bind
+        source: $PROJECT_ROOT
+        target: /root/$PROJECT_NAME
+        volume:
+          nocopy: true
+        read_only: false
