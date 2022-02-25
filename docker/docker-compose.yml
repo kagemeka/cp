@@ -2,10 +2,11 @@ version: '3.9'
 
 services:
   main:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    image: ubuntu:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: kagemeka/$PROJECT_NAME:$PROJECT_VERSION
+    # image: ubuntu:latest
     env_file:
       - common.env
     restart: on-failure
