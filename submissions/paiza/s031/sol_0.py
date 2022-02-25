@@ -1,5 +1,5 @@
-import typing 
-import sys 
+import typing
+import sys
 import numpy as np
 import heapq
 
@@ -20,7 +20,7 @@ def solve(bp: np.ndarray, c: int, k: int) -> typing.NoReturn:
             s += heapq.heappop(hq)
         if s > c: continue
         print(b[i])
-        return    
+        return
 
 
 

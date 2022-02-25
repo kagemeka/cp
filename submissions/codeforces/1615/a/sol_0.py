@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def main() -> typing.NoReturn:
@@ -7,5 +7,5 @@ def main() -> typing.NoReturn:
         n = int(input())
         a = list(map(int, input().split()))
         print(1 if sum(a) % n else 0)
-    
+
 main()

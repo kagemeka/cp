@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 def find_divisors(
   n: int,
@@ -6,7 +6,7 @@ def find_divisors(
   i = 1
   a = []
   while i * i < n:
-    if n % i: 
+    if n % i:
       i += 1; continue
     a.append(i)
     a.append(n // i)
@@ -20,9 +20,8 @@ def find_divisors(
 
 class Solution:
   def isThree(
-    self, 
+    self,
     n: int,
   ) -> bool:
     divs = find_divisors(n)
     return len(divs) == 3
-        

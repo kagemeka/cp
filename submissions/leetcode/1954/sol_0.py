@@ -1,6 +1,6 @@
 class Solution:
   def minimumPerimeter(
-    self, 
+    self,
     neededApples: int,
   ) -> int:
     n = neededApples
@@ -13,12 +13,10 @@ class Solution:
       else:
         lo = x
     return hi * 8
-  
+
 
   def s(
     self,
     n: int,
   ) -> int:
     return 6 * n * (n + 1)
-
-      

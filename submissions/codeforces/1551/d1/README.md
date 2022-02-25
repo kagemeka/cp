@@ -2,4 +2,3 @@
 
 
 # [contest 1551](https://codeforces.com/contest/1551)
-

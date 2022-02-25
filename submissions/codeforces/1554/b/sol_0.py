@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -18,7 +18,7 @@ def solve(
     if i < n - 2 * k: continue
     for j in range(i + 1, n):
       mx = max(mx, f(i, j))
-  
+
   print(mx)
 
 

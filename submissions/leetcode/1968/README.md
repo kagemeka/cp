@@ -6,7 +6,7 @@
 
 
 
-# keywords 
+# keywords
 - greedy
 
 
@@ -14,6 +14,5 @@
 # summary
 - sort nums to satisfy the following condition.
   - let a := sorted array.
-  - $\forall{i} \in{\{i | 1 \le i \lt n - 1\}}$, 
+  - $\forall{i} \in{\{i | 1 \le i \lt n - 1\}}$,
     $a_{i - 1}, a_{i + 1} < a_{i}$ or $a_{i - 1}, a_{i + 1} > a_{i}$
-  

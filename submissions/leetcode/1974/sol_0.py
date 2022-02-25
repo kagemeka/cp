@@ -1,9 +1,9 @@
-import typing 
+import typing
 
 
 class Solution:
   def minTimeToType(
-    self, 
+    self,
     word: str,
   ) -> int:
     *s, = map(
@@ -17,5 +17,3 @@ class Solution:
       d = abs(s[i + 1] - s[i])
       tot += min(d, 26 - d)
     return tot
-      
-        

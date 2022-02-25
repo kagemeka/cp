@@ -5,6 +5,6 @@
 
 
 # keywords
-- sort 
-- greedy 
-- brute-force 
+- sort
+- greedy
+- brute-force

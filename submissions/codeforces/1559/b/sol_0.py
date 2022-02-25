@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -26,11 +26,11 @@ def solve(
     rev.append(
       int(dp[i][1] == dp[i + 1][rev[-1]] - (rev[-1] == 1)),
     )
-      
+
   res = ['R' if x else 'B' for x in rev[::-1]]
   print(''.join(res))
-    
-  
+
+
 
 def main() -> typing.NoReturn:
   t = int(input())
@@ -38,8 +38,8 @@ def main() -> typing.NoReturn:
     n = int(input())
     s = input()
     s = [
-      2 if x == '?' else 
-      0 if x == 'B' else 
+      2 if x == '?' else
+      0 if x == 'B' else
       1
       for x in s
     ]

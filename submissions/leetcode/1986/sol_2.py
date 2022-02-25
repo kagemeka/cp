@@ -1,12 +1,12 @@
-import typing 
+import typing
 import functools
 
 
 
 class Solution:
   def minSessions(
-    self, 
-    a: typing.List[int], 
+    self,
+    a: typing.List[int],
     t0: int,
   ) -> int:
     inf = 1 << 10
@@ -29,7 +29,6 @@ class Solution:
           t += a[i]
         res = min(res, (c, t))
       return res
-    
+
     c, t = dfs((1 << n) - 1)
     return c + (t > 0)
-

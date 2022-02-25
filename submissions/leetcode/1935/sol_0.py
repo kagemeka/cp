@@ -15,8 +15,8 @@ class Solve():
 
 class Solution:
   def canBeTypedWords(
-    self, 
-    text: str, 
+    self,
+    text: str,
     brokenLetters: str,
   ) -> int:
     s = Solve()
@@ -24,4 +24,3 @@ class Solution:
       text,
       brokenLetters,
     )
-        

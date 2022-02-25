@@ -16,11 +16,11 @@
 - at first, all cells are filled with water.
 - let node[y, x]'s index := y * cols + x + 1 (y, x are 0-indexed)
 - prepare dummy nodes 0 and n + 1
-- if drying node[y, x], look at surrounding nodes, if each of them is already dryed, 
+- if drying node[y, x], look at surrounding nodes, if each of them is already dryed,
   connect current node[y, x] and it.
 - after finishing to dry node[y, x], if index 0 and n + 1 are in the same group, terminate searching.
 
-   
+
 
 
 

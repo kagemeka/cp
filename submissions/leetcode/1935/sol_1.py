@@ -1,7 +1,7 @@
 class Solution:
   def canBeTypedWords(
-    self, 
-    text: str, 
+    self,
+    text: str,
     brokenLetters: str,
   ) -> int:
     self.__b = set(
@@ -21,5 +21,3 @@ class Solution:
     for c in w:
       if c in b: return False
     return True
-    
-        

@@ -14,7 +14,7 @@
 # summary
 - oddness of the sum of counts of negative values and positive values is always keeped.
 - any two cell signs can be reversed without changing other cell signs.
-- if the number of negative values is odd at beginning, 
+- if the number of negative values is odd at beginning,
   - ans := $\sum_{i, j} |cell_{i, j}| - 2\times\min_{i, j}{|cell_{i, j}|}$
 - else
   - ans := $\sum_{i, j} |cell_{i, j}|$ simply.

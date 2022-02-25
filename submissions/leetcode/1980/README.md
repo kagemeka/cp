@@ -4,8 +4,8 @@
 # [1980. Find Unique Binary String](https://leetcode.com/problems/find-unique-binary-string/)
 
 
-# keywords 
-- product 
+# keywords
+- product
 - dfs
 - brute-force
 - hash set

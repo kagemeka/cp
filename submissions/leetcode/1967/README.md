@@ -4,5 +4,5 @@
 
 # [Weekly Contest 254](https://leetcode.com/contest/weekly-contest-254)
 
-# keyword 
+# keyword
 - brute force

@@ -15,7 +15,7 @@ class VerbalArithmetic():
   ) -> typing.List[
     typing.Dict[str, int],
   ]:
-    s = words 
+    s = words
     s.append(result)
     self.__s = s
     self.__preprocess()
@@ -53,7 +53,7 @@ class VerbalArithmetic():
     self.__res = []
     self.__i = self.__j = 0
     self.__v = 0
-    
+
 
   def __search(
     self,
@@ -76,12 +76,12 @@ class VerbalArithmetic():
       self.__non_fixed_search()
       return
     self.__fixed_search()
-  
+
 
   def __check_sign(
     self,
   ) -> typing.NoReturn:
-    i, n = self.__i, self.__n 
+    i, n = self.__i, self.__n
     sign = (i < n - 1) * 2 - 1
     self.__sign = sign
 
@@ -91,7 +91,7 @@ class VerbalArithmetic():
   ) -> bool:
     j = self.__j
     return (
-      self.__x 
+      self.__x
       or j != len(self.__w) - 1
       or self.__zero_ok
       and j == 0
@@ -110,7 +110,7 @@ class VerbalArithmetic():
     self.__i += 1
     self.__v += sign * x
     self.__search()
-    self.__i, self.__v = i, v 
+    self.__i, self.__v = i, v
 
 
   def __non_fixed_search(
@@ -122,7 +122,7 @@ class VerbalArithmetic():
     v = self.__v
     sign = self.__sign
     l, d = self.__l, self.__d
-    c = self.__c 
+    c = self.__c
     for x in range(10):
       if l[x] is not None:
         continue
@@ -143,9 +143,9 @@ class VerbalArithmetic():
   ) -> typing.NoReturn:
     if self.__v != 0: return
     d, a = self.__d, self.__a
-    res = self.__res 
+    res = self.__res
     res.append(dict(zip(a, d)))
-    
+
 
   def __skip_row(
     self,
@@ -154,12 +154,12 @@ class VerbalArithmetic():
     self.__i += 1
     self.__search()
     self.__i = i
-  
+
 
   def __search_nxt_col(
     self,
   ) -> typing.NoReturn:
-    v = self.__v 
+    v = self.__v
     i, j = self.__i, self.__j
     if v % 10 != 0: return
     self.__j += 1
@@ -168,13 +168,13 @@ class VerbalArithmetic():
     self.__search()
     self.__i, self.__j = i, j
     self.__v = v
-    
-    
+
+
 
 class Solution:
   def isSolvable(
-    self, 
-    words: typing.List[str], 
+    self,
+    words: typing.List[str],
     result: str,
   ) -> bool:
     fn = VerbalArithmetic()

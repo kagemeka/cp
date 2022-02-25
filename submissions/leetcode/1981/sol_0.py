@@ -1,12 +1,12 @@
-import typing 
+import typing
 from typing import List
 import numpy as np
 
 
 class Solution:
   def minimizeTheDifference(
-    self, 
-    mat: List[List[int]], 
+    self,
+    mat: List[List[int]],
     target: int,
   ) -> int:
     u = 1 << 17
@@ -19,5 +19,3 @@ class Solution:
       dp = ndp
     i = np.flatnonzero(dp)
     return np.abs(target - i).min()
-      
-        

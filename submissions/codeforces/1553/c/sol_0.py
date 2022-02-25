@@ -1,4 +1,4 @@
-import sys 
+import sys
 import typing
 
 
@@ -9,7 +9,7 @@ def win_case(
   s = list(s)
   n = len(s)
   for i in range(n):
-    if s[i] != '?': continue 
+    if s[i] != '?': continue
     s[i] = (
       '0' if i & 1 else '1'
     )
@@ -32,7 +32,7 @@ def lose_case(
   s = list(s)
   n = len(s)
   for i in range(n):
-    if s[i] != '?': continue 
+    if s[i] != '?': continue
     s[i] = (
       '1' if i & 1 else '0'
     )

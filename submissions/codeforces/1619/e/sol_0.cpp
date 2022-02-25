@@ -26,7 +26,7 @@ int main() {
       exist[i + 1] = exist[i + 1] & exist[i];
     }
     vector<int> res(n + 1, -1);
-    
+
     int c = 0;
     res[0] = cnt[0];
     set<int> idx;
@@ -38,10 +38,10 @@ int main() {
         continue;
       }
       if (s[i - 1] <= i - 1) break;
-      if (cnt[i - 1] >= 1) { 
+      if (cnt[i - 1] >= 1) {
         if (cnt[i] >= 2) idx.insert(i);
         res[i] = c + cnt[i];
-        continue; 
+        continue;
       }
       int j = *idx.rbegin();
       c += i - 1 - j;
@@ -58,5 +58,5 @@ int main() {
     }
     cout << res[n] << '\n';
   }
-  
+
 }

@@ -15,5 +15,5 @@
   - the remained value is $2^p - 1$
 
 
-# keywords 
+# keywords
 - math

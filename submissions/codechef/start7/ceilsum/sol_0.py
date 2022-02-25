@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -18,7 +18,7 @@ def solve(
   x = ceil(b - a, 2)
   if a == b:
     print(x)
-    return 
+    return
   y = ceil(b - a - 1, 2) + 1
   print(max(x, y))
 

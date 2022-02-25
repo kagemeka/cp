@@ -10,7 +10,7 @@
 
 
 
-# summary 
+# summary
 - typical shortest paths counting problem.
 
 

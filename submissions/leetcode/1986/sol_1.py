@@ -1,10 +1,10 @@
-import typing 
+import typing
 
 
 class Solution:
   def minSessions(
-    self, 
-    a: typing.List[int], 
+    self,
+    a: typing.List[int],
     t0: int,
   ) -> int:
     inf = 1 << 10
@@ -12,7 +12,7 @@ class Solution:
     n = len(a)
     dp = [(inf, 0)] * (1 << n)
     dp[0] = (0, 0)
-    
+
     for s in range(1 << n):
       for i in range(n):
         if ~s >> i & 1: continue

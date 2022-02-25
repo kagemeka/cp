@@ -1,11 +1,11 @@
-import typing 
+import typing
 from typing import List
 import itertools
 
 
 class Solution:
   def maxMatrixSum(
-    self, 
+    self,
     matrix: List[List[int]],
   ) -> int:
     n = len(matrix)
@@ -13,5 +13,3 @@ class Solution:
     m = sum(x < 0 for x in a)
     *a, = map(abs, a)
     return sum(a) - min(a) * 2 * (m & 1)
-
-        

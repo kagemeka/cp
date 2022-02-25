@@ -4,6 +4,6 @@
 # [Weekly 251](https://leetcode.com/contest/weekly-contest-251)
 
 
-# keywords 
+# keywords
 - brute force
 - permutations

@@ -16,11 +16,11 @@
 - transition
   - $$dp_i = \begin{cases}
     dp_{i - 1} + 2 + (dp_{i - 1} - dp_{\text{next}_{i - 1}}) & \text{if next}_{i - 1} = i - 1 \\
-    dp_{i - 1} + 2 & \text{otherwise} \\ 
+    dp_{i - 1} + 2 & \text{otherwise} \\
     \end{cases}$$
 - answer = $dp_{N - 1}$
 
-# code 
+# code
 ## sol_0
 - DFS
 

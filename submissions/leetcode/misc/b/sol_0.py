@@ -1,5 +1,5 @@
 from collections import defaultdict
-import typing 
+import typing
 
 
 
@@ -10,7 +10,7 @@ def gcd(a: int, b: int) -> int:
 
 class Solution:
   def interchangeableRectangles(
-    self, 
+    self,
     rects: typing.List[typing.List[int]],
   ) -> int:
     c = defaultdict(int)
@@ -20,6 +20,3 @@ class Solution:
       b //= g
       c[(a, b)] += 1
     return sum(v * (v - 1) // 2 for v in c.values())
-
-    
-        

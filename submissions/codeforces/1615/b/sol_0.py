@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -12,7 +12,7 @@ def f(x: int, k: int) -> typing.List[int]:
 
 def solve() -> typing.NoReturn:
     l, r = map(int, input().split())
-    # f(N) = for each bit, how many number has the bit under N 
+    # f(N) = for each bit, how many number has the bit under N
     # (r - l + 1) - max(f(r) - f(l - 1))
     k = 23
     cnt_r = f(r, k)
@@ -20,7 +20,7 @@ def solve() -> typing.NoReturn:
     for i in range(k):
         cnt_r[i] -= cnt_l[i]
     print(r - l + 1 - max(cnt_r))
-    
+
 
 def main() -> typing.NoReturn:
     t = int(input())

@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -7,7 +7,7 @@ def solve(
   k: int,
   a: typing.List[int],
 ) -> typing.NoReturn:
-  inf = 1 << 30 
+  inf = 1 << 30
 
   m = n.bit_length()
   mx_i = [0] * (1 << m)
@@ -28,15 +28,15 @@ def solve(
       if x >> l & 1: continue
       nx = x | (1 << l)
       i = max(
-        mx_j[x], 
+        mx_j[x],
         mx_i[nx],
       )
       j = mx_j[nx]
       if i > j: i, j = j, i
       mx_i[nx], mx_j[nx] = i, j
       print(mx_i, mx_j, l)
-  
-  mx = -inf 
+
+  mx = -inf
   for x in range(1 << m):
     if mx_i[x] == 0: continue
     mx = max(
@@ -44,7 +44,7 @@ def solve(
       mx_i[x] * mx_j[x] - k * x
     )
   print(mx)
-      
+
 
 
 def main() -> typing.NoReturn:

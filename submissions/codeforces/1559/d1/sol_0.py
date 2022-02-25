@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 
@@ -8,17 +8,17 @@ class UnionFind():
     n: int,
   ) -> typing.NoReturn:
     self.__a = [-1] * n
-  
+
 
   def find(
     self,
     u: int,
   ) -> int:
-    a = self.__a 
+    a = self.__a
     if a[u] < 0: return u
     a[u] = self.find(a[u])
     return a[u]
-  
+
 
   def unite(
     self,
@@ -27,13 +27,13 @@ class UnionFind():
   ) -> typing.NoReturn:
     u = self.find(u)
     v = self.find(v)
-    if u == v: return 
-    a = self.__a 
+    if u == v: return
+    a = self.__a
     if a[u] > a[v]: u, v = v, u
     a[u] += a[v]
     a[v] = u
-  
-  
+
+
   def same(
     self,
     u: int,
@@ -53,7 +53,7 @@ def solve(
     uf1.unite(u, v)
   for u, v in uv2:
     uf2.unite(u, v)
-  
+
 
   res = []
   for i in range(n - 1):

@@ -1,4 +1,4 @@
-    import typing 
+    import typing
 
 
     def solve() -> typing.NoReturn:
@@ -8,7 +8,7 @@
 
         def possible(x: int) -> bool:
             ok = [False] * n
-            ok2 = False  
+            ok2 = False
             for i in range(m):
                 cnt = 0
                 for j in range(n):

@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 def main() -> typing.NoReturn:
     t = int(input())
@@ -13,7 +13,7 @@ def main() -> typing.NoReturn:
                 b[x] += 1
             else:
                 c[min((x + 1) // 2 - 1, n)] += 1
-        cnt = 0 
+        cnt = 0
         for i in range(n, 0, -1):
             if b[i] >= 1:
                 c[(i + 1) // 2 - 1] += b[i] - 1
@@ -29,7 +29,3 @@ def main() -> typing.NoReturn:
             print(cnt)
 
 main()
-            
-            
-                
-            

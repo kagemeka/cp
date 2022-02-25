@@ -13,10 +13,10 @@ def solve(
     g[x] = i
   b -= 1
   diff = g[b[:-1]] != g[b[1:]]
-  
+
   print(
     np.count_nonzero(diff) + 1
-  ) 
+  )
 
 
 def main() -> typing.NoReturn:

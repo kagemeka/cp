@@ -2,10 +2,10 @@
 
 
 
-# summary 
+# summary
 - k is small. so there must be something revolging it.
 - let f(i, j) = i * j - k * (a[i] | a[j])
-- i * j = O(n^2) and k * (a[i] | a[j]) = O(nk), that means f(i, j) must be larger for bigger i, j. 
+- i * j = O(n^2) and k * (a[i] | a[j]) = O(nk), that means f(i, j) must be larger for bigger i, j.
 - think about theoretical values
   - what is the `smallest i` which can contribute to the result (f(i, j): i < j)?
   - at first, think about smallest i when we `fix j`
@@ -23,7 +23,7 @@
   - then, if f(i, n) > f(n - 1, n) -> i > n - 2k - 1.
   - so if i < n - 2k, that won't generate a value greater than theoritical minimum value of f(n - 1, n).
     - in other words, `if we take f(i, j): i < n - 2k, instead we can take f(n - 1, n)` because i < n - 2k.
-    - be careful of `f(i, n) > f(n - 1, n)` -> `i > n - 2k - 1`, but not `n - 2k - 1` -> `f(i, n) > f(n - 1, n)` 
+    - be careful of `f(i, n) > f(n - 1, n)` -> `i > n - 2k - 1`, but not `n - 2k - 1` -> `f(i, n) > f(n - 1, n)`
 - This indices us that we just have to check the paris f(i, j) such that  i, j >= n - 2k -> O(k^2)
 which is the heaviest pair.
 
@@ -40,7 +40,7 @@ which is the heaviest pair.
 
 ## sol_0
 - brute force
-- O(tk^2), O(6 * 10^7)      
+- O(tk^2), O(6 * 10^7)
 - pypy.
 
 
@@ -48,7 +48,7 @@ which is the heaviest pair.
 ## sol_1
 - fast zeta-transform (O(4^N) -> O(N2^N)) (where use N in place of log(N))
 - log(N) dimentional zeta-transform
-- DP 
+- DP
 - bitDP
 - dp_j[x] = j such that i * j is max under that condition a[i] | a[j] <= x.
 - dp_i[x] = i such that i * j is max under that condition a[i] | a[j] <= x.

@@ -1,4 +1,4 @@
-import typing 
+import typing
 from typing import List
 
 
@@ -12,9 +12,7 @@ def gcd(
 
 class Solution:
   def findGCD(
-    self, 
+    self,
     nums: List[int],
   ) -> int:
     return gcd(max(nums), min(nums))
-
-        

@@ -4,11 +4,11 @@
 # [Biweekly 57](https://leetcode.com/contest/biweekly-contest-57/)
 
 
-# keywords 
+# keywords
 
 
 ## sol_0
-- longest decreasing sequence 
+- longest decreasing sequence
 - binary search
 - partially init dp
 

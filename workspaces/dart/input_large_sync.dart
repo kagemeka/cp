@@ -14,10 +14,8 @@ void main()  {
 
 class ReadStdinSync {
   int a = 1;
-  
+
   String call() {
     return '';
   }
 }
-
-

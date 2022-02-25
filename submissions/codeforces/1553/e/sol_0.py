@@ -4,7 +4,7 @@ def main():
   t = int(input())
   for _ in range(t):
     n, m = map(
-      int, 
+      int,
       input().split(),
     )
     *p, = map(

@@ -5,19 +5,15 @@
 
 
 # keywords
-- sort 
-- large string 
+- sort
+- large string
 - padding '0'
 - implement comparator
-- greedy 
+- greedy
 
 
 # summary
 - pad '0' to each string and make all the lengths same.
-- or implement sorting comparator 
-  - first, sort by length 
+- or implement sorting comparator
+  - first, sort by length
   - second, sort lexicographically
-
-
-
-

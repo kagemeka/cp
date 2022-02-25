@@ -1,14 +1,14 @@
-import typing 
+import typing
 
 
 def solve(
   n: int,
   a: typing.List[int],
 ) -> typing.NoReturn:
-  mx = 0 
+  mx = 0
   for i in range(n - 1):
     mx = max(
-      mx, 
+      mx,
       a[i] * a[i + 1],
     )
   print(mx)

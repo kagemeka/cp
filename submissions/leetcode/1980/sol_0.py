@@ -1,4 +1,4 @@
-import typing 
+import typing
 from typing import List
 import itertools
 
@@ -13,5 +13,4 @@ class Solution:
       for c in itertools.product('01', repeat=n)
     )
     cands -= set(nums)
-    return cands.pop() 
-        
+    return cands.pop()

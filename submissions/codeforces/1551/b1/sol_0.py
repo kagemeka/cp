@@ -11,7 +11,7 @@ def main():
     c = Counter(c.values())
     for x in range(3, 51):
       c[2] += c[x]
-    c[2] += c[1] // 2 
+    c[2] += c[1] // 2
     print(c[2])
 
 

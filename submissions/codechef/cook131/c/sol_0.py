@@ -1,4 +1,4 @@
-import typing 
+import typing
 from collections import (
   Counter,
 )
@@ -12,7 +12,7 @@ def solve(
   for k, v in c.items():
     s += min(v, k - 1)
   print(s)
-  
+
 
 def main() -> typing.NoReturn:
   t = int(input())

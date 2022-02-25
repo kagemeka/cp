@@ -5,11 +5,10 @@ from collections import (
 
 class Solution:
   def areOccurrencesEqual(
-    self, 
+    self,
     s: str,
   ) -> bool:
     c = Counter(s)
     return len(
       set(c.values())
     ) == 1
-        

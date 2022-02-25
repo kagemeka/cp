@@ -2,7 +2,7 @@ import typing
 
 class Solution:
   def maxPoints(
-    self, 
+    self,
     points: typing.List[
       typing.List[int],
     ],
@@ -13,7 +13,7 @@ class Solution:
 
 class Solve():
   def __call__(
-    self, 
+    self,
     points: typing.List[
       typing.List[int],
     ],
@@ -29,7 +29,7 @@ class Solve():
       for j in range(m):
         mx = max(mx - 1, b[j])
         lmx[j] = mx
-      mx = 0 
+      mx = 0
       for j in range(
         m - 1, -1, -1,
       ):
@@ -40,6 +40,3 @@ class Solve():
           lmx[j], rmx[j],
         )
     return max(a[-1])
-
-      
-       

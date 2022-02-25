@@ -1,4 +1,4 @@
-import typing 
+import typing
 
 
 def solve(
@@ -11,13 +11,13 @@ def solve(
     ri, rj = n - i, m - j
     if ri < rj:
       print('NO')
-      return 
+      return
     if (ri - rj) & 1: continue
     if j == m:
       print('YES')
-      return 
+      return
     if s[i] == t[j]: j += 1
-    
+
 
 def main():
   q = int(input())

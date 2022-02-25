@@ -24,14 +24,14 @@ def solve(
     if d == 0: return ok
     ok |= dfs(i + 1, j + 1, 1)
     return ok
-  
+
   for i in range(len(s)):
     ok = dfs(i, 0, 1)
     if ok: print('YES'); break
   else:
     print('NO')
-    
-  
+
+
 
 def main() -> typing.NoReturn:
   q = int(input())
