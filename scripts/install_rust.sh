@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ENV RUST_BACKTRACE=full
 apt update
 apt install -y curl
