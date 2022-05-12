@@ -1,31 +1,8 @@
-#include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include <functional>
 #include <iostream>
-#include <numeric>
-#include <optional>
 #include <type_traits>
 #include <vector>
-
-// return pair(g: gcd(mod, n), x: inverse(n / g) \mod (mod / g))
-std::pair<int64_t, std::optional<int64_t>> extgcd_modinv(int64_t mod, int64_t n) {
-  assert(mod > 1 && 0 <= n && n < mod);
-  if (n == 0) return {mod, std::nullopt};
-  auto a = n, b = mod;
-  int64_t x00 = 1, x01 = 0;
-  while (b) {
-    auto q = a / b, r = a % b;
-    x00 -= q * x01;
-    std::swap(x00, x01);
-    a = b;
-    b = r;
-  }
-  auto gcd = a;
-  if (x00 < 0) x00 += mod / gcd;
-  assert(0 <= x00 && x00 < mod / gcd);
-  return {gcd, x00};
-}
 
 template <uint32_t v, std::enable_if_t<2 <= v>* = nullptr> struct static_mod {
   static constexpr uint32_t get() { return value; }
@@ -57,7 +34,6 @@ public:
   const uint32_t& operator()() const { return value; }
   template <typename T> explicit operator T() const { return static_cast<T>(value); }
 
-  modular operator-() const { return modular(mod() - value); }
   modular& operator+=(const modular& rhs) {
     uint64_t v = (uint64_t)value + rhs.value;
     if (v >= mod()) v -= mod();
@@ -82,29 +58,21 @@ public:
     *this -= 1;
     return res;
   }
+  modular operator-() const { return modular(mod() - value); }
   modular& operator*=(const modular& rhs) {
     value = (uint64_t)value * rhs.value % mod();
     return *this;
   }
-
-  std::optional<modular> mul_inv() const {
-    auto [g, inv] = extgcd_modinv(mod(), value);
-    if (g != 1) return std::nullopt;
-    return inv;
-  }
-
-  modular& operator/=(const modular& rhs) {
-    if (auto inv = rhs.mul_inv()) {
-      return *this *= *inv;
-    } else {
-      throw;
-    }
-  }
+  // TODO: enable inverse() method and division operator if mod() is prime.
+  // Modular inverse() const { return pow(*this, mod() - 2); }
+  //   Modular &operator/=(const Modular &rhs) {
+  //     *this *= rhs.inverse();
+  //     return *this;
+  //   }
 
   friend modular operator+(const modular& lhs, const modular& rhs) { return modular(lhs) += rhs; }
   friend modular operator-(const modular& lhs, const modular& rhs) { return modular(lhs) -= rhs; }
   friend modular operator*(const modular& lhs, const modular& rhs) { return modular(lhs) *= rhs; }
-  friend modular operator/(const modular& lhs, const modular& rhs) { return modular(lhs) /= rhs; }
   friend bool operator==(const modular& lhs, const modular& rhs) { return lhs.value == rhs.value; }
   friend bool operator!=(const modular& lhs, const modular& rhs) { return lhs.value != rhs.value; }
 
@@ -150,66 +118,11 @@ template <typename S, typename G> S pow_group(const S& s, int64_t n) {
   return n >= 0 ? pow_monoid<S, G>(s, n) : pow_monoid<S, G>(G::invert(s), -n);
 }
 
-template <typename S, S (*op)(S, S)> std::vector<S> accumulate(std::vector<S> v) {
-  for (int i = 0; i < (int)v.size(); ++i) {
-    v[i + 1] = op(v[i], v[i + 1]);
-  }
-  return v;
-}
+using mint = mint1000000007;
 
-template <typename T> T mul(T a, T b) { return a * b; }
-
-template <typename S> std::vector<S> factorial_table(unsigned long int size) {
-  assert(size > 0);
-  std::vector<S> v(size);
-  std::iota(v.begin(), v.end(), 0);
-  v[0] = 1;
-  return accumulate<S, mul<S>>(v);
-}
-
-template <typename S> std::vector<S> inverse_factorial_table(unsigned long int size) {
-  std::vector<S> v(size);
-  std::iota(v.begin(), v.end(), 1);
-  v[size - 1] = 1 / factorial_table<S>(size)[size - 1];
-  reverse(v.begin(), v.end());
-  v = accumulate<S, mul<S>>(v);
-  reverse(v.begin(), v.end());
-  return v;
-}
-
-template <typename S> class combination {
-  std::vector<S> fact, inv_fact;
-
-public:
-  combination(unsigned long int size) {
-    fact = factorial_table<S>(size);
-    inv_fact = inverse_factorial_table<S>(size);
-  }
-  S operator()(unsigned long int n, unsigned long int k) {
-    if (n < k) return 0;
-    return fact[n] * inv_fact[k] * inv_fact[n - k];
-  }
-
-  S inverse(unsigned long int n, unsigned long int k) {
-    if (n < k) return 0;
-    return inv_fact[n] * fact[k] * fact[n - k];
-  }
-};
-
-template <typename S> class homogeneous_product {
-  combination<S> choose;
-
-public:
-  homogeneous_product(unsigned long int size) : choose(size) {}
-  S operator()(unsigned long int n, unsigned long int k) {
-    return n == 0 ? 0 : choose(n + k - 1, k);
-  }
-};
-
-template <typename mint> struct mod_mul {
+struct mod_mul {
   static mint operate(const mint& a, const mint& b) { return a * b; }
   static mint identity() { return 1; }
-  static mint invert(const mint& a) { return 1 / a; }
 };
 
 int main() {
@@ -217,42 +130,38 @@ int main() {
   std::cin.tie(nullptr);
   using namespace std;
 
-  using mint = mint1000000007;
-  auto pow = pow_monoid<mint, mod_mul<mint>>;
-
-  // for each i, i is independent from j (j != i)
-  // for each sum s, how many patterns there exist such that sum(a) = s.
-  // a_i <= 10^4, n <= 10 -> dp.
-  // use comulative sum to make fast.
-  // O(n^2\max(a))
-  // dp[i] might overflow,
-  // -> fermat little theorem
-  // pow(i, p - 1) = 1 (mod p)
-
-  int K = 1 << 17;
-  vector<long long> dp(K, 0);
-  dp[0] = 1;
   int n;
   cin >> n;
-  constexpr long long p = 1000000007;
-  auto get = [&](int i) { return i < 0 ? 0 : dp[i]; };
+
+  const int K = 1 << 17;
+
+  vector<int> count(K);
   for (int i = 0; i < n; i++) {
-    for (int j = 0; j < K - 1; ++j) {
-      dp[j + 1] += dp[j];
-      dp[j + 1] %= p - 1;
-      if (dp[j + 1] < 0) dp[j + 1] += p - 1;
-    }
     int a;
     cin >> a;
-    for (int j = K - 1; j > -1; j--) {
-      dp[j] = get(j - 1) - get(j - a - 1);
-      dp[j] %= p - 1;
-      if (dp[j] < 0) dp[j] += p - 1;
+    ++count[a];
+  }
+
+  // harmonic series
+  for (int i = 1; i < K; i++) {
+    for (int j = i * 2; j < K; j += i) {
+      count[i] += count[j];
     }
   }
-  mint tot = 1;
+  vector<mint> res(K);
   for (int i = 0; i < K; i++) {
-    tot *= pow(i, dp[i]);
+    res[i] = pow_monoid<mint, mod_mul>(2, count[i]) - 1;
   }
-  cout << tot << endl;
+  // mobius transform
+  for (int i = K - 1; i > 0; i--) {
+    for (int j = i * 2; j < K; j += i) {
+      res[i] -= res[j];
+    }
+  }
+
+  mint tot = 0;
+  for (int i = 0; i < K; i++) {
+    tot += res[i] * i;
+  }
+  cout << tot << '\n';
 }

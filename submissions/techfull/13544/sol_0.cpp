@@ -218,41 +218,33 @@ int main() {
   using namespace std;
 
   using mint = mint1000000007;
+  homogeneous_product<mint> hom(1 << 18);
+
+  int n, k;
+  string s;
+  cin >> n >> k >> s;
+
+  int borders = 0;
+  for (int i = 0; i < n - 1; ++i) {
+    borders += s[i] != s[i + 1];
+  }
+  if (borders > k) {
+    cout << 0 << endl;
+    return 0;
+  }
+
   auto pow = pow_monoid<mint, mod_mul<mint>>;
 
-  // for each i, i is independent from j (j != i)
-  // for each sum s, how many patterns there exist such that sum(a) = s.
-  // a_i <= 10^4, n <= 10 -> dp.
-  // use comulative sum to make fast.
-  // O(n^2\max(a))
-  // dp[i] might overflow,
-  // -> fermat little theorem
-  // pow(i, p - 1) = 1 (mod p)
+  if (borders == 0) {
+    cout << pow(26, k) << endl;
+    return 0;
+  }
 
-  int K = 1 << 17;
-  vector<long long> dp(K, 0);
-  dp[0] = 1;
-  int n;
-  cin >> n;
-  constexpr long long p = 1000000007;
-  auto get = [&](int i) { return i < 0 ? 0 : dp[i]; };
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < K - 1; ++j) {
-      dp[j + 1] += dp[j];
-      dp[j + 1] %= p - 1;
-      if (dp[j + 1] < 0) dp[j + 1] += p - 1;
-    }
-    int a;
-    cin >> a;
-    for (int j = K - 1; j > -1; j--) {
-      dp[j] = get(j - 1) - get(j - a - 1);
-      dp[j] %= p - 1;
-      if (dp[j] < 0) dp[j] += p - 1;
-    }
+  k -= borders;
+  mint tot = 0;
+  for (int i = 0; i <= k; i++) {
+    tot += pow(26, i) * pow(25, k - i) * hom(borders, k - i);
   }
-  mint tot = 1;
-  for (int i = 0; i < K; i++) {
-    tot *= pow(i, dp[i]);
-  }
+
   cout << tot << endl;
 }
