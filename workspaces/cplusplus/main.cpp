@@ -5,6 +5,7 @@
 #include <iostream>
 #include <numeric>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -212,47 +213,87 @@ template <typename mint> struct mod_mul {
   static mint invert(const mint& a) { return 1 / a; }
 };
 
+template <typename T> std::vector<std::vector<T>> pascal_triangle(unsigned long int size) {
+  std::vector<std::vector<T>> p(size, std::vector<T>(size, 0));
+  for (unsigned long int i = 0; i < size; ++i) p[i][0] = 1;
+  for (unsigned long int i = 1; i < size; ++i) {
+    for (unsigned long int j = 1; j < size; ++j) {
+      p[i][j] = p[i - 1][j - 1] + p[i - 1][j];
+    }
+  }
+  return p;
+}
+
+template <typename T> class cached_pascal_triangle {
+  std::unordered_map<unsigned long long int, T> cache;
+
+public:
+  cached_pascal_triangle() {}
+
+  T operator()(unsigned long int n, unsigned long int k) {
+    if (n < k) return 0;
+    if (k == 0) return 1;
+    unsigned long long int key = (unsigned long long int)n << 32 | k;
+    if (cache.count(key) == 0) {
+      cache[key] = (*this)(n - 1, k - 1) + (*this)(n - 1, k);
+    }
+    return cache[key];
+  }
+};
+
+template <typename T>
+std::vector<std::vector<T>> floyd_warshall(const std::vector<std::vector<T>>& min_edge_matrix) {
+  auto dist = min_edge_matrix;
+  unsigned long int n = dist.size();
+  for (unsigned long int i = 0; i < n; ++i) assert(dist[i].size() == n);
+  for (unsigned long int i = 0; i < n; ++i) {
+    dist[i][i] = std::min(dist[i][i], 0);
+  }
+  for (unsigned long int k = 0; k < n; ++k) {
+    for (unsigned long int i = 0; i < n; ++i) {
+      for (unsigned long int j = 0; j < n; ++j) {
+        dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+      }
+    }
+  }
+  for (unsigned long int i = 0; i < n; ++i) {
+    if (dist[i][i] < 0) {
+      throw std::logic_error("negative cycle found.");
+    }
+  }
+  return dist;
+}
+
 int main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   using namespace std;
 
-  using mint = mint1000000007;
-  auto pow = pow_monoid<mint, mod_mul<mint>>;
+  int n, m;
+  cin >> n >> m;
 
-  // for each i, i is independent from j (j != i)
-  // for each sum s, how many patterns there exist such that sum(a) = s.
-  // a_i <= 10^4, n <= 10 -> dp.
-  // use comulative sum to make fast.
-  // O(n^2\max(a))
-  // dp[i] might overflow,
-  // -> fermat little theorem
-  // pow(i, p - 1) = 1 (mod p)
-
-  int K = 1 << 17;
-  vector<long long> dp(K, 0);
-  dp[0] = 1;
-  int n;
-  cin >> n;
-  constexpr long long p = 1000000007;
-  auto get = [&](int i) { return i < 0 ? 0 : dp[i]; };
+  constexpr int inf = 1 << 29;
+  vector<vector<int>> dist(n, vector<int>(n, inf));
+  for (int i = 0; i < m; ++i) {
+    int a, b, t;
+    cin >> a >> b >> t;
+    --a;
+    --b;
+    dist[a][b] = t;
+    dist[b][a] = t;
+  }
   for (int i = 0; i < n; i++) {
-    for (int j = 0; j < K - 1; ++j) {
-      dp[j + 1] += dp[j];
-      dp[j + 1] %= p - 1;
-      if (dp[j + 1] < 0) dp[j + 1] += p - 1;
-    }
-    int a;
-    cin >> a;
-    for (int j = K - 1; j > -1; j--) {
-      dp[j] = get(j - 1) - get(j - a - 1);
-      dp[j] %= p - 1;
-      if (dp[j] < 0) dp[j] += p - 1;
+    for (int j = 0; j < n; j++) {
+      assert(dist[i][j] >= 0);
     }
   }
-  mint tot = 1;
-  for (int i = 0; i < K; i++) {
-    tot *= pow(i, dp[i]);
+
+  dist = floyd_warshall(dist);
+
+  int mn = inf;
+
+  for (int i = 0; i < n; ++i) {
+    mn = min(mn, *max_element(dist[i].begin(), dist[i].end()));
   }
-  cout << tot << endl;
+  cout << mn << endl;
 }
