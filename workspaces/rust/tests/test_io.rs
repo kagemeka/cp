@@ -16,7 +16,8 @@ impl Scanner {
             }
             let mut input = String::new();
             stdin().read_line(&mut input).expect("Failed read");
-            self.buffer = input.split_whitespace().rev().map(String::from).collect();
+            self.buffer =
+                input.split_whitespace().rev().map(String::from).collect();
         }
     }
 }

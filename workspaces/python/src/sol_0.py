@@ -1,45 +1,63 @@
 def main() -> None:
-    # for each pair of cells, how many times the pair would be choosed?
-    # compute pairs altogether by their distance.
-    # (n * m) choose (k - 2) \sum_d{count_pairs(d) * d}
+    n, m = map(int, input().split())
 
-    # inclusion exclusion principle
-    n, m, k = map(int, input().split())
-
-    K = 1 << 18
-    fact = list(range(K))
-    fact[0] = 1
-    MOD = 10**9 + 7
-    for i in range(K - 1):
-        fact[i + 1] = fact[i] * fact[i + 1] % MOD
-
-    ifact = list(range(1, K + 1))
-    ifact[-1] = pow(fact[-1], -1, MOD)
-    for i in range(K - 1, 0, -1):
-        ifact[i - 1] = ifact[i - 1] * ifact[i] % MOD
-
-    def choose(n: int, k: int) -> int:
-        if not 0 <= k <= n:
-            return 0
-
-        return fact[n] * ifact[k] % MOD * ifact[n - k] % MOD
-
-    # i * min(d - i, n)
-    # \sum_i=1^{d-1} {min(i, n) * min(d - i, m)}
+    edges = [tuple(map(lambda x: int(x) - 1, input().split())) for _ in range(m)]
     
-    a = [min(i, n) * min(
-    tot = 0
-    for d in range(1, K):
-        count = 0
-        count += n * m * 4 * d
-        # nd = min(d, n)
-        # md = min(d, n)
-        count -= 2 * (min(d, n) * m + min(d, m) * n)
-        count -= 2 * 2 * (
-            (1 + min(d - 1, n)) * min(d - 1, n) // 2 * m
-            + (1 + min(d - 1, m)) * min(d - 1, m) // 2 * n
-        )
+
+    # T1
+
+    g = [[] for _ in range(n)]
+    for i in range(m):
+        u, v = edges[i]
+        g[u].append((v, i, 0)) # if not added, u must be ancestor of v
+        g[v].append((u, i, 1))
+
+    
+    on_stack = [False] * n
+    stack = [0]
+    on_stack[0] = True
+    added = [False] * m
+    # visited = [False] * n
+    added_to_stack = [False] * m
+    added_to_stack[0] = True
+    while stack:
+        u = stack.pop()
+        if u < 0:
+            on_stack[~u] = False
+            continue
+        # if visited[u]:
+        #     continue
+        # visited[u] = True
+        stack.append(~u)
+        for v, i, j in g[u]:
+            if not added_to_stack[v] and j == 1:
+                stack.append(v)
+                on_stack[v] = True
+                added_to_stack[v] = True
+                added[i] = True
+
+    print(added_to_stack)
+    rev_g = [[] for _ in range(n)]
+    for i in range(m):
+        u, v = edges[i]
+        rev_g[v].append((u, i))
+    que = [u for u in range(n) if added_to_stack[u]]
+    for u in que:
+        for v, i in rev_g[u]:
+            if added_to_stack[v]:
+                continue
+            added[i] = True
+            added_to_stack[v] = True
+            que.append(v)
+    print(added_to_stack)
+    print(added)
+
         
+    
+
+
+
+    # T2
 
 
 if __name__ == "__main__":
