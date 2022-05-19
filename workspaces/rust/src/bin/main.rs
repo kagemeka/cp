@@ -32,15 +32,18 @@ pub fn locked_stdin_buf_writer()
     std::io::BufWriter::new(stdout.lock())
 }
 
-/// old implementations are mathematically wrong,
-/// because if two Ids are same, comb(L, R, Codomain) are also gonna be same.
-/// but it's possible that comb(L, R, Codomain) are different
-/// even if Ids are same.
-/// however kept.
-/// because mathematically right implementations are still
-/// not supported on atcoder yet (this is bug for old Rust versions).
-pub trait BinaryOperation<Lhs, Rhs, Codomain, Id> {
-    fn map(lhs: Lhs, rhs: Rhs) -> Codomain;
+pub trait BinaryOperationId {}
+
+impl<T> BinaryOperationId for T {}
+
+pub trait BinaryOperation<Id>
+where
+    Id: BinaryOperationId,
+{
+    type Lhs;
+    type Rhs;
+    type Codomain;
+    fn map(l: Self::Lhs, r: Self::Rhs) -> Self::Codomain;
 }
 
 pub fn is_associative<F, X>(f: &F, first: X, second: X, third: X) -> bool
@@ -53,7 +56,12 @@ where
         third.clone(),
     ) == f(first, f(second, third))
 }
-pub trait AssociativeProperty<X, Id>: BinaryOperation<X, X, X, Id> {}
+
+pub trait AssociativeProperty<Id>
+where
+    Id: BinaryOperationId,
+{
+}
 
 pub fn is_idempotent<F, X>(f: &F, x: X) -> bool
 where
@@ -63,7 +71,11 @@ where
     f(x.clone(), x.clone()) == x
 }
 
-pub trait Idempotence<X, Id>: BinaryOperation<X, X, X, Id> {}
+pub trait Idempotence<Id>
+where
+    Id: BinaryOperationId,
+{
+}
 
 pub fn is_commutative<F, X, Y>(f: &F, a: X, b: X) -> bool
 where
@@ -74,7 +86,75 @@ where
     f(a.clone(), b.clone()) == f(b, a)
 }
 
-pub trait CommutativeProperty<X, Y, Id>: BinaryOperation<X, X, Y, Id> {}
+pub trait CommutativeProperty<Id>
+where
+    Id: BinaryOperationId,
+{
+}
+
+pub fn is_left_distributive<Add, Mul, X>(
+    add: &Add,
+    mul: &Mul,
+    x: X,
+    y: X,
+    z: X,
+) -> bool
+where
+    Add: Fn(X, X) -> X,
+    Mul: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    mul(
+        x.clone(),
+        add(y.clone(), z.clone()),
+    ) == add(mul(x.clone(), y), mul(x, z))
+}
+
+pub fn is_right_distributive<Add, Mul, X>(
+    add: &Add,
+    mul: &Mul,
+    y: X,
+    z: X,
+    x: X,
+) -> bool
+where
+    Add: Fn(X, X) -> X,
+    Mul: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    mul(
+        add(y.clone(), z.clone()),
+        x.clone(),
+    ) == add(mul(y, x.clone()), mul(z, x))
+}
+
+pub fn is_distributive<Add, Mul, X>(
+    add: &Add,
+    mul: &Mul,
+    x: X,
+    y: X,
+    z: X,
+) -> bool
+where
+    Add: Fn(X, X) -> X,
+    Mul: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    is_left_distributive(
+        add,
+        mul,
+        x.clone(),
+        y.clone(),
+        z.clone(),
+    ) && is_right_distributive(add, mul, y, z, x)
+}
+
+pub trait DistributiveProperty<Add, Mul>
+where
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+}
 
 pub fn is_left_identity<F, S>(f: &F, identity: S, x: S) -> bool
 where
@@ -101,8 +181,12 @@ where
         && is_right_identity(f, identity, x)
 }
 
-pub trait IdentityElement<X, Id> {
-    fn identity() -> X;
+pub trait IdentityElement<Id>
+where
+    Id: BinaryOperationId,
+{
+    type X;
+    fn identity() -> Self::X;
 }
 
 pub fn has_inverse<F, X>(f: &F, x: X) -> bool
@@ -113,81 +197,208 @@ where
     f(f(x.clone())) == x
 }
 
-pub trait InverseElement<X, Id> {
-    fn invert(element: X) -> X;
-}
-
-pub trait Magma<S, Id> {
-    fn operate(lhs: S, rhs: S) -> S;
-}
-
-impl<S, Id, T> Magma<S, Id> for T
+pub trait InverseElement<Id>
 where
-    T: BinaryOperation<S, S, S, Id>,
+    Id: BinaryOperationId,
 {
-    fn operate(lhs: S, rhs: S) -> S { T::map(lhs, rhs) }
+    type X;
+    fn invert(element: Self::X) -> Self::X;
 }
 
-pub trait Semigroup<S, Id>: Magma<S, Id> {}
-
-impl<S, Id, T> Semigroup<S, Id> for T where
-    T: Magma<S, Id> + AssociativeProperty<S, Id>
-{
-}
-
-pub trait Monoid<S, Id>: Semigroup<S, Id> {
-    fn identity() -> S;
-}
-
-impl<S, Id, T> Monoid<S, Id> for T
+pub trait Magma<Id>
 where
-    T: Semigroup<S, Id> + IdentityElement<S, Id>,
+    Id: BinaryOperationId,
 {
-    fn identity() -> S { T::identity() }
+    type S;
+    fn operate(l: Self::S, r: Self::S) -> Self::S;
 }
 
-pub trait CommutativeMonoid<S, Id>: Monoid<S, Id> {}
-
-impl<S, Id, T> CommutativeMonoid<S, Id> for T where
-    T: Monoid<S, Id> + CommutativeProperty<S, S, Id>
+impl<S, Id, T> Magma<Id> for T
+where
+    T: BinaryOperation<Id, Lhs = S, Rhs = S, Codomain = S>,
+    Id: BinaryOperationId,
 {
+    type S = S;
+
+    fn operate(l: Self::S, r: Self::S) -> Self::S { T::map(l, r) }
 }
 
-pub trait Group<S, Id>: Monoid<S, Id> {
-    fn invert(element: S) -> S;
-}
-
-impl<S, Id, T: Monoid<S, Id> + InverseElement<S, Id>> Group<S, Id> for T {
-    fn invert(element: S) -> S { T::invert(element) }
-}
-
-pub trait AbelianGroup<S, Id>: Group<S, Id> {}
-
-impl<S, Id, T> AbelianGroup<S, Id> for T where
-    T: Group<S, Id> + CommutativeProperty<S, S, Id>
+pub trait Semigroup<Id>: Magma<Id>
+where
+    Id: BinaryOperationId,
 {
 }
 
-pub trait Semiring<S, Add, Mul>:
-    CommutativeMonoid<S, Add> + Monoid<S, Mul>
+impl<Id, T> Semigroup<Id> for T
+where
+    T: Magma<Id> + AssociativeProperty<Id>,
+    Id: BinaryOperationId,
 {
 }
 
-// TODO: + distributive + zero-element.
-impl<S, Add, Mul, T> Semiring<S, Add, Mul> for T where
-    T: CommutativeMonoid<S, Add> + Monoid<S, Mul>
+pub trait Monoid<Id>: Semigroup<Id>
+where
+    Id: BinaryOperationId,
+{
+    fn identity() -> Self::S;
+}
+
+impl<Id, T> Monoid<Id> for T
+where
+    T: Semigroup<Id> + IdentityElement<Id, X = Self::S>,
+    Id: BinaryOperationId,
+{
+    fn identity() -> Self::S { T::identity() }
+}
+
+pub trait CommutativeMonoid<Id>: Monoid<Id>
+where
+    Id: BinaryOperationId,
 {
 }
 
-pub trait Ring<S, Add, Mul>:
-    CommutativeMonoid<S, Add> + Monoid<S, Mul>
+impl<Id, T> CommutativeMonoid<Id> for T
+where
+    T: Monoid<Id> + CommutativeProperty<Id>,
+    Id: BinaryOperationId,
 {
 }
 
-impl<S, Add, Mul, T> Ring<S, Add, Mul> for T where
-    T: CommutativeMonoid<S, Add> + Monoid<S, Mul>
+pub trait Group<Id>: Monoid<Id>
+where
+    Id: BinaryOperationId,
+{
+    fn invert(element: Self::S) -> Self::S;
+}
+
+impl<Id, T> Group<Id> for T
+where
+    T: Monoid<Id> + InverseElement<Id, X = Self::S>,
+    Id: BinaryOperationId,
+{
+    fn invert(element: Self::S) -> Self::S { T::invert(element) }
+}
+
+pub trait AbelianGroup<Id>: Group<Id>
+where
+    Id: BinaryOperationId,
 {
 }
+
+impl<Id, T> AbelianGroup<Id> for T
+where
+    T: Group<Id> + CommutativeProperty<Id>,
+    Id: BinaryOperationId,
+{
+}
+
+pub fn is_left_absorbing<F, X>(f: &F, element: X, x: X) -> bool
+where
+    F: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    f(element.clone(), x) == element
+}
+
+pub fn is_right_absorbing<F, X>(f: &F, element: X, x: X) -> bool
+where
+    F: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    f(x, element.clone()) == element
+}
+
+pub fn is_absorbing<F, X>(f: &F, element: X, x: X) -> bool
+where
+    F: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    is_left_absorbing(f, element.clone(), x.clone())
+        && is_right_absorbing(f, element, x)
+}
+
+pub trait AbsorbingElement<Id>
+where
+    Id: BinaryOperationId,
+{
+    type X;
+    fn absorbing_element() -> Self::X;
+}
+
+pub fn iz_zero<Mul, X>(mul: &Mul, add_identity: X, x: X) -> bool
+where
+    Mul: Fn(X, X) -> X,
+    X: Clone + PartialEq,
+{
+    is_absorbing(mul, add_identity, x)
+}
+
+pub trait ZeroElement<Add, Mul>
+where
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+}
+
+pub trait Semiring<Add, Mul>
+where
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+    type S;
+    fn add(l: Self::S, r: Self::S) -> Self::S;
+    fn mul(l: Self::S, r: Self::S) -> Self::S;
+    fn zero() -> Self::S;
+    fn one() -> Self::S;
+}
+
+impl<S, Add, Mul, T> Semiring<Add, Mul> for T
+where
+    T: CommutativeMonoid<Add, S = S>
+        + Monoid<Mul, S = S>
+        + DistributiveProperty<Add, Mul>
+        + ZeroElement<Add, Mul>,
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+    type S = S;
+
+    fn add(l: Self::S, r: Self::S) -> Self::S {
+        <T as Magma<Add>>::operate(l, r)
+    }
+
+    fn mul(l: Self::S, r: Self::S) -> Self::S {
+        <T as Magma<Mul>>::operate(l, r)
+    }
+
+    fn zero() -> Self::S { <T as Monoid<Add>>::identity() }
+
+    fn one() -> Self::S { <T as Monoid<Mul>>::identity() }
+}
+
+pub trait Ring<Add, Mul>: Semiring<Add, Mul>
+where
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+    fn add_inv(element: Self::S) -> Self::S;
+}
+
+impl<S, Add, Mul, T> Ring<Add, Mul> for T
+where
+    T: Semiring<Add, Mul, S = S>
+        + InverseElement<Add, X = S>,
+    Add: BinaryOperationId,
+    Mul: BinaryOperationId,
+{
+    fn add_inv(element: Self::S) -> Self::S {
+        <T as InverseElement<Add>>::invert(element)
+    }
+}
+
+pub trait AdditiveGroup: AbelianGroup<Additive> {}
+
+impl<T> AdditiveGroup for T where T: AbelianGroup<Additive> {}
 
 pub struct Additive;
 pub struct Multiplicative;
@@ -198,20 +409,23 @@ pub struct LCM;
 pub struct Min;
 pub struct Max;
 
-pub trait AdditiveGroup<S>: AbelianGroup<S, Additive> {}
-impl<S, T> AdditiveGroup<S> for T where T: AbelianGroup<S, Additive> {}
-
 pub trait MulInv {
     type Output;
     fn mul_inv(self) -> Self::Output;
 }
 
-impl BinaryOperation<Self, Self, Self, Min> for (usize, usize) {
+impl BinaryOperation<Min> for (usize, usize) {
+    type Codomain = Self;
+    type Lhs = Self;
+    type Rhs = Self;
+
     fn map(lhs: Self, rhs: Self) -> Self { std::cmp::min(lhs, rhs) }
 }
 
-impl AssociativeProperty<Self, Min> for (usize, usize) {}
-impl IdentityElement<Self, Min> for (usize, usize) {
+impl AssociativeProperty<Min> for (usize, usize) {}
+impl IdentityElement<Min> for (usize, usize) {
+    type X = Self;
+
     fn identity() -> Self {
         (
             std::usize::MAX,
@@ -220,19 +434,19 @@ impl IdentityElement<Self, Min> for (usize, usize) {
     }
 }
 
-impl CommutativeProperty<Self, Self, Min> for (usize, usize) {}
-impl Idempotence<Self, Min> for (usize, usize) {}
+impl CommutativeProperty<Min> for (usize, usize) {}
+impl Idempotence<Min> for (usize, usize) {}
 
-pub fn pow_semigroup_recurse<S, G, Id>(x: S, exponent: u64) -> S
+pub fn pow_semigroup_recurse<G, Id>(x: G::S, exponent: u64) -> G::S
 where
-    S: Clone,
-    G: Semigroup<S, Id>,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     assert!(exponent > 0);
     if exponent == 1 {
         return x;
     }
-    let mut y = pow_semigroup_recurse::<S, G, Id>(x.clone(), exponent >> 1);
+    let mut y = pow_semigroup_recurse::<G, Id>(x.clone(), exponent >> 1);
     y = G::operate(y.clone(), y);
     if exponent & 1 == 1 {
         y = G::operate(y, x);
@@ -240,10 +454,10 @@ where
     y
 }
 
-pub fn pow_semigroup<S, G, Id>(mut x: S, mut exponent: u64) -> S
+pub fn pow_semigroup<G, Id>(mut x: G::S, mut exponent: u64) -> G::S
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     assert!(exponent > 0);
     let mut y = x.clone();
@@ -258,59 +472,59 @@ where
     y
 }
 
-pub trait PowerSemigroup<Id>: Semigroup<Self, Id>
+pub trait PowerSemigroup<Id>: Semigroup<Id, S = Self>
 where
     Self: Clone,
 {
     fn pow_seimigroup(self, exponent: u64) -> Self {
-        pow_semigroup::<Self, Self, Id>(self, exponent)
+        pow_semigroup::<Self, Id>(self, exponent)
     }
 }
-impl<S, Id> PowerSemigroup<Id> for S where S: Semigroup<S, Id> + Clone {}
+impl<S, Id> PowerSemigroup<Id> for S where S: Semigroup<Id, S = S> + Clone {}
 
-pub fn pow_monoid<S, M, Id>(x: S, exponent: u64) -> S
+pub fn pow_monoid<M, Id>(x: M::S, exponent: u64) -> M::S
 where
-    S: Clone,
-    M: Monoid<S, Id>,
+    M::S: Clone,
+    M: Monoid<Id>,
 {
     if exponent == 0 {
         M::identity()
     } else {
-        pow_semigroup::<S, M, Id>(x, exponent)
+        pow_semigroup::<M, Id>(x, exponent)
     }
 }
 
-pub trait PowerMonoid<Id>: Monoid<Self, Id>
+pub trait PowerMonoid<Id>: Monoid<Id, S = Self>
 where
     Self: Clone,
 {
     fn pow_monoid(self, exponent: u64) -> Self {
-        pow_monoid::<Self, Self, Id>(self, exponent)
+        pow_monoid::<Self, Id>(self, exponent)
     }
 }
-impl<S, Id> PowerMonoid<Id> for S where S: Monoid<S, Id> + Clone {}
+impl<S, Id> PowerMonoid<Id> for S where S: Monoid<Id, S = Self> + Clone {}
 
-pub fn pow_group<S, G, Id>(x: S, exponent: i64) -> S
+pub fn pow_group<G, Id>(x: G::S, exponent: i64) -> G::S
 where
-    S: Clone,
-    G: Group<S, Id>,
+    G: Group<Id>,
+    G::S: Clone,
 {
     if exponent >= 0 {
-        pow_monoid::<S, G, Id>(x, exponent as u64)
+        pow_monoid::<G, Id>(x, exponent as u64)
     } else {
-        pow_monoid::<S, G, Id>(G::invert(x), -exponent as u64)
+        pow_monoid::<G, Id>(G::invert(x), -exponent as u64)
     }
 }
 
-pub trait PowerGroup<Id>: Group<Self, Id>
+pub trait PowerGroup<Id>: Group<Id, S = Self>
 where
     Self: Clone,
 {
     fn pow_group(self, exponent: i64) -> Self {
-        pow_group::<Self, Self, Id>(self, exponent)
+        pow_group::<Self, Id>(self, exponent)
     }
 }
-impl<S, Id> PowerGroup<Id> for S where S: Group<S, Id> + Clone {}
+impl<S, Id> PowerGroup<Id> for S where S: Group<Id, S = Self> + Clone {}
 
 pub fn floor_sqrt(n: u64) -> u64 {
     let mut lo = 0;
@@ -515,17 +729,21 @@ impl<M: Modulus> From<usize> for Modular<M> {
     fn from(value: usize) -> Self { Self::from(value as u64) }
 }
 
-impl<M: Modulus> BinaryOperation<Self, Self, Self, Multiplicative>
-    for Modular<M>
-{
+impl<M: Modulus> BinaryOperation<Multiplicative> for Modular<M> {
+    type Codomain = Self;
+    type Lhs = Self;
+    type Rhs = Self;
+
     fn map(lhs: Self, rhs: Self) -> Self { lhs * rhs }
 }
 
-impl<M: Modulus> IdentityElement<Self, Multiplicative> for Modular<M> {
+impl<M: Modulus> IdentityElement<Multiplicative> for Modular<M> {
+    type X = Self;
+
     fn identity() -> Self { 1.into() }
 }
 
-impl<M: Modulus> AssociativeProperty<Self, Multiplicative> for Modular<M> {}
+impl<M: Modulus> AssociativeProperty<Multiplicative> for Modular<M> {}
 
 impl<M: Modulus + Clone> Modular<M> {
     pub fn pow(self, exponent: u64) -> Self { self.pow_monoid(exponent) }
@@ -570,7 +788,8 @@ impl<I: DynamicModId> DynamicMod<I> {
     fn core() -> &'static std::sync::atomic::AtomicU32 {
         // cannot return &'static mut VALUE because it can be changed by
         // multiple threads.
-        // so we should return a reference of a type having interior mutability.
+        // so we should return a reference of a type having
+        // interior mutability.
         // cannot use std::cell for static value because it is not
         // `Sync`;
         // we should use std::sync types instead.
@@ -690,7 +909,8 @@ where
     }
 
     pub fn inv(&self, n: u64, k: u64) -> T {
-        assert!(k <= n); // (n, k) := 0 if k > n, so the inverse is undefined.
+        assert!(k <= n);
+        // (n, k) := 0 if k > n, so the inverse is undefined.
         let n = n as usize;
         let k = k as usize;
         self.inv_fact[n].clone()
@@ -1268,18 +1488,18 @@ impl<Q> LCAEulerTourRMQ<Q> {
 use std::iter::FromIterator;
 
 // TODO: use Monoid2 after language update on AtCoder
-pub struct SegmentTree<S, M, Id> {
-    phantom: std::marker::PhantomData<(Id, M)>,
+pub struct SegmentTree<M: Monoid<Id>, Id> {
+    // phantom: std::marker::PhantomData<(Id, M)>,
     size: usize,
-    data: Vec<S>,
+    data: Vec<M::S>,
 }
 
-impl<S, M, Id> std::iter::FromIterator<S> for SegmentTree<S, M, Id>
+impl<M, Id> std::iter::FromIterator<M::S> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = M::S>>(iter: T) -> Self {
         let mut data = iter.into_iter().collect::<Vec<_>>();
         let size = data.len();
         let n = size.next_power_of_two();
@@ -1289,7 +1509,7 @@ where
             .chain((0..n - size).map(|_| M::identity()))
             .collect::<Vec<_>>();
         let mut seg = Self {
-            phantom: std::marker::PhantomData,
+            // phantom: std::marker::PhantomData,
             size,
             data,
         };
@@ -1298,20 +1518,20 @@ where
     }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id> {
+impl<M: Monoid<Id>, Id> SegmentTree<M, Id> {
     pub fn size(&self) -> usize { self.size }
 
     pub(crate) fn n(&self) -> usize { self.data.len() >> 1 }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn new<F>(size: usize, default: F) -> Self
     where
-        F: Fn() -> S,
+        F: Fn() -> M::S,
     {
         Self::from_iter((0..size).map(|_| default()))
     }
@@ -1323,7 +1543,7 @@ where
         );
     }
 
-    pub fn set(&mut self, mut i: usize, x: S) {
+    pub fn set(&mut self, mut i: usize, x: M::S) {
         assert!(i < self.size);
         i += self.n();
         self.data[i] = x;
@@ -1333,7 +1553,7 @@ where
         }
     }
 
-    pub fn reduce(&self, mut l: usize, mut r: usize) -> S {
+    pub fn reduce(&self, mut l: usize, mut r: usize) -> M::S {
         assert!(l < r && r <= self.size);
         let n = self.n();
         l += n;
@@ -1356,19 +1576,19 @@ where
     }
 }
 
-impl<S, M, Id> From<&[S]> for SegmentTree<S, M, Id>
+impl<M, Id> From<&[M::S]> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn from(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
+    fn from(slice: &[M::S]) -> Self { Self::from_iter(slice.iter().cloned()) }
 }
 
-impl<S, M, Id> std::ops::Index<usize> for SegmentTree<S, M, Id>
+impl<M, Id> std::ops::Index<usize> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
+    M: Monoid<Id>,
 {
-    type Output = S;
+    type Output = M::S;
 
     fn index(&self, i: usize) -> &Self::Output {
         assert!(i < self.size());
@@ -1376,14 +1596,14 @@ where
     }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn max_right<F>(&self, is_ok: &F, l: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(l <= self.size);
         if l == self.size {
@@ -1421,7 +1641,7 @@ where
 
     pub fn min_left<F>(&self, is_ok: &F, r: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(r <= self.size);
         if r == 0 {
@@ -1462,12 +1682,12 @@ where
     }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    pub fn reduce_recurse(&self, l: usize, r: usize) -> S {
+    pub fn reduce_recurse(&self, l: usize, r: usize) -> M::S {
         assert!(l <= r && r <= self.size);
         self._reduce_recurse(l, r, 0, self.n(), 1)
     }
@@ -1479,7 +1699,7 @@ where
         cur_l: usize,
         cur_r: usize,
         i: usize,
-    ) -> S {
+    ) -> M::S {
         if cur_r <= l || r <= cur_l {
             return M::identity();
         }
@@ -1494,14 +1714,14 @@ where
     }
 }
 
-impl<S, M, Id> SegmentTree<S, M, Id>
+impl<M, Id> SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
     pub fn max_right_recurse<F>(&self, is_ok: &F, l: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(l <= self.size);
         self._max_right_recurse(
@@ -1523,11 +1743,11 @@ where
         l: usize,
         cur_l: usize,
         cur_r: usize,
-        v: &mut S,
+        v: &mut M::S,
         i: usize,
     ) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         if cur_r <= l {
             return l;
@@ -1560,7 +1780,7 @@ where
 
     pub fn min_left_recurse<F>(&self, is_ok: &F, r: usize) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         assert!(r <= self.size);
         self._min_left_recurse(
@@ -1579,11 +1799,11 @@ where
         r: usize,
         cur_l: usize,
         cur_r: usize,
-        v: &mut S,
+        v: &mut M::S,
         i: usize,
     ) -> usize
     where
-        F: Fn(&S) -> bool,
+        F: Fn(&M::S) -> bool,
     {
         if cur_l >= r {
             return r;
@@ -1612,30 +1832,29 @@ where
     }
 }
 
-impl<S, M, Id> RangeGetQuery<S, Id> for SegmentTree<S, M, Id>
+impl<M, Id> RangeGetQuery<M::S, Id> for SegmentTree<M, Id>
 where
-    M: Monoid<S, Id>,
-    S: Clone,
+    M: Monoid<Id>,
+    M::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> M::S { self.reduce(l, r) }
 }
 
 #[allow(dead_code)]
-type LCAEulerTourRMQSegTree =
-    LCAEulerTourRMQ<SegmentTree<(usize, usize), (usize, usize), Min>>;
+type LCAEulerTourRMQSegTree = LCAEulerTourRMQ<SegmentTree<(usize, usize), Min>>;
 
 // TODO: use Semigroup2 after language update on AtCoder
-pub struct SparseTable<S, G, Id> {
-    phantom: std::marker::PhantomData<(G, Id)>,
-    data: Vec<Vec<S>>,
+pub struct SparseTable<G: Semigroup<Id>, Id> {
+    // phantom: std::marker::PhantomData<(G, Id)>,
+    data: Vec<Vec<G::S>>,
 }
 
-impl<S, G, Id> std::iter::FromIterator<S> for SparseTable<S, G, Id>
+impl<G, Id> std::iter::FromIterator<G::S> for SparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + Idempotence<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = G::S>>(iter: T) -> Self {
         let mut data = vec![iter.into_iter().collect::<Vec<_>>()];
         let max_width = data[0].len();
         let height = if max_width <= 1 {
@@ -1659,22 +1878,24 @@ where
             );
         }
         Self {
-            phantom: std::marker::PhantomData,
+            // phantom: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<S, G, Id> SparseTable<S, G, Id>
+impl<G, Id> SparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + Idempotence<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
+    pub fn new(slice: &[G::S]) -> Self {
+        Self::from_iter(slice.iter().cloned())
+    }
 
     pub fn size(&self) -> usize { self.data[0].len() }
 
-    pub fn reduce(&self, l: usize, r: usize) -> S {
+    pub fn reduce(&self, l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         if r - l == 1 {
             return self.data[0][l].clone();
@@ -1687,30 +1908,30 @@ where
     }
 }
 
-impl<S, G, Id> RangeGetQuery<S, Id> for SparseTable<S, G, Id>
+impl<G, Id> RangeGetQuery<G::S, Id> for SparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + Idempotence<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + Idempotence<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S { self.reduce(l, r) }
 }
 
 #[allow(dead_code)]
 type LCAEulerTourRMQSparseTable =
-    LCAEulerTourRMQ<SparseTable<(usize, usize), (usize, usize), Min>>;
+    LCAEulerTourRMQ<SparseTable<(usize, usize), Min>>;
 
 // TODO: use Semigroup2 after language update on AtCoder
-pub struct DisjointSparseTable<S, G, Id> {
-    phantom: std::marker::PhantomData<(G, Id)>,
-    data: Vec<Vec<S>>,
+pub struct DisjointSparseTable<G: Semigroup<Id>, Id> {
+    // phantom: std::marker::PhantomData<(G, Id)>,
+    data: Vec<Vec<G::S>>,
 }
 
-impl<S, G, Id> std::iter::FromIterator<S> for DisjointSparseTable<S, G, Id>
+impl<G, Id> std::iter::FromIterator<G::S> for DisjointSparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = G::S>>(iter: T) -> Self {
         let mut data = vec![iter.into_iter().collect::<Vec<_>>()];
         let size = data[0].len();
         let height = if size <= 1 {
@@ -1742,23 +1963,25 @@ where
             data.push(row);
         }
         Self {
-            phantom: std::marker::PhantomData,
+            // phantom: std::marker::PhantomData,
             data,
         }
     }
 }
 
-impl<S, G, Id> DisjointSparseTable<S, G, Id>
+impl<G, Id> DisjointSparseTable<G, Id>
 where
-    G: Semigroup<S, Id> + CommutativeProperty<S, S, Id>,
-    S: Clone,
+    G: Semigroup<Id> + CommutativeProperty<Id>,
+    G::S: Clone,
 {
-    pub fn new(slice: &[S]) -> Self { Self::from_iter(slice.iter().cloned()) }
+    pub fn new(slice: &[G::S]) -> Self {
+        Self::from_iter(slice.iter().cloned())
+    }
 
     pub fn size(&self) -> usize { self.data[0].len() }
 
     /// [l, r)
-    pub fn reduce(&self, l: usize, mut r: usize) -> S {
+    pub fn reduce(&self, l: usize, mut r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         r -= 1; // internally, consider [l, r]
         if l == r {
@@ -1787,26 +2010,26 @@ where
     }
 }
 
-impl<S, G, I> RangeGetQuery<S, I> for DisjointSparseTable<S, G, I>
+impl<G, I> RangeGetQuery<G::S, I> for DisjointSparseTable<G, I>
 where
-    G: Semigroup<S, I> + CommutativeProperty<S, S, I>,
-    S: Clone,
+    G: Semigroup<I> + CommutativeProperty<I>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S { self.reduce(l, r) }
 }
 
 #[allow(dead_code)]
 type LCAEulerTourRMQDisjointSparseTable =
-    LCAEulerTourRMQ<DisjointSparseTable<(usize, usize), (usize, usize), Min>>;
+    LCAEulerTourRMQ<DisjointSparseTable<(usize, usize), Min>>;
 
 // TODO: use Semigroup2 after language update on AtCoder
-pub struct SqrtDecomposition<S, G, Id> {
-    phantom: std::marker::PhantomData<(G, Id)>,
-    pub(crate) data: Vec<S>,
-    pub(crate) buckets: Vec<S>,
+pub struct SqrtDecomposition<G: Semigroup<Id>, Id> {
+    // phantom: std::marker::PhantomData<(G, Id)>,
+    pub(crate) data: Vec<G::S>,
+    pub(crate) buckets: Vec<G::S>,
 }
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id> {
+impl<G: Semigroup<Id>, Id> SqrtDecomposition<G, Id> {
     pub fn size(&self) -> usize { self.data.len() }
 
     pub(crate) fn sqrt(&self) -> usize {
@@ -1815,12 +2038,12 @@ impl<S, G, Id> SqrtDecomposition<S, G, Id> {
     }
 }
 
-impl<S, G, Id> std::iter::FromIterator<S> for SqrtDecomposition<S, G, Id>
+impl<G, Id> std::iter::FromIterator<G::S> for SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
-    fn from_iter<T: IntoIterator<Item = S>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = G::S>>(iter: T) -> Self {
         let data = iter.into_iter().collect::<Vec<_>>();
         let size = data.len();
         let n = floor_sqrt(size as u64) as usize;
@@ -1844,17 +2067,17 @@ where
             })
             .collect();
         Self {
-            phantom: std::marker::PhantomData,
+            // phantom: std::marker::PhantomData,
             data,
             buckets,
         }
     }
 }
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id>
+impl<G, Id> SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     pub(crate) fn update(&mut self, bucket: usize) {
         let j = bucket;
@@ -1879,7 +2102,7 @@ where
 
     pub fn apply<F>(&mut self, i: usize, f: F)
     where
-        F: FnOnce(&S) -> S,
+        F: FnOnce(&G::S) -> G::S,
     {
         self.data[i] = f(&self.data[i]);
         self.update(i / self.sqrt());
@@ -1887,12 +2110,12 @@ where
 
     // TODO: move out from core implementation. (the core is apply method)
     /// set is defined as the application of 'replacement'
-    pub fn set(&mut self, i: usize, x: S) {
+    pub fn set(&mut self, i: usize, x: G::S) {
         self.apply(i, |_| x);
         self.update(i / self.sqrt());
     }
 
-    pub fn reduce(&self, l: usize, r: usize) -> S {
+    pub fn reduce(&self, l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         // just for early panic. it's not necessary to be checked here.
         let n = self.sqrt();
@@ -1944,13 +2167,13 @@ where
     }
 }
 
-impl<S, G, Id> SqrtDecomposition<S, G, Id>
+impl<G, Id> SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
     /// faster with constant time optimization.
-    pub fn fast_reduce(&self, mut l: usize, r: usize) -> S {
+    pub fn fast_reduce(&self, mut l: usize, r: usize) -> G::S {
         assert!(l < r && r <= self.size());
         let n = self.sqrt();
         let mut v = self.data[l].clone();
@@ -1976,17 +2199,19 @@ where
     }
 }
 
-impl<S, G, Id> RangeGetQuery<S, Id> for SqrtDecomposition<S, G, Id>
+impl<G, Id> RangeGetQuery<G::S, Id> for SqrtDecomposition<G, Id>
 where
-    G: Semigroup<S, Id>,
-    S: Clone,
+    G: Semigroup<Id>,
+    G::S: Clone,
 {
-    fn get_range(&mut self, l: usize, r: usize) -> S { self.fast_reduce(l, r) }
+    fn get_range(&mut self, l: usize, r: usize) -> G::S {
+        self.fast_reduce(l, r)
+    }
 }
 
 #[allow(dead_code)]
 type LCAEulerTourRMQSqrtDecomposition =
-    LCAEulerTourRMQ<SqrtDecomposition<(usize, usize), (usize, usize), Min>>;
+    LCAEulerTourRMQ<SqrtDecomposition<(usize, usize), Min>>;
 
 pub trait RangeGetQuery<S, Id> {
     fn get_range(&mut self, l: usize, r: usize) -> S;
@@ -2072,5 +2297,3 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 // TODO: tetoration mod
 // TODO: pow_mod
 // TODO: pow of pow mod. (x^{y^z} mod p)
-
-// TODO:
