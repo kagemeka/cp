@@ -11,7 +11,7 @@ def main() -> None:
     visited = [False] * n
     def dfs(u: int, length: int) -> None:
         ...
-    
+
 
 
 if __name__ == "__main__":

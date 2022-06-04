@@ -13,10 +13,10 @@ def main() -> None:
             return False
         if (yj - yi) * (xk - xj) == (yk - yj) * (xj - xi):
             return False
-        
-    
-        
-        
+
+
+
+
 
 
 if __name__ == "__main__":
