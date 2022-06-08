@@ -7,7 +7,7 @@ curl https://dlang.org/install.sh | bash -s
 
 # for activate dmd,
 # source ~/dlang/dmd-2.099.1/activate
-# update compiler version manually. 
+# update compiler version manually.
 # run `deactivate` for exit.
 # https://dlang.org/install.html#activate
 

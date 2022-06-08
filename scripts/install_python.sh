@@ -14,5 +14,5 @@
 # ln -fns /usr/bin/python$PYVER /usr/bin/python3
 # ln -fns /usr/bin/python3 /usr/bin/python
 
-apt update 
+apt update
 apt install -y python3-pip
