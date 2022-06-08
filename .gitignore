@@ -41,6 +41,9 @@ test_io
 target/
 Cargo.lock
 ![a-z]/
+/target/
+!/src/bin/
+!.gitkeep
 
 
 # python
