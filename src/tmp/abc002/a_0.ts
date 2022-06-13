@@ -33,7 +33,7 @@ class IO {
       s.trim().split(/ |\n/)
     );
   }
-  
+
 
   private *toGen(
     chunks: string[],
@@ -102,7 +102,7 @@ extends Solver {
 
 
   prepare(): void {
-    const io = this.io; 
+    const io = this.io;
   }
 
 
