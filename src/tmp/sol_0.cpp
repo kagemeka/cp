@@ -9,6 +9,39 @@
 #include <type_traits>
 #include <vector>
 
+namespace dsalgo {
+// alias of Rust types for frequently used types.
+using u8 = uint8_t;
+using u16 = uint16_t;
+using u32 = uint32_t;
+using u64 = uint64_t;
+using u128 = __uint128_t;
+using i8 = int8_t;
+using i16 = int16_t;
+using i32 = int32_t;
+using i64 = int64_t;
+using i128 = __int128_t;
+using usize = size_t;
+using isize = std::make_signed<std::size_t>::type;
+using f32 = float;
+using f64 = double;
+using f128 = __float128;
+
+template <typename T> using vec = std::vector<T>;
+
+} // namespace dsalgo
+
+namespace dsalgo {
+
+// iteration macros.
+#define range(i, lo, hi, step) for (int i = lo; i < hi; i += step)
+#define repeat(times) for (int _ = 0; _ < times; ++_)
+#define loop while (true)
+
+} // namespace dsalgo
+
+namespace dsalgo {
+
 // return pair(g: gcd(mod, n), x: inverse(n / g) \mod (mod / g))
 std::pair<int64_t, std::optional<int64_t>> extgcd_modinv(int64_t mod, int64_t n) {
   assert(mod > 1 && 0 <= n && n < mod);
@@ -160,7 +193,7 @@ template <typename S, S (*op)(S, S)> std::vector<S> accumulate(std::vector<S> v)
 
 template <typename T> T mul(T a, T b) { return a * b; }
 
-template <typename S> std::vector<S> factorial_table(unsigned long int size) {
+template <typename S> std::vector<S> factorial_table(usize size) {
   assert(size > 0);
   std::vector<S> v(size);
   std::iota(v.begin(), v.end(), 0);
@@ -168,7 +201,7 @@ template <typename S> std::vector<S> factorial_table(unsigned long int size) {
   return accumulate<S, mul<S>>(v);
 }
 
-template <typename S> std::vector<S> inverse_factorial_table(unsigned long int size) {
+template <typename S> std::vector<S> inverse_factorial_table(usize size) {
   std::vector<S> v(size);
   std::iota(v.begin(), v.end(), 1);
   v[size - 1] = 1 / factorial_table<S>(size)[size - 1];
@@ -182,16 +215,16 @@ template <typename S> class combination {
   std::vector<S> fact, inv_fact;
 
 public:
-  combination(unsigned long int size) {
+  combination(usize size) {
     fact = factorial_table<S>(size);
     inv_fact = inverse_factorial_table<S>(size);
   }
-  S operator()(unsigned long int n, unsigned long int k) {
+  S operator()(usize n, usize k) {
     if (n < k) return 0;
     return fact[n] * inv_fact[k] * inv_fact[n - k];
   }
 
-  S inverse(unsigned long int n, unsigned long int k) {
+  S inverse(usize n, usize k) {
     if (n < k) return 0;
     return inv_fact[n] * fact[k] * fact[n - k];
   }
@@ -201,10 +234,8 @@ template <typename S> class homogeneous_product {
   combination<S> choose;
 
 public:
-  homogeneous_product(unsigned long int size) : choose(size) {}
-  S operator()(unsigned long int n, unsigned long int k) {
-    return n == 0 ? 0 : choose(n + k - 1, k);
-  }
+  homogeneous_product(usize size) : choose(size) {}
+  S operator()(usize n, usize k) { return n == 0 ? 0 : choose(n + k - 1, k); }
 };
 
 template <typename mint> struct mod_mul {
@@ -213,11 +244,11 @@ template <typename mint> struct mod_mul {
   static mint invert(const mint& a) { return 1 / a; }
 };
 
-template <typename T> std::vector<std::vector<T>> pascal_triangle(unsigned long int size) {
+template <typename T> std::vector<std::vector<T>> pascal_triangle(usize size) {
   std::vector<std::vector<T>> p(size, std::vector<T>(size, 0));
-  for (unsigned long int i = 0; i < size; ++i) p[i][0] = 1;
-  for (unsigned long int i = 1; i < size; ++i) {
-    for (unsigned long int j = 1; j < size; ++j) {
+  for (usize i = 0; i < size; ++i) p[i][0] = 1;
+  for (usize i = 1; i < size; ++i) {
+    for (usize j = 1; j < size; ++j) {
       p[i][j] = p[i - 1][j - 1] + p[i - 1][j];
     }
   }
@@ -230,7 +261,7 @@ template <typename T> class cached_pascal_triangle {
 public:
   cached_pascal_triangle() {}
 
-  T operator()(unsigned long int n, unsigned long int k) {
+  T operator()(usize n, usize k) {
     if (n < k) return 0;
     if (k == 0) return 1;
     unsigned long long int key = (unsigned long long int)n << 32 | k;
@@ -241,59 +272,110 @@ public:
   }
 };
 
-template <typename T>
-std::vector<std::vector<T>> floyd_warshall(const std::vector<std::vector<T>>& min_edge_matrix) {
+template <typename T> vec<vec<T>> floyd_warshall(const vec<vec<T>>& min_edge_matrix) {
   auto dist = min_edge_matrix;
-  unsigned long int n = dist.size();
-  for (unsigned long int i = 0; i < n; ++i) assert(dist[i].size() == n);
-  for (unsigned long int i = 0; i < n; ++i) {
+  usize n = dist.size();
+  for (usize i = 0; i < n; ++i) assert(dist[i].size() == n);
+  for (usize i = 0; i < n; ++i) {
     dist[i][i] = std::min(dist[i][i], 0);
   }
-  for (unsigned long int k = 0; k < n; ++k) {
-    for (unsigned long int i = 0; i < n; ++i) {
-      for (unsigned long int j = 0; j < n; ++j) {
+  for (usize k = 0; k < n; ++k) {
+    for (usize i = 0; i < n; ++i) {
+      for (usize j = 0; j < n; ++j) {
         dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
       }
     }
   }
-  for (unsigned long int i = 0; i < n; ++i) {
+  for (usize i = 0; i < n; ++i) {
     if (dist[i][i] < 0) {
       throw std::logic_error("negative cycle found.");
     }
   }
   return dist;
 }
+} // namespace dsalgo
+
+namespace dsalgo {
+// stdout.
+
+template <typename T> void print(vec<T> v) {
+  for (usize i = 0; i < v.size(); ++i) {
+    std::cout << v[i] << " \n"[i == v.size() - 1];
+  }
+}
+
+template <typename T> void print(const T& t) { std::cout << t << '\n'; }
+
+template <typename T, typename... U> void print(const T& t, const U&... args) {
+  std::cout << t << ' ';
+  print(args...);
+}
+
+template <typename T, typename... U> void print(char sep, const T& t, const U&... args) {
+  if (sizeof...(args) > 0) {
+    std::cout << t << sep;
+    print(sep, args...);
+  } else {
+    print(t);
+  }
+}
+
+#ifdef CPP_DEBUG // g++ -DCPP_DEBUG ...
+#define debug(...) print(__VA_ARGS__);
+#else
+#define debug(...) nullptr
+#endif
+
+} // namespace dsalgo
 
 int main() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   using namespace std;
+  using namespace dsalgo;
+  int a = 0, b = 2, c = 3;
+  debug(a, b, c);
 
-  int n, m;
-  cin >> n >> m;
+  vec<int> v{1, 2, 3, 4, 5};
+  debug(v);
+  debug(a, v);
+  usize d = 0;
+  print(d);
+  repeat(10) { print(_); }
+  range(i, 0, 10, 2) { print(i); }
 
-  constexpr int inf = 1 << 29;
-  vector<vector<int>> dist(n, vector<int>(n, inf));
-  for (int i = 0; i < m; ++i) {
-    int a, b, t;
-    cin >> a >> b >> t;
-    --a;
-    --b;
-    dist[a][b] = t;
-    dist[b][a] = t;
+  int i = 0;
+  loop {
+    i += 1;
+    print(i);
+    if (i == 10) break;
   }
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      assert(dist[i][j] >= 0);
-    }
-  }
 
-  dist = floyd_warshall(dist);
+  // int n, m;
+  // cin >> n >> m;
 
-  int mn = inf;
+  // constexpr int inf = 1 << 29;
+  // vector<vector<int>> dist(n, vector<int>(n, inf));
+  // for (int i = 0; i < m; ++i) {
+  //   int a, b, t;
+  //   cin >> a >> b >> t;
+  //   --a;
+  //   --b;
+  //   dist[a][b] = t;
+  //   dist[b][a] = t;
+  // }
+  // for (int i = 0; i < n; i++) {
+  //   for (int j = 0; j < n; j++) {
+  //     assert(dist[i][j] >= 0);
+  //   }
+  // }
 
-  for (int i = 0; i < n; ++i) {
-    mn = min(mn, *max_element(dist[i].begin(), dist[i].end()));
-  }
-  cout << mn << endl;
+  // dist = floyd_warshall(dist);
+
+  // int mn = inf;
+
+  // for (int i = 0; i < n; ++i) {
+  //   mn = min(mn, *max_element(dist[i].begin(), dist[i].end()));
+  // }
+  // cout << mn << endl;
 }

@@ -114,176 +114,257 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut reader = locked_stdin_reader();
     let mut writer = locked_stdout_buf_writer();
 
-    // let n: usize = reader.read()?;
-    // let a: usize = reader.read()?;
-    // let b: usize = reader.read()?;
+    let n: u64 = reader.read()?;
+    // let count = prime_pi_fast(n);
+    // let count = prime_pi_fast_half(n);
+    let count = prime_pi_fast_optimized(n);
 
-    // let primes = sieve_of_sundaram(n as u32 + 1);
-    // let primes = sieve_of_eratosthenes(n + 1);
-    // let primes = sieve_of_eratosthenes(n + 1);
-    // let primes = linear_prime_sieve(n + 1).1;
-
-    // let pi = primes.len();
-    // let mut res = vec![];
-    // let mut i = b;
-    // while i < pi {
-    //     res.push(primes[i]);
-    //     i += a;
-    // }
-    // write_all!(writer, pi, res.len());
-    // write_vec!(writer, res);
-
-    // let mut prime_gen = prime_generator(0, n as u64 + 1);
-
-    // let mut res = vec![];
-    // let mut i = 0;
-    // while let Some(p) = prime_gen.next() {
-    //     if i % a == b {
-    //         res.push(p);
-    //     }
-    //     i += 1;
-    // }
-
-    // write_all!(writer, i, res.len());
-    // write_vec!(writer, res);
-
-    let a: u64 = reader.read()?;
-    let b: u64 = reader.read()?;
-    let range_sieve = RangeSieveOfEratosthenes::new(b + 1);
+    writeln!(writer, "{}", count)?;
     writeln!(
         writer,
         "{}",
-        range_sieve.find_prime_numbers(a, b + 1).len()
+        prime_pi_approx_ln(n as u128)
     )?;
-
     writer.flush()?;
     Ok(())
 }
+// u128 prime_pi_approx_ln(u128 n) {
+//   if (n < 2) return 0;
+//   f128 nf = n;
+//   return nf / logf128(nf) * 1.1;
+// }
 
-
-
-pub fn sieve_of_eratosthenes(sieve_size: usize) -> Vec<u32> {
-    let mut primes = Vec::with_capacity(sieve_size >> 1);
-    if sieve_size > 2 {
-        primes.push(2);
+/// mainly used for initializing prime_numbers vec with capacity.
+pub fn prime_pi_approx_ln(n: u128) -> u128 {
+    if n < 2 {
+        return 0;
     }
-    let mut is_prime = vec![true; sieve_size >> 1];
-    for i in (3..sieve_size).step_by(2) {
-        if !is_prime[i >> 1] {
+    return n * 3 / bit_length_128(n) as u128 >> 1;
+    // suppose pi(x) ~= [x / ln(x)] * 1.1
+    // = [x / log_2(x) * (log_2(x) / ln(x))] * 1.1
+    // = [x / log_2(x) * ln(2)^{-1}] * 1.1
+    // ~= [x / log_2(x) * 1.4427] * 1.1
+    // ~= x * 3 / log_2(x) / 2
+}
+
+pub fn bit_length_128(n: u128) -> u8 {
+    (0u128.leading_zeros() - n.leading_zeros()) as u8
+}
+
+/// O(N^{3/4}) with constant time optimization.
+/// insipired by O(N^{3/4}/log{N}) implementation.
+pub fn prime_pi_fast_half(n: u64) -> u64 {
+    if n < 2 {
+        return 0;
+    }
+    if n == 2 {
+        return 1;
+    }
+    let sqrt = floor_sqrt(n) as usize;
+    let n = n as usize;
+    let size = (sqrt + 1) >> 1;
+    let half = |j: usize| (j - 1) >> 1;
+
+    let mut small = (0..size).collect::<Vec<_>>();
+    let mut large =
+        (0..size).map(|i| half(n / (i << 1 | 1))).collect::<Vec<_>>();
+
+    for i in (3..=sqrt).step_by(2) {
+        let i_half = half(i);
+        if small[i_half] == small[i_half - 1] {
             continue;
         }
-        primes.push(i as u32);
-        for j in (i * i >> 1..sieve_size >> 1).step_by(i) {
-            is_prime[j] = false;
+        let pi = small[i_half - 1];
+        let mut border = sqrt / i;
+        if border & 1 == 0 {
+            border -= 1;
+        }
+        let n_i = n / i;
+        for k in (1..=border).step_by(2) {
+            large[half(k)] -= large[half(k * i)] - pi;
+        }
+        for k in (border + 2..=sqrt.min(n_i / i)).step_by(2) {
+            large[half(k)] -= small[half(n_i / k)] - pi;
+        }
+        for k in (i..=border).rev().step_by(2) {
+            let sub = small[half(k)] - pi;
+            small[half(k * i)..]
+                .iter_mut()
+                .take(half(i) + 1)
+                .for_each(|j| *j -= sub);
         }
     }
-    primes
+    large[0] as u64 + 1
 }
 
-/// compute least prime factor table and prime numbers list.
-pub fn linear_prime_sieve(size: usize) -> (Vec<Option<u32>>, Vec<u32>) {
-    let mut lpf = vec![None; size];
-    let mut prime_numbers = Vec::with_capacity(size);
-    for i in 2..size {
-        if lpf[i].is_none() {
-            lpf[i] = Some(i as u32);
-            prime_numbers.push(i as u32);
+/// Compute \pi(n)
+/// O(N^{3/4}/log{N})
+/// reference
+/// - https://judge.yosupo.jp/submission/61553
+pub fn prime_pi_fast_optimized(n: u64) -> u64 {
+    if n < 2 {
+        return 0;
+    }
+    if n == 2 {
+        return 1;
+    }
+    let half = |i: usize| (i - 1) >> 1;
+    let sqrt = floor_sqrt(n) as usize;
+    let n = n as usize;
+    let mut size = (sqrt + 1) >> 1;
+    // for memory saving. do not have space for even numbers.
+    let mut small: Vec<usize> = (0..size).collect();
+    // j=1, 3, 5, 7, ..., k=0, 1, 2, 3
+    // -> unsieved count less than or equal to j is (j - 1) >> 1 = k.
+    let mut large: Vec<usize> =
+        (0..size).map(|i| half(n / (i << 1 | 1))).collect();
+    // (j - 1) >> 1 = k <-> (k << 1 | 1) = j
+    let mut unsieved_nums: Vec<usize> = (0..size).map(|i| i << 1 | 1).collect();
+    // 1initially, 1, 3, 5, ... (odd at most sqrt(n))
+    // unsieved_nums[..size] are odd integers which are still unsieved.
+    // (size will be updated in each iteration)
+    // unsieved_nums[size..] are no longer used.
+    let mut checked_or_sieved = vec![false; size];
+    // 1, 2 -> 0, 3, 4 -> 1, ... (because even numbers are skipped.)
+    let mut pi = 0;
+    for i in (3..=sqrt).step_by(2) {
+        if checked_or_sieved[half(i)] {
+            // sieved
+            continue;
         }
-        for &p in &prime_numbers {
-            if p > lpf[i].unwrap() || p as usize * i >= size {
-                break;
+        let i2 = i * i;
+        if i2 * i2 > n {
+            break;
+        }
+        checked_or_sieved[half(i)] = true; // checked
+        for j in (i2..=sqrt).step_by(i << 1) {
+            checked_or_sieved[half(j)] = true;
+        }
+        // update large and unsieved_nums
+        let mut ptr = 0;
+        for k in 0..size {
+            let j = unsieved_nums[k];
+            if checked_or_sieved[half(j)] {
+                continue;
             }
-            debug_assert!(lpf[p as usize * i].is_none());
-            lpf[p as usize * i] = Some(p);
+            let border = j * i;
+            large[ptr] = large[k]
+                - if border <= sqrt {
+                    large[small[border >> 1] - pi]
+                } else {
+                    small[half(n / border)]
+                }
+                + pi;
+            unsieved_nums[ptr] = j;
+            ptr += 1;
         }
-    }
-    (lpf, prime_numbers)
-}
-
-pub fn sieve_of_sundaram(less_than: u32) -> Vec<u32> {
-    let mut prime_numbers = vec![];
-    if less_than <= 2 {
-        return prime_numbers;
-    }
-    prime_numbers.push(2);
-    let size = (less_than >> 1) as usize;
-    let mut is_prime = vec![true; size];
-    for i in 1..size {
-        if is_prime[i] {
-            prime_numbers.push(((i as u32) << 1) | 1);
-        }
-        for j in (i * (i + 1) << 1..size).step_by((i << 1) | 1) {
-            is_prime[j] = false;
-        }
-    }
-    prime_numbers
-}
-
-pub struct SieveOfEratosthenesLowMemoryPrimeGenerator {
-    iter: std::vec::IntoIter<u64>,
-    range_sieve: RangeSieveOfEratosthenes,
-    ranges: std::vec::IntoIter<(u64, u64)>,
-}
-
-impl SieveOfEratosthenesLowMemoryPrimeGenerator {
-    /// [lo, hi)
-    pub fn new(mut lo: u64, mut hi: u64) -> Self {
-        if lo < 2 {
-            lo = 2;
-        }
-        if hi < 2 {
-            hi = 2;
-        }
-        let mut ranges = vec![];
-        let range_size = (floor_sqrt(hi) as usize) << 4; // 2 or 3?
-        // because range sieve has only odd numbers internally,
-        // the size is sqrt / 2.
-        // so we can check more than twice the range at once.
-        // four times is best in test.
-        for i in (lo..hi).step_by(range_size) {
-            ranges.push((
-                i,
-                std::cmp::min(hi, i + range_size as u64),
-            ));
-        }
-
-        Self {
-            iter: vec![].into_iter(),
-            range_sieve: RangeSieveOfEratosthenes::new(hi as u64),
-            ranges: ranges.into_iter(),
-        }
-    }
-}
-
-impl Iterator for SieveOfEratosthenesLowMemoryPrimeGenerator {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(p) = self.iter.next() {
-            return Some(p);
-        }
-        while let Some((lo, hi)) = self.ranges.next() {
-            self.iter = self.range_sieve.find_prime_numbers(lo, hi).into_iter();
-            if let Some(p) = self.iter.next() {
-                return Some(p);
+        size = ptr;
+        let mut j = half(sqrt);
+        let mut k = sqrt / i - 1 | 1;
+        while k >= i {
+            let c = small[k >> 1] - pi;
+            let e = k * i >> 1;
+            while j >= e {
+                small[j] -= c;
+                j -= 1;
             }
+            k -= 2;
         }
-        None
+        pi += 1;
     }
+    // be careful of overflow.
+    large[0] += if pi > 0 {
+        size + ((pi - 1) << 1)
+    } else {
+        // -1 << 1 == -2
+        size.saturating_sub(2)
+        // if size == 1,
+        // (size + ((pi - 1) << 1)) * (size - 1) >> 1 == 0
+        // regardless of `size + ((pi - 1) << 1)`
+    } * (size - 1)
+        >> 1;
+    for k in 1..size {
+        large[0] -= large[k];
+    }
+    for k in 1..size {
+        let q = unsieved_nums[k];
+        let n_q = n / q;
+        let e = small[half(n_q / q)] - pi;
+        if e < k + 1 {
+            break;
+        }
+        let mut t = 0;
+        for l in k + 1..=e {
+            t += small[half(n_q / unsieved_nums[l])];
+        }
+        large[0] += t - (e - k) * (pi + k - 1);
+    }
+
+    large[0] as u64 + 1
 }
 
-pub fn prime_generator(
-    lo: u64,
-    hi: u64,
-) -> SieveOfEratosthenesLowMemoryPrimeGenerator {
-    SieveOfEratosthenesLowMemoryPrimeGenerator::new(lo, hi)
-}
+/// O(N^{3/4})
+pub fn prime_pi_fast(n: u64) -> u64 {
+    if n < 2 {
+        return 0;
+    }
+    let sqrt = floor_sqrt(n) as usize;
+    let n = n as usize;
 
-pub fn floor_sqrt(n: u64) -> u64 { int_sqrt_binary_search(n) }
+    // consider sieve of Eratosthenes' transitions.
+    // S(j, p) := number of trues in [2, j] after sieving with prime p.
+    let mut small = vec![0; sqrt + 1]; // small[j] = S(j, p)
+    let mut large = vec![0; sqrt + 1];
+    // large[k] := S([n/k]=j, p)
+    // large[0] is undefined.
+    for i in 1..=sqrt {
+        small[i] = i - 1;
+        large[i] = n / i - 1;
+    }
+
+    for i in 2..=sqrt {
+        if small[i] == small[i - 1] {
+            continue;
+            // i is not prime.
+        }
+        // we want update S(j, i) such that j >= i * i.
+        // for j > sqrt(n), update large[inv] such that j = [N/inv].
+        // for j <= sqrt(n), update small[j].
+        let pi = small[i - 1]; // S(p - 1, p - 1) = pi(p - 1).
+
+        // compute S(j, i) -= S(j/i, i - 1) - pi
+
+        // for large
+        // large[n/j] -= large[n/(j/i)] - pi = large[(n/j)i] - pi
+        // large[k] -= large[ki] - pi
+        // because j = [N/k] >= i*i, k <= [N/(i*i)]
+        // be careful of updating in forward order because of in-place.
+        let border = sqrt / i;
+        let n_i = n / i; // cache
+        for k in 1..=border {
+            large[k] -= large[k * i] - pi;
+        }
+        for k in border + 1..=sqrt.min(n_i / i) {
+            large[k] -= small[n_i / k] - pi;
+        }
+
+        // for small
+        // just small[j] -= small[j/i] - pi (i*i <= j <= sqrt)
+        // be careful of updating in reverse order because of in-place.
+        // for optimization, use multiplication instead of division
+        // by computing giving dp instead of receiving.
+        // small[j=[k*i, sqrt]] -= small[k] - pi (i <= k <= sqrt/i)
+        for k in (i..=border).rev() {
+            let sub = small[k] - pi;
+            small[(k * i)..].iter_mut().take(i).for_each(|j| *j -= sub);
+        }
+    }
+    large[1] as u64
+}
 
 pub fn int_sqrt_binary_search(n: u64) -> u64 {
     let mut lo = 0;
-    let mut hi = 1 << 32;
+    let mut hi = std::cmp::min(n + 1, 1 << 32);
     while hi - lo > 1 {
         let x = (lo + hi) >> 1;
         if x * x <= n {
@@ -295,71 +376,4 @@ pub fn int_sqrt_binary_search(n: u64) -> u64 {
     lo
 }
 
-pub struct RangeSieveOfEratosthenes {
-    primes: Vec<u64>,
-    less_than: u64,
-}
-
-impl RangeSieveOfEratosthenes {
-    pub fn new(less_than: u64) -> Self {
-        Self {
-            primes: find_prime_numbers(floor_sqrt(less_than) as u32 + 1)
-                .into_iter()
-                .map(|p| p as u64)
-                .collect(),
-            less_than,
-        }
-    }
-
-    /// find prime numbers in [lo, hi).
-    /// time: O((hi - lo)\log{\log{less_than}})
-    /// space: O(hi - lo)
-    pub fn find_prime_numbers(&self, mut lo: u64, hi: u64) -> Vec<u64> {
-        assert!(lo <= hi && hi <= self.less_than);
-        if hi <= 2 {
-            return vec![];
-        }
-        if lo < 2 {
-            lo = 2;
-        }
-        debug_assert!(2 <= lo && lo < hi);
-        let mut res = vec![];
-        if lo & 1 == 0 {
-            if lo == 2 {
-                res.push(2);
-            }
-            lo += 1;
-        }
-        if lo == hi {
-            return res;
-        }
-        // initially, only odd numbers are in sieve.
-        // be careful of indices.
-        let size = ((hi - lo + 1) >> 1) as usize;
-        let mut is_prime = vec![true; size];
-        for &p in self.primes.iter().skip(1) {
-            let mut from = p * p;
-            if from >= hi {
-                break;
-            }
-            from = std::cmp::max(from, (lo + p - 1) / p * p);
-            if from & 1 == 0 {
-                from += p;
-            }
-            debug_assert!(from & 1 == 1);
-            for j in (((from - lo) >> 1) as usize..size).step_by(p as usize) {
-                is_prime[j] = false;
-            }
-        }
-        res.extend(
-            is_prime.into_iter().enumerate().filter_map(|(i, is_prime)| {
-                if is_prime { Some(lo + (i << 1) as u64) } else { None }
-            }),
-        );
-        res
-    }
-}
-
-pub fn find_prime_numbers(less_than: u32) -> Vec<u32> {
-    sieve_of_eratosthenes(less_than as usize)
-}
+pub fn floor_sqrt(n: u64) -> u64 { int_sqrt_binary_search(n) }

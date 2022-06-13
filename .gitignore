@@ -61,4 +61,7 @@ __pycache__
 
 *.deb
 
+
+.vscode/*.log
+
 !.gitkeep
