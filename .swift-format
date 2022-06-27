@@ -5,13 +5,13 @@
   "indentConditionalCompilationBlocks": true,
   "indentSwitchCaseLabels": false,
   "indentation": {
-    "spaces": 4
+    "spaces": 2
   },
-  "lineBreakAroundMultilineExpressionChainComponents": true,
-  "lineBreakBeforeControlFlowKeywords": true,
-  "lineBreakBeforeEachArgument": true,
-  "lineBreakBeforeEachGenericRequirement": true,
-  "lineLength": 80,
+  "lineBreakAroundMultilineExpressionChainComponents": false,
+  "lineBreakBeforeControlFlowKeywords": false,
+  "lineBreakBeforeEachArgument": false,
+  "lineBreakBeforeEachGenericRequirement": false,
+  "lineLength": 79,
   "maximumBlankLines": 1,
   "prioritizeKeepingFunctionOutputTogether": false,
   "respectsExistingLineBreaks": true,
@@ -48,9 +48,9 @@
     "UseSingleLinePropertyGetter": true,
     "UseSynthesizedInitializer": true,
     "UseTripleSlashForDocumentationComments": true,
-    "UseWhereClausesInForLoops": true,
+    "UseWhereClausesInForLoops": false,
     "ValidateDocumentationComments": false
   },
-  "tabWidth": 4,
+  "tabWidth": 2,
   "version": 1
 }

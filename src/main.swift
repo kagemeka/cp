@@ -1,3 +1,5 @@
+import Foundation
+
 private func readStrings() -> [String] {
   return readLine()!.split(separator: " ").map { String($0) }
 }
@@ -19,16 +21,18 @@ private class Scanner {
   func ints(size: Int) -> [Int] {
     return (0..<size).map { _ in int() }
   }
-  func intMatrix(height: Int, width: Int) -> [[Int]] {
-    return (0..<height).map { _ in (0..<width).map { _ in int() } }
+
+  func intMatrix(h: Int, w: Int) -> [[Int]] {
+    return (0..<h).map { _ in (0..<w).map { _ in int() } }
   }
 }
 
 func main() {
-  let sc = Scanner()
-  for _ in 0 ..< 1 << 20 {
-    sc.string()
+  // let sc = Scanner()
+  for _ in 0..<10 {
+    print(1)
   }
 }
+
 main()
 // swift main.swift < in.txt

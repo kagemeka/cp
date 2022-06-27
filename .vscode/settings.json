@@ -107,7 +107,8 @@
     "semaphore": "cpp",
     "span": "cpp",
     "stop_token": "cpp",
-    "syncstream": "cpp"
+    "syncstream": "cpp",
+    "netfwd": "cpp"
   },
   "go.inferGopath": false,
   "C_Cpp.errorSquiggles": "Enabled",

@@ -1,38 +1,42 @@
-# # mypy: ignore-errors
+# / mypy: ignore-errors
+import typing
 
 
-def debug(*objects: object, **kwargs: object) -> None:
-    import os
-    import pprint
+# combinations
 
-    if os.environ.get("PYTHON_DEBUG") is None:
-        return
+MOD = 998_244_353
 
-    for obj in objects:
-        pprint.pprint(obj)
+K = 1 << 18
+fact = list(range(K))
+fact[0] = 1
+for i in range(K - 1):
+    fact[i + 1] = fact[i] * fact[i + 1] % MOD
 
-    for key, obj in kwargs.items():
-        print(f"{key}: ")
-        pprint.pprint(obj)
+ifact = list(range(1, K + 1))
+ifact[-1] = pow(fact[-1], MOD - 2, MOD)
+for i in range(K - 1, 0, -1):
+    ifact[i - 1] = ifact[i - 1] * ifact[i] % MOD
+
+
+def choose(n: int, k: int) -> int:
+    if not 0 <= k <= n:
+        return 0
+    return fact[n] * ifact[k] % MOD * ifact[n - k] % MOD
 
 
 def main() -> None:
-    n, m = map(int, input().split())
-    g = [[] for _ in range(n)]
-    for _ in range(m):
-        a, b, c, d = map(int, input().split())
-        a -= 1
-        b -= 1
-        g[a].append((b, c, d))
-        g[b].append((a, c, d))
+    n = int(input())
+    m = n * n
 
-    # c is constant
-    # arrive at node_i at time t,
-    # then leave at t + dt
-    # cost = c + dt + [d / (t + dt)]
-    # find minimum of dt + [d / (t + dt)]
-    # t + dt is approximately \sqrt(d)
+    p = 0
+    for i in range(1, m + 1):
+        p += choose(m - i, n - 1) * choose(i - 1, n - 1) % MOD
+        p %= MOD
+    p *= fact[n] * fact[n] % MOD * fact[n * n - 2 * n + 1] % MOD
+    p %= MOD
+    ans = fact[n * n] - p
+    ans %= MOD
+    print(ans)
 
 
-if __name__ == "__main__":
-    main()
+main()
