@@ -2,73 +2,71 @@
 import typing
 
 
-# similar to prim's mst algorithm
-def min_weight_dijkstra_dense(
-    g: typing.List[typing.List[typing.Optional[int]]],
-    src: int,
-) -> None:
-    n = len(g)
-    min_weight = [None] * n
-    min_weight[src] = 0
-    is_fixed = [False] * n
-    for _ in range(n - 1):
-        u, wu = None, None
-        for i in range(n):
-            if is_fixed[i] or min_weight[i] is None:
-                continue
-            if wu is None or min_weight[i] < wu:
-                u, wu = i, min_weight[i]
-        if u is None:
-            break
-        is_fixed[u] = True
-        for v in range(n):
-            wv = g[u][v]
-            if is_fixed[v] or wv is None:
-                continue
-            if min_weight[v] is None or wv < min_weight[v]:
-                min_weight[v] = wv
-    return min_weight
+M0 = 0x5555555555555555
+M1 = 0x3333333333333333
+M2 = 0x0F0F0F0F0F0F0F0F
+def popcount(n: int) -> int:
+    n -= (n >> 1) & M0
+    n = (n & M1) + ((n >> 2) & M1)
+    n = (n + (n >> 4)) & M2
+    n = n + (n >> 8)
+    n = n + (n >> 16)
+    n = n + (n >> 32)
+    return n & 0x7F
 
 
-T = typing.TypeVar("T")
-G = typing.List[typing.List[T]]
-F = typing.Callable[[T, T, T], T]
-Cb = typing.Callable[[int, G], None]
+K = 6
+M = (1 << K) - 1
 
 
-def floyd_warshall(f: F, g: G, cb: typing.Optional[Cb] = None) -> G:
-    n = len(g)
-    for k in range(n):
-        for i in range(n):
-            for j in range(n):
-                g[i][j] = f(g[i][j], g[i][k], g[k][j])
-        if cb:
-            cb(k, g)
-    return g
+Self = typing.TypeVar("Self")
+
+
+class BitArray:
+    _d: typing.List[int]
+
+    def __init__(self, size: int) -> None:
+        self._d = [0] * ((size + M) >> K)
+
+    def __getitem__(self, i: int) -> int:
+        return self._d[i >> K] >> (i & M) & 1 == 1
+
+    def __setitem__(self, i: int, value: int) -> None:
+        if self[i] != value:
+            self.flip(i)
+
+    def flip(self, i: int) -> None:
+        self._d[i >> K] ^= 1 << (i & M)
+
+    def __and__(self, rhs: Self) -> Self:
+        res = BitArray(0)
+        res._d = self._d.copy()
+        for i in range(min(len(self._d), len(rhs._d))):
+            res._d[i] &= rhs._d[i]
+        return res
+
+    def and_count(self, rhs: Self) -> int:
+        return sum(popcount(x & y) for x, y in zip(self._d, rhs._d))
+
+    def popcount(self) -> int:
+        return sum(popcount(x) for x in self._d)
 
 
 def main() -> None:
     n = int(input())
-
-    a = [tuple(map(int, input().split())) for _ in range(n)]
-
-    inf = 1 << 60
-    g = [[inf] * n for _ in range(n)]
-
+    a = [BitArray(n) for _ in range(n)]
     for i in range(n):
-        xi, yi, pi = a[i]
-        for j in range(n):
-            xj, yj, pj = a[j]
-            d = abs(xi - xj) + abs(yi - yj)
-            d = (d + pi - 1) // pi
-            g[i][j] = d
+        for j, v in enumerate(map(int, input())):
+            a[i][j] = v
 
-    def f(x: int, y: int, z: int) -> int:
-        return min(x, max(y, z))
-
-    min_w = floyd_warshall(f, g)
-    res = min(max(row) for row in min_w)
-    print(res)
+    cnt = 0
+    for i in range(n):
+        for j in range(i):
+            if not a[i][j]:
+                continue
+            # cnt += (a[i] & a[j]).popcount()
+            cnt += a[i].and_count(a[j])
+    print(cnt // 3)
 
 
 main()

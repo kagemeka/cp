@@ -1,78 +1,177 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-namespace types {
-#include <cstdint>
-#include <functional>
-
-  using u8 = uint8_t;
-  using u16 = uint16_t;
-  using u32 = uint32_t;
-  using u64 = uint64_t;
-  using u128 = __uint128_t;
-  using i8 = int8_t;
-  using i16 = int16_t;
-  using i32 = int32_t;
-  using i64 = int64_t;
-  using i128 = __int128_t;
-  using usize = std::size_t;
-  using isize = std::make_signed<usize>::type;
-  using f32 = float;
-  using f64 = double;
-  using f128 = __float128;
-
-  template <typename T>
-  using vec = std::vector<T>;
-
-  template <typename T>
-  using fn = std::function<T>;
-
-} // namespace types
-
-namespace z_algorithm {
-  using namespace types;
-
-  template <typename A>
-  auto z_algorithm(const A& a) -> vec<int> {
-    int n = a.size();
-    vec<int> lcp(n, 0);
-    for (int i = 1, l = 0; i < n; ++i) {
-      auto r = l + lcp[l];
-      auto d = r <= i ? 0 : std::min(lcp[i - l], r - i);
-      while (i + d < n && a[i + d] == a[d]) ++d;
-      lcp[i] = d;
-      if (r < i + d) l = i;
-    }
-    lcp[0] = n;
-    return lcp;
+template<typename T, typename A>
+auto count_common_subsequences(const A& a, const A& b) -> T {
+  int n = a.size(), m = b.size();
+  vector<T> dp(m + 1, 1);
+  for(int i = 0; i < n; i++) {
+    for(int j = m - 1; j >= 0; j--) dp[j + 1] -= dp[j] * (a[i] != b[j]);
+    for(int j = 0; j < m; j++) dp[j + 1] += dp[j];
   }
-} // namespace z_algorithm
+  return dp[m];
+}
+
+template<typename T, T v, std::enable_if_t<(v > 0)>* = nullptr>
+struct const_mod {
+  static constexpr auto get() -> T { return v; }
+};
+
+template<typename M> struct modint {
+  using T = typename std::decay<decltype(M::get())>::type;
+
+  T value;
+
+  using Self = modint;
+
+  constexpr static auto m() -> T { return M::get(); }
+
+  template<typename U> constexpr static auto norm(U x) -> T {
+    return (x % m() + m()) % m();
+  }
+
+  constexpr modint(): value() {}
+
+  template<typename U> modint(U x): value(norm(x)) {}
+
+  auto operator()() -> const T& { return value; }
+
+  template<typename T> explicit operator T() const {
+    return static_cast<T>(value);
+  }
+
+  auto operator-() const -> Self {
+    return Self(value == 0 ? value : m() - value);
+  }
+
+  auto operator+=(Self& rhs) -> Self& {
+    value += rhs.value;
+    value -= (value >= m()) * m();
+    return *this;
+  }
+
+  friend auto operator>>(std::istream& stream, Self& x) -> std::istream& {
+    T v;
+    stream >> v;
+    x.value = norm(v);
+    return stream;
+  }
+
+  friend auto operator<<(std::ostream& stream, Self const& x) -> std::ostream& {
+    return stream << x.value;
+  }
+
+  friend auto operator+(Self& lhs, Self& rhs) -> Self {
+    return Self(lhs) += rhs;
+  }
+};
+
+template<typename T> auto operator+(T& a, T& b) -> T { return T(a) += b; }
+
+template<typename T> auto operator-(T& a, T& b) -> T { return T(a) -= b; }
+
+template<typename T> auto operator*(T& a, T& b) -> T { return T(a) *= b; }
+
+template<typename T> auto operator/(T& a, T& b) -> T { return T(a) /= b; }
+
+// template <typename A> // Arithmetic
+// class modular_int {
+
+//   T value;
+//   using Self = modular_int;
+//   constexpr static auto mod() -> T { return A::mod(); }
+
+//   template <typename U>
+//   constexpr static auto norm(const U& x) -> T {
+//     return (x % mod() + mod()) % mod();
+//   }
+
+// public:
+//   constexpr modular_int() : value() {}
+
+//   template <typename U>
+//   modular_int(const U& x) {
+//     value = norm(x);
+//   }
+
+//   auto operator()() const -> const T& { return value; }
+//   template <typename T>
+//   explicit operator T() const {
+//     return static_cast<T>(value);
+//   }
+
+//   auto operator-() const -> Self { return Self(A::neg(value)); }
+//   auto operator+=(const Self& rhs) -> Self& {
+//     value = A::add(value, rhs.value);
+//     return *this;
+//   }
+//   auto operator-=(const Self& rhs) -> Self& { return *this += -rhs; }
+//   auto operator++() -> Self& { return *this += 1; }
+//   auto operator--() -> Self& { return *this -= 1; }
+//   auto operator++(int) -> Self {
+//     Self res(*this);
+//     *this += 1;
+//     return res;
+//   }
+//   auto operator--(int) -> Self {
+//     Self res(*this);
+//     *this -= 1;
+//     return res;
+//   }
+//   auto operator*=(const Self& rhs) -> Self& {
+//     value = A::mul(value, rhs.value);
+//     return *this;
+//   }
+
+//   [[nodiscard]] auto inv() const -> Self { return Self(A::inv(value)); }
+
+//   auto operator/=(const Self& rhs) -> Self& { return *this *= rhs.inv(); }
+
+//   friend auto operator+(const Self& lhs, const Self& rhs) -> Self {
+//     return Self(lhs) += rhs;
+//   }
+//   friend auto operator-(const Self& lhs, const Self& rhs) -> Self {
+//     return Self(lhs) -= rhs;
+//   }
+//   friend auto operator*(const Self& lhs, const Self& rhs) -> Self {
+//     return Self(lhs) *= rhs;
+//   }
+//   friend auto operator/(const Self& lhs, const Self& rhs) -> Self {
+//     return Self(lhs) /= rhs;
+//   }
+//   friend auto operator==(const Self& lhs, const Self& rhs) -> bool {
+//     return lhs.value == rhs.value;
+//   }
+//   friend auto operator!=(const Self& lhs, const Self& rhs) -> bool {
+//     return lhs.value != rhs.value;
+//   }
+
+//   friend auto operator>>(std::istream& stream, Self& x) -> std::istream& {
+//     T v;
+//     stream >> v;
+//     x.value = norm(v);
+//     return stream;
+//   }
+//   friend auto operator<<(std::ostream& stream, const Self& x) ->
+//   std::ostream& {
+//     return stream << x.value;
+//   }
+// };
 
 auto main() -> int {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  using namespace types;
-  using z_algorithm::z_algorithm;
+  int n, m;
+  cin >> n >> m;
+  using mint = modint<const_mod<int, 1000000007>>;
 
-  string s, t;
-  cin >> s >> t;
-  usize n = s.size(), m = t.size();
+  vector<mint> a(n), b(m);
+  for(int i = 0; i < n; i++) cin >> a[i];
+  for(int i = 0; i < m; i++) cin >> b[i];
 
-  auto lcp = z_algorithm(s + '$' + t);
-  usize r = 0, i = 0, k = 0;
-  while (r < m) {
-    auto nr = r;
-    while (i <= r) {
-      nr = max(nr, i + lcp[n + 1 + i]);
-      ++i;
-    }
-    if (nr == r) {
-      cout << -1 << '\n';
-      return 0;
-    }
-    r = nr;
-    ++k;
-  }
-  cout << k << '\n';
+  a[1] = a[1] + a[0];
+  cout << a[1] << endl;
+
+  // cout << (dp[m] + mod) % mod << endl;
 }

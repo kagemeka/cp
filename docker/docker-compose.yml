@@ -20,3 +20,17 @@ services:
         volume:
           nocopy: true
         read_only: false
+      - type: bind
+        bind:
+          propagation: rprivate
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: false
+        volume:
+          nocopy: true
+      - type: bind
+        source: $GIT_CONFIG_PATH
+        target: /etc/gitconfig
+        volume:
+          nocopy: true
+        read_only: true
